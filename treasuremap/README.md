@@ -22,18 +22,6 @@ treasuremap
 
 　　宝箱1→鍵はいらない
 
-	■開発者向け補足
-
-FPS_UPDATE時に動作するようにしています。
-
-MAP_OPEN_HOOKEDにしたいところでしたが、mapfogviewerとの兼ね合いもあり、FPS_UPDATEにしました。
-
-MAP_OPEN_HOOKEDで、この処理後にmapfogviewerを呼び出すようにしても良かったのですが、単体で完結したかったのでこうしてます。
-
-何かいい方法あれば教えてください。
-
-あと、手探りで作成したのでAPIとかどこかにあれば教えてください。
-
 ### [EN]
 
 I'm sorry. It is a Google translation
@@ -55,15 +43,3 @@ The numbers behind the treasure box, represents the treasure chest level.
 Example: Treasure Chest 4 → LV4 need is key to the treasure box
 
 Treasure Chest 1 → key is not needed
-
-	■ Developer Supplement
-
-FPS_UPDATE you have to work at.
-
-Was the place you want to MAP_OPEN_HOOKED, but there is also a balance with mapfogviewer, it was to FPS_UPDATE.
-
-In MAP_OPEN_HOOKED, it was also good so as to invoke the mapfogviewer after this process, we are doing because I wanted to complete alone.
-
-Please tell me if there is any good way.
-
-Then, please tell me if the API somewhere.
