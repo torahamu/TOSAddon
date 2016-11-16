@@ -1,6 +1,3 @@
-# TOSAddon
-Tree of Savior Addon
-
 treasuremap
 --
 ![alt text](http://i.imgur.com/dAkRzhk.png "Map Screenshot")

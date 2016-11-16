@@ -1,5 +1,3 @@
-# TOSAddon
-
 marketshowlevel
 --
 ![alt text](http://i.imgur.com/YC1b3hX.jpg "Gem Screenshot")
