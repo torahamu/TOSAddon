@@ -19,6 +19,8 @@ marketshowlevel
 
 	■使い方
 
+**「_marketshowlevel-⛄-v1.0.0.ipf」が既にある場合は、「_marketshowlevel-⛄-v1.0.0.ipf」を削除してください**
+
 「_marketshowlevel-⛄-v1.0.1.ipf」をTree of Saviorインストールフォルダの「data」フォルダ内にコピーしてください。Tree of Saviorのキャラログイン時に、チャット欄に「MARKET SHOW LEVEL v1.0.1 loaded!」が表示されていれば導入完了です。
 
 
@@ -37,5 +39,7 @@ Addons to add levels to the names of gems and cards in the market. You can check
 You can not search by level and ability.
 
 	■ How to use
+
+**If "_marketshowlevel - ⛄ - v1.0.0.ipf" already exists, delete "_ marketshowlevel - ⛄ - v1.0.0.ipf"**
 
 Please copy "_marketshowlevel-⛄-v1.0.1.ipf" into the "data" folder of the Tree of Savior installation folder. Chara of Tree of Savior When introducing "MARKET SHOW LEVEL v1.0.1 loaded!" In the chat field, installation is completed.
