@@ -8,40 +8,40 @@ local itemColor = {
 };
 
 local propNameList = {
-	["MHP"]            = "ＨＰ  ",
-	["RHP"]            = "ＨＰ回",
-	["MSP"]            = "ＳＰ  ",
-	["RSP"]            = "ＳＰ回",
-	["PATK"]           = "物攻  ",
-	["ADD_MATK"]       = "魔攻  ",
-	["ADD_DEF"]        = "物防  ",
-	["ADD_MDEF"]       = "魔防  ",
-	["ADD_MHR"]        = "魔増幅",
-	["CRTATK"]         = "クリ発",
-	["CRTHR"]          = "クリ攻",
-	["CRTDR"]          = "クリ抵",
-	["ADD_HR"]         = "命中  ",
-	["ADD_DR"]         = "回避  ",
-	["ADD_FIRE"]       = "属攻炎",
-	["ADD_ICE"]        = "属攻氷",
-	["ADD_POISON"]     = "属攻毒",
-	["ADD_LIGHTNING"]  = "属攻雷",
-	["ADD_EARTH"]      = "属攻地",
-	["ADD_SOUL"]       = "属攻霊",
-	["ADD_HOLY"]       = "属攻聖",
-	["ADD_DARK"]       = "属攻闇",
-	["RES_FIRE"]       = "属防炎",
-	["RES_ICE"]        = "属防氷",
-	["RES_POISON"]     = "属防毒",
-	["RES_LIGHTNING"]  = "属防雷",
-	["RES_EARTH"]      = "属防地",
-	["RES_SOUL"]       = "属防霊",
-	["RES_HOLY"]       = "属防聖",
-	["RES_DARK"]       = "属防闇",
-	["MSPD"]           = "移動  ",
-	["SR"]             = "広域攻",
-	["SDR"]            = "広域防",
-	["BLK"]            = "ブロ  ",
+	["MHP"]            = "ＨＰ",
+	["RHP"]            = "HP回",
+	["MSP"]            = "ＳＰ",
+	["RSP"]            = "SP回",
+	["PATK"]           = "物攻",
+	["ADD_MATK"]       = "魔攻",
+	["ADD_DEF"]        = "物防",
+	["ADD_MDEF"]       = "魔防",
+	["ADD_MHR"]        = "増幅",
+	["CRTATK"]         = "ｸﾘ発",
+	["CRTHR"]          = "ｸﾘ攻",
+	["CRTDR"]          = "ｸﾘ抵",
+	["ADD_HR"]         = "命中",
+	["ADD_DR"]         = "回避",
+	["ADD_FIRE"]       = "炎攻",
+	["ADD_ICE"]        = "氷攻",
+	["ADD_POISON"]     = "毒攻",
+	["ADD_LIGHTNING"]  = "雷攻",
+	["ADD_EARTH"]      = "地攻",
+	["ADD_SOUL"]       = "霊攻",
+	["ADD_HOLY"]       = "聖攻",
+	["ADD_DARK"]       = "闇攻",
+	["RES_FIRE"]       = "炎防",
+	["RES_ICE"]        = "氷防",
+	["RES_POISON"]     = "毒防",
+	["RES_LIGHTNING"]  = "雷防",
+	["RES_EARTH"]      = "地防",
+	["RES_SOUL"]       = "霊防",
+	["RES_HOLY"]       = "聖防",
+	["RES_DARK"]       = "闇防",
+	["MSPD"]           = "移動",
+	["SR"]             = "広攻",
+	["SDR"]            = "広防",
+	["BLK"]            = "ブロ",
 	
 };
 
@@ -191,7 +191,7 @@ function ON_MARKET_ITEM_LIST_HOOKED(frame, msg, argStr, argNum)
 
 					propName = propNameList[propName];
 					prop = prop..propName..":"..string.format("{#%s}{ol}%4d{/}{/}", propValueColored, propValue);
-					space = space .. "            ";
+					space = space .. "         ";
 				end
 			end
 			if prop == "" then
