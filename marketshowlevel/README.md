@@ -10,8 +10,10 @@ marketshowlevel
 	■なにこれ
 
 マーケット内のジェムとカードの名前に、レベルを追加するアドオンです。いちいちマウスカーソル合わせなくてもレベルが確認出来ます。
-  *v1.0.1 にて、ヘアコスチュームの内容も表記するようになりました。*
-  *Special Thanks to とすけん様*
+
+**v1.0.1 にて、ヘアコスチュームの内容も表記するようになりました。**
+
+**Special Thanks to とすけん様**
 
 レベル、および能力での検索は出来ません。
 
@@ -27,8 +29,11 @@ I'm sorry. It is a Google translation
 	■ What is this
 
 Addons to add levels to the names of gems and cards in the market. You can check the level without touching the mouse cursor every time.
-  *At v1.0.1, the content of the hair costume also began to appear.*
-  *Special Thanks to tosken*
+
+**At v1.0.1, the content of the hair costume also began to appear.**
+
+**Special Thanks to tosken**
+
 You can not search by level and ability.
 
 	■ How to use
