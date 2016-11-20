@@ -1,4 +1,4 @@
-CHAT_SYSTEM("MARKET SHOW LEVEL loaded!");
+CHAT_SYSTEM("MARKET SHOW LEVEL v1.0.1 loaded!");
 
 function MARKETSHOWLEVEL_ON_INIT(addon, frame)
 
@@ -47,6 +47,35 @@ function ON_MARKET_ITEM_LIST_HOOKED(frame, msg, argStr, argNum)
 -- add code start
 		if itemGroup == "Gem" or itemGroup == "Card" then
 			name:SetTextByKey("value", "Lv".. itemLevel .. ":" .. GET_FULL_NAME(itemObj));
+		elseif itemGroup == "Armor" then
+			local prop = "";
+		    for i = 1 , 3 do
+		        local propName = "HatPropName_"..i;
+		        local propValue = "HatPropValue_"..i;
+				if itemObj[propValue] ~= 0 and itemObj[propName] ~= "None" then
+					if #prop > 0 then
+						prop = prop..",";
+					end
+					if itemObj[propName] == "MHP" then
+						prop = prop.."HP:"..itemObj[propValue];
+					elseif itemObj[propName] == "MSP" then
+						prop = prop.."SP:"..itemObj[propValue];
+					elseif itemObj[propName] == "MSPD" then
+						prop = prop.."MOV:"..itemObj[propValue];
+					elseif itemObj[propName] == "SR" then
+						prop = prop.."AOE:"..itemObj[propValue];
+					elseif itemObj[propName] == "SDR" then
+						prop = prop.."AOED:"..itemObj[propValue];
+					elseif itemObj[propName] == "ADD_MHR" then
+						prop = prop.."MAMP:"..itemObj[propValue];
+					elseif itemObj[propName] == "CRTHR" then
+						prop = prop.."CRT:"..itemObj[propValue];
+					else
+						prop = prop..string.gsub(string.gsub(itemObj[propName],"ADD_",""),"RES_","R_")..":"..itemObj[propValue];
+					end
+				end
+			end
+			name:SetTextByKey("value", prop.." "..GET_FULL_NAME(itemObj));
 		else
 			name:SetTextByKey("value", GET_FULL_NAME(itemObj));
 		end
