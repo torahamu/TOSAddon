@@ -24,8 +24,11 @@ marketshowlevel
 
 **「_marketshowlevel-⛄-v1.0.0.ipf」もしくは「_marketshowlevel-⛄-v1.0.1.ipf」が既にある場合は削除してください**
 
-ヘアアクセ日本語表記をされる方は「_marketshowlevel_jp-⛄-v1.0.2.ipf」をTree of Saviorインストールフォルダの「data」フォルダ内にコピーしてください。Tree of Saviorのキャラログイン時に、チャット欄に「MARKET SHOW LEVEL v1.0.2 JP loaded!」が表示されていれば導入完了です。  
-通常版を導入される方は「_marketshowlevel-⛄-v1.0.2.ipf」をTree of Saviorインストールフォルダの「data」フォルダ内にコピーしてください。Tree of Saviorのキャラログイン時に、チャット欄に「MARKET SHOW LEVEL v1.0.2 loaded!」が表示されていれば導入完了です。  
+ヘアアクセ日本語表記をされる方は「_marketshowlevel_jp-⛄-v1.0.2.ipf」をTree of Saviorインストールフォルダの「data」フォルダ内にコピーしてください。  
+Tree of Saviorのキャラログイン時に、チャット欄に「MARKET SHOW LEVEL v1.0.2 JP loaded!」が表示されていれば導入完了です。  
+
+通常版を導入される方は「_marketshowlevel-⛄-v1.0.2.ipf」をTree of Saviorインストールフォルダの「data」フォルダ内にコピーしてください。  
+Tree of Saviorのキャラログイン時に、チャット欄に「MARKET SHOW LEVEL v1.0.2 loaded!」が表示されていれば導入完了です。  
 
 ### [EN]
 
