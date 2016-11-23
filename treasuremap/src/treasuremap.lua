@@ -1,5 +1,5 @@
 isTreasuremapLoad = false;
-CHAT_SYSTEM("TREASUREMAP 1.0.2 loaded!");
+CHAT_SYSTEM("TREASUREMAP 1.0.3 loaded!");
 
 function TREASUREMAP_ON_INIT(addon, frame)
 	if (isTreasuremapLoad ~= true) then
@@ -35,7 +35,7 @@ function DRAW_TREASUREMAP()
 	for i = 0 , cnt - 1 do
 		local MonProp = mongens:Element(i);
 
-		if string.find(MonProp:GetClassType(),"treasure") then
+		if string.find(string.lower(MonProp:GetClassType()),"treasure") then
 			monCls = GetClassByType("Monster", MonProp:GetType());
 
 			local GenList = MonProp.GenList;
