@@ -12,7 +12,10 @@ treasuremap
 
 	■使い方
 
-「_treasuremap-⛄-v1.0.1.ipf」をTree of Saviorインストールフォルダの「data」フォルダ内にコピーしてください。Tree of Saviorのキャラログイン時に、チャット欄に「TREASUREMAP loaded!」が表示されていれば導入完了です。
+**「_treasuremap-⛄-v1.0.1.ipf」が既にある場合は削除してください**
+
+「_treasuremap-⛄-v1.0.2.ipf」をTree of Saviorインストールフォルダの「data」フォルダ内にコピーしてください。  
+Tree of Saviorのキャラログイン時に、チャット欄に「TREASUREMAP loaded!」が表示されていれば導入完了です。
 
 	■補足
 
@@ -34,7 +37,10 @@ It does not appear on the mini-map, also do not know whether or not opened. In a
 
 	■ How to use
 
-Please copy the "_treasuremap-⛄-v1.0.1.ipf" in the "data" folder of the Tree of Savior installation folder. During the character login of Tree of Savior, is the introduction completion if "TREASUREMAP loaded!" Is displayed in the chat field.
+** Delete "_treasuremap-⛄-v1.0.1.ipf" if it already exists **
+
+Please copy the "_treasuremap-⛄-v1.0.2.ipf" in the "data" folder of the Tree of Savior installation folder.  
+During the character login of Tree of Savior, is the introduction completion if "TREASUREMAP loaded!" Is displayed in the chat field.
 
 	■ supplement
 

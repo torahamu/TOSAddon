@@ -1,23 +1,28 @@
-CHAT_SYSTEM("TREASUREMAP loaded!");
-
+isTreasuremapLoad = false;
+CHAT_SYSTEM("TREASUREMAP 1.0.2 loaded!");
 
 function TREASUREMAP_ON_INIT(addon, frame)
-	local acutil = require("acutil");
+	if (isTreasuremapLoad ~= true) then
+		_G["MAKE_MAP_NPC_ICONS_OLD"] = MAKE_MAP_NPC_ICONS;
+		_G["MAKE_MAP_NPC_ICONS"] = MAKE_MAP_NPC_ICONS_HOOKS;
+		isTreasuremapLoad = true;
+	end
 
-	addon:RegisterMsg("FPS_UPDATE", "TREASUREMAP_UPDATE");
 end
 
-function TREASUREMAP_UPDATE(frame, msg, argStr, argNum)
+function MAKE_MAP_NPC_ICONS_HOOKS(frame, mapname, mapWidth, mapHeight, offsetX, offsetY)
+	MAKE_MAP_NPC_ICONS_OLD(frame, mapname, mapWidth, mapHeight, offsetX, offsetY);
 	DRAW_TREASUREMAP();
 end
 
 function DRAW_TREASUREMAP()
 
-
+	local mapframe = ui.GetFrame("map");
+	if mapframe:IsVisible() == 0 then
+		return;
+	end
 	local mapClassName = session.GetMapName();
 	local mapprop = geMapTable.GetMapProp(mapClassName);
-
-	local mapframe = ui.GetFrame("map");
 
 	local mongens = mapprop.mongens;
 
