@@ -1,4 +1,4 @@
-CHAT_SYSTEM("MARKET SHOW LEVEL v1.0.2 JP loaded!");
+CHAT_SYSTEM("MARKET SHOW LEVEL JP v1.0.3 loaded!");
 
 local itemColor = {
 	[0] = "FFFFFF",    -- Normal
@@ -7,59 +7,166 @@ local itemColor = {
 	[3] = "FF4F00",    -- 0.95 over
 };
 
-local propNameList = {
-	["MHP"]            = "ＨＰ",
-	["RHP"]            = "HP回",
-	["MSP"]            = "ＳＰ",
-	["RSP"]            = "SP回",
-	["PATK"]           = "物攻",
-	["ADD_MATK"]       = "魔攻",
-	["ADD_DEF"]        = "物防",
-	["ADD_MDEF"]       = "魔防",
-	["ADD_MHR"]        = "増幅",
-	["CRTATK"]         = "ｸﾘ攻",
-	["CRTHR"]          = "ｸﾘ発",
-	["CRTDR"]          = "ｸﾘ抵",
-	["ADD_HR"]         = "命中",
-	["ADD_DR"]         = "回避",
-	["ADD_FIRE"]       = "炎攻",
-	["ADD_ICE"]        = "氷攻",
-	["ADD_POISON"]     = "毒攻",
-	["ADD_LIGHTNING"]  = "雷攻",
-	["ADD_EARTH"]      = "地攻",
-	["ADD_SOUL"]       = "霊攻",
-	["ADD_HOLY"]       = "聖攻",
-	["ADD_DARK"]       = "闇攻",
-	["RES_FIRE"]       = "炎防",
-	["RES_ICE"]        = "氷防",
-	["RES_POISON"]     = "毒防",
-	["RES_LIGHTNING"]  = "雷防",
-	["RES_EARTH"]      = "地防",
-	["RES_SOUL"]       = "霊防",
-	["RES_HOLY"]       = "聖防",
-	["RES_DARK"]       = "闇防",
-	["MSPD"]           = "移動",
-	["SR"]             = "広攻",
-	["SDR"]            = "広防",
-	["BLK"]            = "ブロ",
-	
-};
+local propList = {};
+propList.MHP           = {name = "ＨＰ";max = 2283;};
+propList.RHP           = {name = "HP回";max = 56;};
+propList.MSP           = {name = "ＳＰ";max = 450;};
+propList.RSP           = {name = "SP回";max = 56;};
+propList.PATK          = {name = "物攻";max = 126;};
+propList.ADD_MATK      = {name = "魔攻";max = 126;};
+propList.ADD_DEF       = {name = "物防";max = 110;};
+propList.ADD_MDEF      = {name = "魔防";max = 110;};
+propList.ADD_MHR       = {name = "増幅";max = 126;};
+propList.CRTATK        = {name = "ｸﾘ攻";max = 189;};
+propList.CRTHR         = {name = "ｸﾘ発";max = 14;};
+propList.CRTDR         = {name = "ｸﾘ抵";max = 14;};
+propList.BLK           = {name = "ブロ";max = 14;};
+propList.ADD_HR        = {name = "命中";max = 14;};
+propList.ADD_DR        = {name = "回避";max = 14;};
+propList.ADD_FIRE      = {name = "炎攻";max = 99;};
+propList.ADD_ICE       = {name = "氷攻";max = 99;};
+propList.ADD_POISON    = {name = "毒攻";max = 99;};
+propList.ADD_LIGHTNING = {name = "雷攻";max = 99;};
+propList.ADD_EARTH     = {name = "地攻";max = 99;};
+propList.ADD_SOUL      = {name = "霊攻";max = 99;};
+propList.ADD_HOLY      = {name = "聖攻";max = 99;};
+propList.ADD_DARK      = {name = "闇攻";max = 99;};
+propList.RES_FIRE      = {name = "炎防";max = 84;};
+propList.RES_ICE       = {name = "氷防";max = 84;};
+propList.RES_POISON    = {name = "毒防";max = 84;};
+propList.RES_LIGHTNING = {name = "雷防";max = 84;};
+propList.RES_EARTH     = {name = "地防";max = 84;};
+propList.RES_SOUL      = {name = "霊防";max = 84;};
+propList.RES_HOLY      = {name = "聖防";max = 84;};
+propList.RES_DARK      = {name = "闇防";max = 84;};
+propList.MSPD          = {name = "移動";max = 1;};
+propList.SR            = {name = "広攻";max = 1;};
+propList.SDR           = {name = "広防";max = 4;};
 
-function GetItemValueColor(value, max)
+function MARKETSHOWLEVEL_ON_INIT(addon, frame)
+	_G["ON_MARKET_ITEM_LIST"] = ON_MARKET_ITEM_LIST_HOOKED;
+end
+
+
+function GetItemValueColor(propname,value, max)
 	local index = 0;
-	if value > (max * 0.95) then
-		index = 3
-	elseif value > (max * 0.85) then
-		index = 2
-	elseif value > (max * 0.75) then
-		index = 1
+
+	if propname == "MSPD" or propname == "SR" or propname == "SDR" then
+		index = 0
+	else
+		if value > (max * 0.95) then
+			index = 3
+		elseif value > (max * 0.85) then
+			index = 2
+		elseif value > (max * 0.75) then
+			index = 1
+		end
 	end
+
 	return itemColor[index]
 end
 
-function MARKETSHOWLEVEL_ON_INIT(addon, frame)
 
-	_G["ON_MARKET_ITEM_LIST"] = ON_MARKET_ITEM_LIST_HOOKED;
+function GetGemInfo(itemObj)
+	local gemInfo = "";
+	local fn = GET_FULL_NAME_OLD or GET_FULL_NAME;
+
+	local socketId;
+	local rstLevel;
+	local gemName;
+	local exp;
+	local space= "";
+	local color="";
+
+	for i = 0, 4 do
+
+		socketId = itemObj["Socket_Equip_" .. i];
+		rstLevel = itemObj["Socket_JamLv_" .. i];
+		exp = itemObj["SocketItemExp_" .. i];
+
+		if socketId > 0 then
+			if #gemInfo > 0 then
+				gemInfo = gemInfo..",";
+				space = space .. "  ";
+			end
+			if i==3 then
+				space = space .. " ";
+			end
+
+			local obj = GetClassByType("Item", socketId);
+			gemName = fn(obj);
+			local gemLevel = 0;
+
+			if exp >= 27014700 then
+				gemLevel = 10;
+			elseif exp >= 5414700 then
+				gemLevel = 9;
+			elseif exp >= 1094700 then
+				gemLevel = 8;
+			elseif exp >= 230700 then
+				gemLevel = 7;
+			elseif exp >= 57900 then
+				gemLevel = 6;
+			elseif exp >= 14700 then
+				gemLevel = 5;
+			elseif exp >= 3900 then
+				gemLevel = 4;
+			elseif exp >= 1200 then
+				gemLevel = 3;
+			elseif exp >= 300 then
+				gemLevel = 2;
+			else
+				gemLevel = 1;
+			end
+
+			if gemLevel <= rstLevel then
+				gemInfo = gemInfo .. "{#FF7F50}{ol}Lv" .. gemLevel .. ":" .. gemName .. "{/}{/}";
+			else
+				gemInfo = gemInfo .. "{#FFFFFF}{ol}Lv" .. gemLevel .. ":" .. gemName .. "{/}{/}";
+			end
+
+			space = space .. "                 ";
+
+		end
+	end
+
+	if #gemInfo > 0 then
+		gemInfo = "{nl}" .. space .. gemInfo;
+	end
+
+	return gemInfo;
+
+end
+
+function GetHatProp(itemObj)
+	local prop = "";
+	local space= "";
+	for i = 1 , 3 do
+		local propName = "";
+		local propValue = 0;
+		local propNameStr = "HatPropName_"..i;
+		local propValueStr = "HatPropValue_"..i;
+		if itemObj[propValueStr] ~= 0 and itemObj[propNameStr] ~= "None" then
+			if #prop > 0 then
+				prop = prop..",";
+				space = space .. " ";
+			end
+
+			propName = itemObj[propNameStr];
+			propValue = itemObj[propValueStr];
+
+			propValueColored = GetItemValueColor(propName, propValue, propList[propName].max);
+
+			prop = prop .. string.format("%s:{#%s}{ol}%4d{/}{/}", propList[propName].name, propValueColored, propValue);
+			space = space .. "         ";
+		end
+	end
+
+	if #prop > 0 then
+		prop = "{nl}" .. space .. prop;
+	end
+
+	return prop;
 
 end
 
@@ -102,106 +209,23 @@ function ON_MARKET_ITEM_LIST_HOOKED(frame, msg, argStr, argNum)
 		local name = ctrlSet:GetChild("name");
 
 -- add code start
-		if itemGroup == "Gem" or itemGroup == "Card" then
+
+		if itemGroup == "Weapon" or itemGroup == "SubWeapon" then
+			local gemInfo = GetGemInfo(itemObj);
+			name:SetTextByKey("value", GET_FULL_NAME(itemObj) .. gemInfo);
+		elseif itemGroup == "Armor" then
+			local gemInfo = GetGemInfo(itemObj);
+			local prop = GetHatProp(itemObj);
+			name:SetTextByKey("value", GET_FULL_NAME(itemObj) .. prop .. gemInfo);
+		elseif itemGroup == "Gem" or itemGroup == "Card" then
 			name:SetTextByKey("value", "Lv".. itemLevel .. ":" .. GET_FULL_NAME(itemObj));
 		elseif (itemObj.ClassName == "Scroll_SkillItem") then
 			local skillClass = GetClassByType("Skill", itemObj.SkillType);
 			name:SetTextByKey("value", "Lv".. itemObj.SkillLevel .. " " .. skillClass.Name .. ":" .. GET_FULL_NAME(itemObj));
-		elseif itemGroup == "Armor" then
-			local prop = "";
-			local space= "";
-			for i = 1 , 3 do
-				local propName = "";
-				local propValue = 0;
-				local propNameStr = "HatPropName_"..i;
-				local propValueStr = "HatPropValue_"..i;
-				local propValueColored = "FFFFFF";
-				if itemObj[propValueStr] ~= 0 and itemObj[propNameStr] ~= "None" then
-					if #prop > 0 then
-						prop = prop..",";
-						space = space .. " ";
-					end
-
-					propName = itemObj[propNameStr];
-					propValue = itemObj[propValueStr];
-
-					if propName == "MHP" then
-						propValueColored = GetItemValueColor(propValue,2283);
-					elseif propName == "RHP" then
-						propValueColored = GetItemValueColor(propValue,56);
-					elseif propName == "MSP" then
-						propValueColored = GetItemValueColor(propValue,447);
-					elseif propName == "RSP" then
-						propValueColored = GetItemValueColor(propValue,42);
-					elseif propName == "PATK" then
-						propValueColored = GetItemValueColor(propValue,126);
-					elseif propName == "ADD_MATK" then
-						propValueColored = GetItemValueColor(propValue,126);
-					elseif propName == "ADD_DEF" then
-						propValueColored = GetItemValueColor(propValue,110);
-					elseif propName == "ADD_MDEF" then
-						propValueColored = GetItemValueColor(propValue,110);
-					elseif propName == "ADD_MHR" then
-						propValueColored = GetItemValueColor(propValue,126);
-					elseif propName == "CRTATK" then
-						propValueColored = GetItemValueColor(propValue,189);
-					elseif propName == "CRTHR" then
-						propValueColored = GetItemValueColor(propValue,14);
-					elseif propName == "CRTDR" then
-						propValueColored = GetItemValueColor(propValue,14);
-					elseif propName == "BLK" then
-						propValueColored = GetItemValueColor(propValue,14);
-					elseif propName == "ADD_HR" then
-						propValueColored = GetItemValueColor(propValue,14);
-					elseif propName == "ADD_DR" then
-						propValueColored = GetItemValueColor(propValue,14);
-					elseif propName == "ADD_FIRE" then
-						propValueColored = GetItemValueColor(propValue,99);
-					elseif propName == "ADD_ICE" then
-						propValueColored = GetItemValueColor(propValue,99);
-					elseif propName == "ADD_POISON" then
-						propValueColored = GetItemValueColor(propValue,99);
-					elseif propName == "ADD_LIGHTNING" then
-						propValueColored = GetItemValueColor(propValue,99);
-					elseif propName == "ADD_EARTH" then
-						propValueColored = GetItemValueColor(propValue,99);
-					elseif propName == "ADD_SOUL" then
-						propValueColored = GetItemValueColor(propValue,99);
-					elseif propName == "ADD_HOLY" then
-						propValueColored = GetItemValueColor(propValue,99);
-					elseif propName == "ADD_DARK" then
-						propValueColored = GetItemValueColor(propValue,99);
-					elseif propName == "RES_FIRE" then
-						propValueColored = GetItemValueColor(propValue,84);
-					elseif propName == "RES_ICE" then
-						propValueColored = GetItemValueColor(propValue,84);
-					elseif propName == "RES_POISON" then
-						propValueColored = GetItemValueColor(propValue,84);
-					elseif propName == "RES_LIGHTNING" then
-						propValueColored = GetItemValueColor(propValue,84);
-					elseif propName == "RES_EARTH" then
-						propValueColored = GetItemValueColor(propValue,84);
-					elseif propName == "RES_SOUL" then
-						propValueColored = GetItemValueColor(propValue,84);
-					elseif propName == "RES_HOLY" then
-						propValueColored = GetItemValueColor(propValue,84);
-					elseif propName == "RES_DARK" then
-						propValueColored = GetItemValueColor(propValue,84);
-					end
-
-					propName = propNameList[propName];
-					prop = prop..propName..":"..string.format("{#%s}{ol}%4d{/}{/}", propValueColored, propValue);
-					space = space .. "         ";
-				end
-			end
-			if prop == "" then
-				name:SetTextByKey("value", GET_FULL_NAME(itemObj));
-			else
-				name:SetTextByKey("value", GET_FULL_NAME(itemObj).."\r\n"..space..prop);
-			end
 		else
 			name:SetTextByKey("value", GET_FULL_NAME(itemObj));
 		end
+
 -- add code end
 
 		local count = ctrlSet:GetChild("count");
