@@ -26,8 +26,9 @@ marketshowlevel
 
 武器・防具のジェムは、ジェムロースティングしてあればピンク色、してない物やモンスタージェムは白色になっています。  
 レベル、および能力での検索は出来ません。  
-**Special Thanks to とすけん様**
-**Special Thanks to zealot様**
+**Special Thanks to とすけん様**  
+**Special Thanks to zealot様**  
+**Special Thanks to Riunia様**  
 
 	■使い方
 
@@ -51,8 +52,9 @@ Displays additional information on certain market items. The following will be d
 * Socketed Gems on equipment. (v.1.0.3 update!!)
 
 Searching by level/ability is not available.  
-**Special Thanks to tosken**
-**Special Thanks to zealot**
+**Special Thanks to tosken**  
+**Special Thanks to zealot**  
+**Special Thanks to Riunia**  
 
 Gems that are Gem Roasted will be displayed as Pink while Gems that are not roasted or are Monster Gems will be displayed as White.
 
