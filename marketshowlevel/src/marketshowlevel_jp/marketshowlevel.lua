@@ -1,4 +1,4 @@
-CHAT_SYSTEM("MARKET SHOW LEVEL JP v1.0.3 loaded!");
+CHAT_SYSTEM("MARKET SHOW LEVEL JP v1.0.4 loaded!");
 
 local itemColor = {
 	[0] = "FFFFFF",    -- Normal
@@ -48,25 +48,6 @@ function MARKETSHOWLEVEL_ON_INIT(addon, frame)
 end
 
 
-function GetItemValueColor(propname,value, max)
-	local index = 0;
-
-	if propname == "MSPD" or propname == "SR" or propname == "SDR" then
-		index = 0
-	else
-		if value > (max * 0.95) then
-			index = 3
-		elseif value > (max * 0.85) then
-			index = 2
-		elseif value > (max * 0.75) then
-			index = 1
-		end
-	end
-
-	return itemColor[index]
-end
-
-
 function GetGemInfo(itemObj)
 	local gemInfo = "";
 	local fn = GET_FULL_NAME_OLD or GET_FULL_NAME;
@@ -75,7 +56,6 @@ function GetGemInfo(itemObj)
 	local rstLevel;
 	local gemName;
 	local exp;
-	local space= "";
 	local color="";
 
 	for i = 0, 4 do
@@ -87,10 +67,6 @@ function GetGemInfo(itemObj)
 		if socketId > 0 then
 			if #gemInfo > 0 then
 				gemInfo = gemInfo..",";
-				space = space .. "  ";
-			end
-			if i==3 then
-				space = space .. " ";
 			end
 
 			local obj = GetClassByType("Item", socketId);
@@ -120,18 +96,16 @@ function GetGemInfo(itemObj)
 			end
 
 			if gemLevel <= rstLevel then
-				gemInfo = gemInfo .. "{#FF7F50}{ol}Lv" .. gemLevel .. ":" .. gemName .. "{/}{/}";
+				gemInfo = gemInfo .. "{#FF7F50}{ol}Lv" .. gemLevel .. ":" .. GET_ITEM_IMG_BY_CLS(obj, 22) .. "{/}{/}";
 			else
-				gemInfo = gemInfo .. "{#FFFFFF}{ol}Lv" .. gemLevel .. ":" .. gemName .. "{/}{/}";
+				gemInfo = gemInfo .. "{#FFFFFF}{ol}Lv" .. gemLevel .. ":" .. GET_ITEM_IMG_BY_CLS(obj, 22) .. "{/}{/}";
 			end
-
-			space = space .. "                 ";
 
 		end
 	end
 
 	if #gemInfo > 0 then
-		gemInfo = "{nl}" .. space .. gemInfo;
+		gemInfo = "{nl}" .. gemInfo;
 	end
 
 	return gemInfo;
@@ -140,7 +114,6 @@ end
 
 function GetHatProp(itemObj)
 	local prop = "";
-	local space= "";
 	for i = 1 , 3 do
 		local propName = "";
 		local propValue = 0;
@@ -149,7 +122,6 @@ function GetHatProp(itemObj)
 		if itemObj[propValueStr] ~= 0 and itemObj[propNameStr] ~= "None" then
 			if #prop > 0 then
 				prop = prop..",";
-				space = space .. " ";
 			end
 
 			propName = itemObj[propNameStr];
@@ -158,16 +130,33 @@ function GetHatProp(itemObj)
 			propValueColored = GetItemValueColor(propName, propValue, propList[propName].max);
 
 			prop = prop .. string.format("%s:{#%s}{ol}%4d{/}{/}", propList[propName].name, propValueColored, propValue);
-			space = space .. "         ";
 		end
 	end
 
 	if #prop > 0 then
-		prop = "{nl}" .. space .. prop;
+		prop = "{nl}" .. prop;
 	end
 
 	return prop;
 
+end
+
+function GetItemValueColor(propname,value, max)
+	local index = 0;
+
+	if propname == "MSPD" or propname == "SR" or propname == "SDR" then
+		index = 0
+	else
+		if value > (max * 0.95) then
+			index = 3
+		elseif value > (max * 0.85) then
+			index = 2
+		elseif value > (max * 0.75) then
+			index = 1
+		end
+	end
+
+	return itemColor[index]
 end
 
 function ON_MARKET_ITEM_LIST_HOOKED(frame, msg, argStr, argNum)
@@ -185,10 +174,6 @@ function ON_MARKET_ITEM_LIST_HOOKED(frame, msg, argStr, argNum)
 		local marketItem = session.market.GetItemByIndex(i);
 		local itemObj = GetIES(marketItem:GetObject());
 
--- add code start
-		local itemLevel = GET_ITEM_LEVEL(itemObj);
-		local itemGroup = itemObj.GroupName;
--- add code end
 
 		local refreshScp = itemObj.RefreshScp;
 		if refreshScp ~= "None" then
@@ -210,6 +195,9 @@ function ON_MARKET_ITEM_LIST_HOOKED(frame, msg, argStr, argNum)
 
 -- add code start
 
+		local itemLevel = GET_ITEM_LEVEL(itemObj);
+		local itemGroup = itemObj.GroupName;
+
 		if itemGroup == "Weapon" or itemGroup == "SubWeapon" then
 			local gemInfo = GetGemInfo(itemObj);
 			name:SetTextByKey("value", GET_FULL_NAME(itemObj) .. gemInfo);
@@ -225,6 +213,8 @@ function ON_MARKET_ITEM_LIST_HOOKED(frame, msg, argStr, argNum)
 		else
 			name:SetTextByKey("value", GET_FULL_NAME(itemObj));
 		end
+		name = tolua.cast(name, 'ui::CRichText');
+		name:SetTextAlign("left", "top");
 
 -- add code end
 

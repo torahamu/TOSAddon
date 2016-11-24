@@ -1,4 +1,4 @@
-CHAT_SYSTEM("MARKET SHOW LEVEL v1.0.3 loaded!");
+CHAT_SYSTEM("MARKET SHOW LEVEL v1.0.4 loaded!");
 
 local itemColor = {
 	[0] = "FFFFFF",    -- Normal
@@ -8,40 +8,40 @@ local itemColor = {
 };
 
 local propList = {};
-propList.MHP           = {name = "HP  ";max = 2283;};
-propList.RHP           = {name = "RHP ";max = 56;};
-propList.MSP           = {name = "SP  ";max = 450;};
-propList.RSP           = {name = "RSP ";max = 56;};
+propList.MHP           = {name = "HP";max = 2283;};
+propList.RHP           = {name = "HPR";max = 56;};
+propList.MSP           = {name = "SP";max = 450;};
+propList.RSP           = {name = "SPR";max = 56;};
 propList.PATK          = {name = "PATK";max = 126;};
 propList.ADD_MATK      = {name = "MATK";max = 126;};
-propList.ADD_DEF       = {name = "DEF ";max = 110;};
+propList.ADD_DEF       = {name = "DEF";max = 110;};
 propList.ADD_MDEF      = {name = "MDEF";max = 110;};
 propList.ADD_MHR       = {name = "MAMP";max = 126;};
-propList.CRTATK        = {name = "CRAT";max = 189;};
-propList.CRTHR         = {name = "CRT ";max = 14;};
-propList.CRTDR         = {name = "CRDR";max = 14;};
-propList.BLK           = {name = "BLK ";max = 14;};
-propList.ADD_HR        = {name = "HR  ";max = 14;};
-propList.ADD_DR        = {name = "DR  ";max = 14;};
-propList.ADD_FIRE      = {name = "A_FI";max = 99;};
-propList.ADD_ICE       = {name = "A_IC";max = 99;};
-propList.ADD_POISON    = {name = "A_PO";max = 99;};
-propList.ADD_LIGHTNING = {name = "A_LI";max = 99;};
-propList.ADD_EARTH     = {name = "A_EA";max = 99;};
-propList.ADD_SOUL      = {name = "A_SO";max = 99;};
-propList.ADD_HOLY      = {name = "A_HO";max = 99;};
-propList.ADD_DARK      = {name = "A_DA";max = 99;};
-propList.RES_FIRE      = {name = "R_FI";max = 84;};
-propList.RES_ICE       = {name = "R_IC";max = 84;};
-propList.RES_POISON    = {name = "R_PO";max = 84;};
-propList.RES_LIGHTNING = {name = "R_LI";max = 84;};
-propList.RES_EARTH     = {name = "R_EA";max = 84;};
-propList.RES_SOUL      = {name = "R_SO";max = 84;};
-propList.RES_HOLY      = {name = "R_HO";max = 84;};
-propList.RES_DARK      = {name = "R_DA";max = 84;};
-propList.MSPD          = {name = "MOV";max = 1;};
-propList.SR            = {name = "AOE ";max = 1;};
-propList.SDR           = {name = "AOED";max = 4;};
+propList.CRTATK        = {name = "CATK";max = 189;};
+propList.CRTHR         = {name = "CRate";max = 14;};
+propList.CRTDR         = {name = "CRes";max = 14;};
+propList.BLK           = {name = "BLK";max = 14;};
+propList.ADD_HR        = {name = "ACC";max = 14;};
+propList.ADD_DR        = {name = "EVA";max = 14;};
+propList.ADD_FIRE      = {name = "FATK";max = 99;};
+propList.ADD_ICE       = {name = "IATK";max = 99;};
+propList.ADD_POISON    = {name = "PATK";max = 99;};
+propList.ADD_LIGHTNING = {name = "LATK";max = 99;};
+propList.ADD_EARTH     = {name = "EATK";max = 99;};
+propList.ADD_SOUL      = {name = "GATK";max = 99;};
+propList.ADD_HOLY      = {name = "HATK";max = 99;};
+propList.ADD_DARK      = {name = "DATK";max = 99;};
+propList.RES_FIRE      = {name = "FRES";max = 84;};
+propList.RES_ICE       = {name = "IRES";max = 84;};
+propList.RES_POISON    = {name = "PRES";max = 84;};
+propList.RES_LIGHTNING = {name = "LRES";max = 84;};
+propList.RES_EARTH     = {name = "ERES";max = 84;};
+propList.RES_SOUL      = {name = "GRES";max = 84;};
+propList.RES_HOLY      = {name = "HRES";max = 84;};
+propList.RES_DARK      = {name = "DRES";max = 84;};
+propList.MSPD          = {name = "MSpD";max = 1;};
+propList.SR            = {name = "AoE AR";max = 1;};
+propList.SDR           = {name = "AoE DR";max = 4;};
 
 function MARKETSHOWLEVEL_ON_INIT(addon, frame)
 	_G["ON_MARKET_ITEM_LIST"] = ON_MARKET_ITEM_LIST_HOOKED;
@@ -56,7 +56,6 @@ function GetGemInfo(itemObj)
 	local rstLevel;
 	local gemName;
 	local exp;
-	local space= "";
 	local color="";
 
 	for i = 0, 4 do
@@ -68,10 +67,6 @@ function GetGemInfo(itemObj)
 		if socketId > 0 then
 			if #gemInfo > 0 then
 				gemInfo = gemInfo..",";
-				space = space .. "  ";
-			end
-			if i==3 then
-				space = space .. " ";
 			end
 
 			local obj = GetClassByType("Item", socketId);
@@ -101,18 +96,16 @@ function GetGemInfo(itemObj)
 			end
 
 			if gemLevel <= rstLevel then
-				gemInfo = gemInfo .. "{#FF7F50}{ol}Lv" .. gemLevel .. ":" .. gemName .. "{/}{/}";
+				gemInfo = gemInfo .. "{#FF7F50}{ol}Lv" .. gemLevel .. ":" .. GET_ITEM_IMG_BY_CLS(obj, 22) .. "{/}{/}";
 			else
-				gemInfo = gemInfo .. "{#FFFFFF}{ol}Lv" .. gemLevel .. ":" .. gemName .. "{/}{/}";
+				gemInfo = gemInfo .. "{#FFFFFF}{ol}Lv" .. gemLevel .. ":" .. GET_ITEM_IMG_BY_CLS(obj, 22) .. "{/}{/}";
 			end
-
-			space = space .. "                 ";
 
 		end
 	end
 
 	if #gemInfo > 0 then
-		gemInfo = "{nl}" .. space .. gemInfo;
+		gemInfo = "{nl}" .. gemInfo;
 	end
 
 	return gemInfo;
@@ -121,7 +114,6 @@ end
 
 function GetHatProp(itemObj)
 	local prop = "";
-	local space= "";
 	for i = 1 , 3 do
 		local propName = "";
 		local propValue = 0;
@@ -130,10 +122,6 @@ function GetHatProp(itemObj)
 		if itemObj[propValueStr] ~= 0 and itemObj[propNameStr] ~= "None" then
 			if #prop > 0 then
 				prop = prop..",";
-				space = space .. "  ";
-			end
-			if i==3 then
-				space = space .. " ";
 			end
 
 			propName = itemObj[propNameStr];
@@ -142,12 +130,11 @@ function GetHatProp(itemObj)
 			propValueColored = GetItemValueColor(propName, propValue, propList[propName].max);
 
 			prop = prop .. string.format("%s:{#%s}{ol}%4d{/}{/}", propList[propName].name, propValueColored, propValue);
-			space = space .. "        ";
 		end
 	end
 
 	if #prop > 0 then
-		prop = "{nl}" .. space .. prop;
+		prop = "{nl}" .. prop;
 	end
 
 	return prop;
@@ -187,10 +174,6 @@ function ON_MARKET_ITEM_LIST_HOOKED(frame, msg, argStr, argNum)
 		local marketItem = session.market.GetItemByIndex(i);
 		local itemObj = GetIES(marketItem:GetObject());
 
--- add code start
-		local itemLevel = GET_ITEM_LEVEL(itemObj);
-		local itemGroup = itemObj.GroupName;
--- add code end
 
 		local refreshScp = itemObj.RefreshScp;
 		if refreshScp ~= "None" then
@@ -212,6 +195,9 @@ function ON_MARKET_ITEM_LIST_HOOKED(frame, msg, argStr, argNum)
 
 -- add code start
 
+		local itemLevel = GET_ITEM_LEVEL(itemObj);
+		local itemGroup = itemObj.GroupName;
+
 		if itemGroup == "Weapon" or itemGroup == "SubWeapon" then
 			local gemInfo = GetGemInfo(itemObj);
 			name:SetTextByKey("value", GET_FULL_NAME(itemObj) .. gemInfo);
@@ -227,6 +213,8 @@ function ON_MARKET_ITEM_LIST_HOOKED(frame, msg, argStr, argNum)
 		else
 			name:SetTextByKey("value", GET_FULL_NAME(itemObj));
 		end
+		name = tolua.cast(name, 'ui::CRichText');
+		name:SetTextAlign("left", "top");
 
 -- add code end
 
