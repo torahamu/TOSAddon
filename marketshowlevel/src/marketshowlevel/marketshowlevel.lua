@@ -58,9 +58,11 @@ function GetItemValueColor(value, max)
 end
 
 function MARKETSHOWLEVEL_ON_INIT(addon, frame)
-
-	_G["ON_MARKET_ITEM_LIST"] = ON_MARKET_ITEM_LIST_HOOKED;
-
+	if (acutil ~= nil) then
+		acutil.setupEvent(addon, "ON_MARKET_ITEM_LIST", "ON_MARKET_ITEM_LIST_HOOKED")
+	else
+		_G["ON_MARKET_ITEM_LIST"] = ON_MARKET_ITEM_LIST_HOOKED;
+	end
 end
 
 function ON_MARKET_ITEM_LIST_HOOKED(frame, msg, argStr, argNum)
