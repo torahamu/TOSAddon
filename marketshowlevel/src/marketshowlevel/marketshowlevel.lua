@@ -4,64 +4,155 @@ local itemColor = {
 	[0] = "FFFFFF",    -- Normal
 	[1] = "108CFF",    -- 0.75 over
 	[2] = "9F30FF",    -- 0.85 over
-	[3] = "FF4F00",    -- 0.95 over
+	[3] = "FF4F00"     -- 0.95 over
 };
 
 local propNameList = {
-	["MHP"]            = "HP  ",
-	["RHP"]            = "RHP ",
-	["MSP"]            = "SP  ",
-	["RSP"]            = "RSP ",
-	["PATK"]           = "PATK",
-	["ADD_MATK"]       = "MATK",
-	["ADD_DEF"]        = "DEF ",
-	["ADD_MDEF"]       = "MDEF",
-	["ADD_MHR"]        = "MAMP",
-	["CRTATK"]         = "CRAT",
-	["CRTHR"]          = "CRT ",
-	["CRTDR"]          = "CRDR",
-	["ADD_HR"]         = "HR  ",
-	["ADD_DR"]         = "DR  ",
-	["ADD_FIRE"]       = "A_FI",
-	["ADD_ICE"]        = "A_IC",
-	["ADD_POISON"]     = "A_PO",
-	["ADD_LIGHTNING"]  = "A_LI",
-	["ADD_EARTH"]      = "A_EA",
-	["ADD_SOUL"]       = "A_SO",
-	["ADD_HOLY"]       = "A_HO",
-	["ADD_DARK"]       = "A_DA",
-	["RES_FIRE"]       = "R_FI",
-	["RES_ICE"]        = "R_IC",
-	["RES_POISON"]     = "R_PO",
-	["RES_LIGHTNING"]  = "R_LI",
-	["RES_EARTH"]      = "R_EA",
-	["RES_SOUL"]       = "R_SO",
-	["RES_HOLY"]       = "R_HO",
-	["RES_DARK"]       = "R_DA",
-	["MSPD"]           = "MOV ",
-	["SR"]             = "AOE ",
-	["SDR"]            = "AOED",
-	["BLK"]            = "BLK ",
-	
+	["MHP"]            = "Max HP",
+	["RHP"]            = "HP Rec",
+	["MSP"]            = "Max SP",
+	["RSP"]            = "SP Rec",
+	["PATK"]           = "PhysAtk",
+	["ADD_MATK"]       = "Mag Atk",
+	["ADD_DEF"]        = "PhysDef",
+	["ADD_MDEF"]       = "Mag Def",
+	["ADD_MHR"]        = "Mag Amp",
+	["CRTATK"]         = "CritAtk",
+	["CRTHR"]          = "CritRate",
+	["CRTDR"]          = "CritDef",
+	["ADD_HR"]         = "Accuracy",
+	["ADD_DR"]         = "Evasion",
+	["ADD_FIRE"]       = "FireAtk",
+	["ADD_ICE"]        = "IceAtk",
+	["ADD_POISON"]     = "PsnAtk",
+	["ADD_LIGHTNING"]  = "LgtAtk",
+	["ADD_EARTH"]      = "EarthAtk",
+	["ADD_SOUL"]       = "GhostAtk",
+	["ADD_HOLY"]       = "HolyAtk",
+	["ADD_DARK"]       = "DarkAtk",
+	["RES_FIRE"]       = "FireRes",
+	["RES_ICE"]        = "IceRes",
+	["RES_POISON"]     = "PsnRes",
+	["RES_LIGHTNING"]  = "LgtRes",
+	["RES_EARTH"]      = "EarthRes",
+	["RES_SOUL"]       = "GhostRes",
+	["RES_HOLY"]       = "HolyRes",
+	["RES_DARK"]       = "DarkRes",
+	["MSPD"]           = "Mspd",
+	["SR"]             = "AoEAtk",
+	["SDR"]            = "AoEDef",
+	["BLK"]            = "Block"
 };
 
-function GetItemValueColor(value, max)
-	local index = 0;
-	if value > (max * 0.95) then
-		index = 3
-	elseif value > (max * 0.85) then
-		index = 2
-	elseif value > (max * 0.75) then
-		index = 1
-	end
-	return itemColor[index]
+function MARKETSHOWLEVEL_ON_INIT(addon, frame)
+	_G["ON_MARKET_ITEM_LIST"] = ON_MARKET_ITEM_LIST_HOOKED;
 end
 
-function MARKETSHOWLEVEL_ON_INIT(addon, frame)
-	if (acutil ~= nil) then
-		acutil.setupEvent(addon, "ON_MARKET_ITEM_LIST", "ON_MARKET_ITEM_LIST_HOOKED")
+function GET_ITEM_VALUE_COLOR(value, max)
+	if value > (max * 0.95) then
+		return itemColor[3]
+	elseif value > (max * 0.85) then
+		return itemColor[2]
+	elseif value > (max * 0.75) then
+		return itemColor[1]
 	else
-		_G["ON_MARKET_ITEM_LIST"] = ON_MARKET_ITEM_LIST_HOOKED;
+		return itemColor[0]
+	end
+end
+
+--Show extra details, refactored method
+function SHOW_EXTRA_DETAILS(itemObj)
+	local itemLevel = GET_ITEM_LEVEL(itemObj);
+	local itemGroup = itemObj.GroupName;
+	local itemFullName = GET_FULL_NAME(itemObj);
+	if itemGroup == "Gem" or itemGroup == "Card" then
+		return "Lv".. itemLevel .. ":" .. itemFullName
+	elseif (itemObj.ClassName == "Scroll_SkillItem") then
+		local skillClass = GetClassByType("Skill", itemObj.SkillType);
+		return "Lv".. itemObj.SkillLevel .. " " .. skillClass.Name .. ":" .. itemFullName
+	elseif itemGroup == "Armor" then
+		local prop = "";
+		for i = 1 , 3 do
+			local propName = "";
+			local propValue = 0;
+			local propNameStr = "HatPropName_"..i;
+			local propValueStr = "HatPropValue_"..i;
+			local propValueColored = "FFFFFF";
+			if itemObj[propValueStr] ~= 0 and itemObj[propNameStr] ~= "None" then
+				propName = itemObj[propNameStr];
+				propValue = itemObj[propValueStr];
+
+				if propName == "MHP" then propValueColored = GET_ITEM_VALUE_COLOR(propValue,2283);
+				elseif propName == "RHP" then propValueColored = GET_ITEM_VALUE_COLOR(propValue,56);
+				elseif propName == "MSP" then propValueColored = GET_ITEM_VALUE_COLOR(propValue,447);
+				elseif propName == "RSP" then propValueColored = GET_ITEM_VALUE_COLOR(propValue,42);
+				elseif propName == "CRTATK" then propValueColored = GET_ITEM_VALUE_COLOR(propValue,189);
+				elseif propName == "ADD_DEF" 
+					or propName == "ADD_MDEF" then propValueColored = GET_ITEM_VALUE_COLOR(propValue,110);
+				elseif propName == "PATK" 
+					or propName == "ADD_MATK" 
+					or propName == "ADD_MHR" then propValueColored = GET_ITEM_VALUE_COLOR(propValue,126);
+				elseif propName == "CRTHR" 
+					or propName == "CRTDR" 
+					or propName == "BLK" 
+					or propName == "ADD_HR" 
+					or propName == "ADD_DR" then propValueColored = GET_ITEM_VALUE_COLOR(propValue,14);
+				elseif propName == "ADD_FIRE" 
+					or propName == "ADD_ICE" 
+					or propName == "ADD_POISON" 
+					or propName == "ADD_LIGHTNING"
+					or propName == "ADD_EARTH"
+					or propName == "ADD_SOUL"
+					or propName == "ADD_HOLY"
+					or propName == "ADD_DARK" then propValueColored = GET_ITEM_VALUE_COLOR(propValue,99);
+				elseif propName == "RES_FIRE" 
+					or propName == "RES_ICE" 
+					or propName == "RES_POISON" 
+					or propName == "RES_LIGHTNING"
+					or propName == "RES_EARTH"
+					or propName == "RES_SOUL"
+					or propName == "RES_HOLY"
+					or propName == "RES_DARK" then propValueColored = GET_ITEM_VALUE_COLOR(propValue,84);
+				end
+
+				propName = propNameList[propName];
+				prop = prop .. string.format("%s:{#%s}{ol}%d{/}{/}", propName, propValueColored, propValue);
+			end
+		end
+		if prop == "" then
+			return itemFullName
+		else
+			local spacesBeforeProp = ""
+			for k = 1, #itemFullName + 10 do
+				spacesBeforeProp = spacesBeforeProp .. " "
+			end
+			local text = "%s{nl}" .. spacesBeforeProp .. "%s"
+			return string.format(text, itemFullName, prop) 
+		end
+	else
+		return itemFullName
+	end
+end
+
+--Market names integration
+function SHOW_MARKET_NAMES(ctrlSet, marketItem)
+	if marketItem == nil then
+		return;
+	end
+
+	if _G["MARKETNAMES"] ~= nil then
+		return;
+	end
+	
+	local marketName = _G["MARKETNAMES"][marketItem:GetSellerCID()];
+	if marketName == nil then
+		return;
+	end
+	
+	local buyButton = ctrlSet:GetChild("button_1");
+
+	if buyButton ~= nil then
+		buyButton:SetTextTooltip("Buy from " .. marketName.characterName .. " " .. marketName.familyName .. "!");
 	end
 end
 
@@ -79,12 +170,6 @@ function ON_MARKET_ITEM_LIST_HOOKED(frame, msg, argStr, argNum)
 	for i = 0 , count - 1 do
 		local marketItem = session.market.GetItemByIndex(i);
 		local itemObj = GetIES(marketItem:GetObject());
-
--- add code start
-		local itemLevel = GET_ITEM_LEVEL(itemObj);
-		local itemGroup = itemObj.GroupName;
--- add code end
-
 		local refreshScp = itemObj.RefreshScp;
 		if refreshScp ~= "None" then
 			refreshScp = _G[refreshScp];
@@ -101,113 +186,10 @@ function ON_MARKET_ITEM_LIST_HOOKED(frame, msg, argStr, argNum)
 		local pic = GET_CHILD(ctrlSet, "pic", "ui::CPicture");
 		pic:SetImage(itemObj.Icon);
 
+		-- add code start
 		local name = ctrlSet:GetChild("name");
-
--- add code start
-		if itemGroup == "Gem" or itemGroup == "Card" then
-			name:SetTextByKey("value", "Lv".. itemLevel .. ":" .. GET_FULL_NAME(itemObj));
-		elseif (itemObj.ClassName == "Scroll_SkillItem") then
-			local skillClass = GetClassByType("Skill", itemObj.SkillType);
-			name:SetTextByKey("value", "Lv".. itemObj.SkillLevel .. " " .. skillClass.Name .. ":" .. GET_FULL_NAME(itemObj));
-		elseif itemGroup == "Armor" then
-			local prop = "";
-			local space= "";
-			for i = 1 , 3 do
-				local propName = "";
-				local propValue = 0;
-				local propNameStr = "HatPropName_"..i;
-				local propValueStr = "HatPropValue_"..i;
-				local propValueColored = "FFFFFF";
-				if itemObj[propValueStr] ~= 0 and itemObj[propNameStr] ~= "None" then
-					if #prop > 0 then
-						prop = prop..",";
-						space = space .. "  ";
-					end
-					if i==3 then
-						space = space .. " ";
-					end
-
-					propName = itemObj[propNameStr];
-					propValue = itemObj[propValueStr];
-
-					if propName == "MHP" then
-						propValueColored = GetItemValueColor(propValue,2283);
-					elseif propName == "RHP" then
-						propValueColored = GetItemValueColor(propValue,56);
-					elseif propName == "MSP" then
-						propValueColored = GetItemValueColor(propValue,447);
-					elseif propName == "RSP" then
-						propValueColored = GetItemValueColor(propValue,42);
-					elseif propName == "PATK" then
-						propValueColored = GetItemValueColor(propValue,126);
-					elseif propName == "ADD_MATK" then
-						propValueColored = GetItemValueColor(propValue,126);
-					elseif propName == "ADD_DEF" then
-						propValueColored = GetItemValueColor(propValue,110);
-					elseif propName == "ADD_MDEF" then
-						propValueColored = GetItemValueColor(propValue,110);
-					elseif propName == "ADD_MHR" then
-						propValueColored = GetItemValueColor(propValue,126);
-					elseif propName == "CRTATK" then
-						propValueColored = GetItemValueColor(propValue,189);
-					elseif propName == "CRTHR" then
-						propValueColored = GetItemValueColor(propValue,14);
-					elseif propName == "CRTDR" then
-						propValueColored = GetItemValueColor(propValue,14);
-					elseif propName == "BLK" then
-						propValueColored = GetItemValueColor(propValue,14);
-					elseif propName == "ADD_HR" then
-						propValueColored = GetItemValueColor(propValue,14);
-					elseif propName == "ADD_DR" then
-						propValueColored = GetItemValueColor(propValue,14);
-					elseif propName == "ADD_FIRE" then
-						propValueColored = GetItemValueColor(propValue,99);
-					elseif propName == "ADD_ICE" then
-						propValueColored = GetItemValueColor(propValue,99);
-					elseif propName == "ADD_POISON" then
-						propValueColored = GetItemValueColor(propValue,99);
-					elseif propName == "ADD_LIGHTNING" then
-						propValueColored = GetItemValueColor(propValue,99);
-					elseif propName == "ADD_EARTH" then
-						propValueColored = GetItemValueColor(propValue,99);
-					elseif propName == "ADD_SOUL" then
-						propValueColored = GetItemValueColor(propValue,99);
-					elseif propName == "ADD_HOLY" then
-						propValueColored = GetItemValueColor(propValue,99);
-					elseif propName == "ADD_DARK" then
-						propValueColored = GetItemValueColor(propValue,99);
-					elseif propName == "RES_FIRE" then
-						propValueColored = GetItemValueColor(propValue,84);
-					elseif propName == "RES_ICE" then
-						propValueColored = GetItemValueColor(propValue,84);
-					elseif propName == "RES_POISON" then
-						propValueColored = GetItemValueColor(propValue,84);
-					elseif propName == "RES_LIGHTNING" then
-						propValueColored = GetItemValueColor(propValue,84);
-					elseif propName == "RES_EARTH" then
-						propValueColored = GetItemValueColor(propValue,84);
-					elseif propName == "RES_SOUL" then
-						propValueColored = GetItemValueColor(propValue,84);
-					elseif propName == "RES_HOLY" then
-						propValueColored = GetItemValueColor(propValue,84);
-					elseif propName == "RES_DARK" then
-						propValueColored = GetItemValueColor(propValue,84);
-					end
-
-					propName = propNameList[propName];
-					prop = prop..propName..":"..string.format("{#%s}{ol}%4d{/}{/}", propValueColored, propValue);
-					space = space .. "        ";
-				end
-			end
-			if prop == "" then
-				name:SetTextByKey("value", GET_FULL_NAME(itemObj));
-			else
-				name:SetTextByKey("value", GET_FULL_NAME(itemObj).."\r\n"..space..prop);
-			end
-		else
-			name:SetTextByKey("value", GET_FULL_NAME(itemObj));
-		end
--- add code end
+		name:SetTextByKey("value", SHOW_EXTRA_DETAILS(itemObj));
+		-- add code end
 
 		local count = ctrlSet:GetChild("count");
 		count:SetTextByKey("value", marketItem.count);
@@ -218,6 +200,12 @@ function ON_MARKET_ITEM_LIST_HOOKED(frame, msg, argStr, argNum)
 		local price = ctrlSet:GetChild("price");
 		price:SetTextByKey("value", GetCommaedText(marketItem.sellPrice));
 		price:SetUserValue("Price", marketItem.sellPrice);
+		
+		--Marketnames integration
+		if (marketItem ~= nil) then
+			SHOW_MARKET_NAMES(ctrlSet, marketItem)
+		end
+		
 		if cid == marketItem:GetSellerCID() then
 			local button_1 = ctrlSet:GetChild("button_1");
 			button_1:SetEnable(0);
