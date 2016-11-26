@@ -20,7 +20,7 @@
 		"fileVersion" : "v1.0.4",
 		"releaseTag" : "marketshowlevel",
 		"unicode" : "⛄",
-		"description" : "An add-on that adds the following information when browsing market items Gem Level.Card Level.Any abilities and enchantments on the equipment.The skill name and level of the Daino scroll.Socketed gems on equipment. ",
+		"description" : "An add-on that adds additional information to certain market items.",
 		"tags" : [
 			"ui",
 			"market"
