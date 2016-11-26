@@ -1,42 +1,43 @@
 [
-    {
-        "name" : "TreasureMap",
-        "file" : "treasuremap",
-        "extension" : "ipf",
-        "fileVersion" : "v1.0.3",
-        "releaseTag" : "treasuremap",
-        "unicode" : "⛄",
-        "description" : "An add-on that shows treasure chests on the map.",
-        "tags" : [
-            "ui",
-            "market"
-        ]
-    },
-    {
-        "name" : "MarketShowLevel",
-        "file" : "marketshowlevel",
-        "extension" : "ipf",
-        "fileVersion" : "v1.0.4",
-        "releaseTag" : "marketshowlevel",
-        "unicode" : "⛄",
-        "description" : "An add-on that adds the following information when browsing market items Gem Level.Card Level.Any abilities and enchantments on the equipment.The skill name and level of the Daino scroll.Socketed gems on equipment. ",
-        "tags" : [
-            "ui",
-            "market"
-        ]
-    },
-    {
-        "name" : "MarketShowLevel For Japan",
-        "file" : "marketshowlevel_jp",
-        "extension" : "ipf",
-        "fileVersion" : "v1.0.4",
-        "releaseTag" : "marketshowlevel",
-        "unicode" : "⛄",
-        "description" : "MarketShowLevel For Japan Version.",
-        "tags" : [
-            "ui",
-            "market",
-            "jp"
-        ]
-    }
+	{
+		"name" : "Treasure Map",
+		"file" : "treasuremap",
+		"extension" : "ipf",
+		"fileVersion" : "v1.0.3",
+		"releaseTag" : "treasuremap",
+		"unicode" : "⛄",
+		"description" : "An add-on that shows treasure chests on the map.",
+		"tags" : [
+			"ui",
+			"map",
+			"treasure"
+		]
+	},
+	{
+		"name" : "Market Show Level",
+		"file" : "marketshowlevel",
+		"extension" : "ipf",
+		"fileVersion" : "v1.0.4",
+		"releaseTag" : "marketshowlevel",
+		"unicode" : "⛄",
+		"description" : "An add-on that adds the following information when browsing market items Gem Level.Card Level.Any abilities and enchantments on the equipment.The skill name and level of the Daino scroll.Socketed gems on equipment. ",
+		"tags" : [
+			"ui",
+			"market"
+		]
+	},
+	{
+		"name" : "Market Show Level For Japan",
+		"file" : "marketshowlevel_jp",
+		"extension" : "ipf",
+		"fileVersion" : "v1.0.4",
+		"releaseTag" : "marketshowlevel",
+		"unicode" : "⛄",
+		"description" : "MarketShowLevel For Japan Version.",
+		"tags" : [
+			"ui",
+			"market",
+			"jp"
+		]
+	}
 ]
