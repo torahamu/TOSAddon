@@ -1,5 +1,9 @@
-CHAT_SYSTEM("MARKET SHOW LEVEL JP v1.0.4 loaded!");
+CHAT_SYSTEM("MARKET SHOW LEVEL JP v1.0.5 loaded!");
 
+-- Equip Jem And Hat prop align
+local propAlign = "left";
+
+-- Hat prop color
 local itemColor = {
 	[0] = "FFFFFF",    -- Normal
 	[1] = "108CFF",    -- 0.75 over
@@ -7,6 +11,7 @@ local itemColor = {
 	[3] = "FF4F00",    -- 0.95 over
 };
 
+-- Hat prop Name and Max Values
 local propList = {};
 propList.MHP           = {name = "ＨＰ";max = 2283;};
 propList.RHP           = {name = "HP回";max = 56;};
@@ -43,12 +48,17 @@ propList.MSPD          = {name = "移動";max = 1;};
 propList.SR            = {name = "広攻";max = 1;};
 propList.SDR           = {name = "広防";max = 4;};
 
+
 function MARKETSHOWLEVEL_ON_INIT(addon, frame)
-	_G["ON_MARKET_ITEM_LIST"] = ON_MARKET_ITEM_LIST_HOOKED;
+	if (acutil ~= nil) then
+		acutil.setupEvent(addon, "ON_MARKET_ITEM_LIST", "ON_MARKET_ITEM_LIST_HOOKED")
+	else
+		_G["ON_MARKET_ITEM_LIST"] = ON_MARKET_ITEM_LIST_HOOKED;
+	end
 end
 
 
-function GetGemInfo(itemObj)
+function GET_GEM_INFO(itemObj)
 	local gemInfo = "";
 	local fn = GET_FULL_NAME_OLD or GET_FULL_NAME;
 
@@ -104,15 +114,15 @@ function GetGemInfo(itemObj)
 		end
 	end
 
-	if #gemInfo > 0 then
-		gemInfo = "{nl}" .. gemInfo;
-	end
-
 	return gemInfo;
 
 end
 
-function GetHatProp(itemObj)
+function GET_HAT_PROP(itemObj)
+	if itemObj.ClassType ~= "Hat" then
+		return ""
+	end
+
 	local prop = "";
 	for i = 1 , 3 do
 		local propName = "";
@@ -127,36 +137,65 @@ function GetHatProp(itemObj)
 			propName = itemObj[propNameStr];
 			propValue = itemObj[propValueStr];
 
-			propValueColored = GetItemValueColor(propName, propValue, propList[propName].max);
+			propValueColored = GET_ITEM_VALUE_COLOR(propName, propValue, propList[propName].max);
 
 			prop = prop .. string.format("%s:{#%s}{ol}%4d{/}{/}", propList[propName].name, propValueColored, propValue);
 		end
-	end
-
-	if #prop > 0 then
-		prop = "{nl}" .. prop;
 	end
 
 	return prop;
 
 end
 
-function GetItemValueColor(propname,value, max)
-	local index = 0;
-
+function GET_ITEM_VALUE_COLOR(propname,value, max)
 	if propname == "MSPD" or propname == "SR" or propname == "SDR" then
-		index = 0
+		return itemColor[0];
 	else
 		if value > (max * 0.95) then
-			index = 3
+			return itemColor[3];
 		elseif value > (max * 0.85) then
-			index = 2
+			return itemColor[2];
 		elseif value > (max * 0.75) then
-			index = 1
+			return itemColor[1];
+		else
+			return itemColor[0];
 		end
 	end
+end
 
-	return itemColor[index]
+function GET_EQUIP_PROP(ctrlSet, itemObj, row)
+	local gemInfo = GET_GEM_INFO(itemObj);
+	local prop = GET_HAT_PROP(itemObj);
+
+	local propDetail = ctrlSet:CreateControl("richtext", "PROP_ITEM_" .. row, 100, 40, 0, 0);
+	tolua.cast(propDetail, 'ui::CRichText');
+	propDetail:SetFontName("brown_16_b");
+	propDetail:SetText(prop..gemInfo);
+	propDetail:Resize(400, 0)
+	propDetail:SetTextAlign(propAlign, "center");
+end
+
+
+--Market names integration
+function SHOW_MARKET_NAMES(ctrlSet, marketItem)
+	if marketItem == nil then
+		return;
+	end
+
+	if _G["MARKETNAMES"] == nil then
+		return;
+	end
+	
+	local marketName = _G["MARKETNAMES"][marketItem:GetSellerCID()];
+	if marketName == nil then
+		return;
+	end
+	
+	local buyButton = ctrlSet:GetChild("button_1");
+
+	if buyButton ~= nil then
+		buyButton:SetTextTooltip("Buy from " .. marketName.characterName .. " " .. marketName.familyName .. "!");
+	end
 end
 
 function ON_MARKET_ITEM_LIST_HOOKED(frame, msg, argStr, argNum)
@@ -198,13 +237,9 @@ function ON_MARKET_ITEM_LIST_HOOKED(frame, msg, argStr, argNum)
 		local itemLevel = GET_ITEM_LEVEL(itemObj);
 		local itemGroup = itemObj.GroupName;
 
-		if itemGroup == "Weapon" or itemGroup == "SubWeapon" then
-			local gemInfo = GetGemInfo(itemObj);
-			name:SetTextByKey("value", GET_FULL_NAME(itemObj) .. gemInfo);
-		elseif itemGroup == "Armor" then
-			local gemInfo = GetGemInfo(itemObj);
-			local prop = GetHatProp(itemObj);
-			name:SetTextByKey("value", GET_FULL_NAME(itemObj) .. prop .. gemInfo);
+		if itemGroup == "Weapon" or itemGroup == "SubWeapon" or itemGroup == "Armor" then
+			name:SetTextByKey("value", GET_FULL_NAME(itemObj));
+			GET_EQUIP_PROP(ctrlSet, itemObj, i);
 		elseif itemGroup == "Gem" or itemGroup == "Card" then
 			name:SetTextByKey("value", "Lv".. itemLevel .. ":" .. GET_FULL_NAME(itemObj));
 		elseif (itemObj.ClassName == "Scroll_SkillItem") then
@@ -213,8 +248,6 @@ function ON_MARKET_ITEM_LIST_HOOKED(frame, msg, argStr, argNum)
 		else
 			name:SetTextByKey("value", GET_FULL_NAME(itemObj));
 		end
-		name = tolua.cast(name, 'ui::CRichText');
-		name:SetTextAlign("left", "top");
 
 -- add code end
 
@@ -227,6 +260,12 @@ function ON_MARKET_ITEM_LIST_HOOKED(frame, msg, argStr, argNum)
 		local price = ctrlSet:GetChild("price");
 		price:SetTextByKey("value", GetCommaedText(marketItem.sellPrice));
 		price:SetUserValue("Price", marketItem.sellPrice);
+
+		--Marketnames integration
+		if (marketItem ~= nil) then
+			SHOW_MARKET_NAMES(ctrlSet, marketItem)
+		end
+
 		if cid == marketItem:GetSellerCID() then
 			local button_1 = ctrlSet:GetChild("button_1");
 			button_1:SetEnable(0);

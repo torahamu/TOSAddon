@@ -1,5 +1,9 @@
-CHAT_SYSTEM("MARKET SHOW LEVEL v1.0.4 loaded!");
+CHAT_SYSTEM("MARKET SHOW LEVEL v1.0.5 loaded!");
 
+-- Equip Jem And Hat prop align
+local propAlign = "center";
+
+-- Hat prop color
 local itemColor = {
 	[0] = "FFFFFF",    -- Normal
 	[1] = "108CFF",    -- 0.75 over
@@ -7,48 +11,54 @@ local itemColor = {
 	[3] = "FF4F00",    -- 0.95 over
 };
 
+-- Hat prop Name and Max Values
 local propList = {};
-propList.MHP           = {name = "HP";max = 2283;};
-propList.RHP           = {name = "HPR";max = 56;};
-propList.MSP           = {name = "SP";max = 450;};
-propList.RSP           = {name = "SPR";max = 56;};
-propList.PATK          = {name = "PATK";max = 126;};
-propList.ADD_MATK      = {name = "MATK";max = 126;};
-propList.ADD_DEF       = {name = "DEF";max = 110;};
-propList.ADD_MDEF      = {name = "MDEF";max = 110;};
-propList.ADD_MHR       = {name = "MAMP";max = 126;};
-propList.CRTATK        = {name = "CATK";max = 189;};
-propList.CRTHR         = {name = "CRate";max = 14;};
-propList.CRTDR         = {name = "CRes";max = 14;};
-propList.BLK           = {name = "BLK";max = 14;};
-propList.ADD_HR        = {name = "ACC";max = 14;};
-propList.ADD_DR        = {name = "EVA";max = 14;};
-propList.ADD_FIRE      = {name = "FATK";max = 99;};
-propList.ADD_ICE       = {name = "IATK";max = 99;};
-propList.ADD_POISON    = {name = "PATK";max = 99;};
-propList.ADD_LIGHTNING = {name = "LATK";max = 99;};
-propList.ADD_EARTH     = {name = "EATK";max = 99;};
-propList.ADD_SOUL      = {name = "GATK";max = 99;};
-propList.ADD_HOLY      = {name = "HATK";max = 99;};
-propList.ADD_DARK      = {name = "DATK";max = 99;};
-propList.RES_FIRE      = {name = "FRES";max = 84;};
-propList.RES_ICE       = {name = "IRES";max = 84;};
-propList.RES_POISON    = {name = "PRES";max = 84;};
-propList.RES_LIGHTNING = {name = "LRES";max = 84;};
-propList.RES_EARTH     = {name = "ERES";max = 84;};
-propList.RES_SOUL      = {name = "GRES";max = 84;};
-propList.RES_HOLY      = {name = "HRES";max = 84;};
-propList.RES_DARK      = {name = "DRES";max = 84;};
-propList.MSPD          = {name = "MSpD";max = 1;};
-propList.SR            = {name = "AoE AR";max = 1;};
-propList.SDR           = {name = "AoE DR";max = 4;};
+propList.MHP           = {name =  "Max HP"  ;max = 2283;};
+propList.RHP           = {name =  "HP Rec"  ;max = 56;};
+propList.MSP           = {name =  "Max SP"  ;max = 450;};
+propList.RSP           = {name =  "SP Rec"  ;max = 56;};
+propList.PATK          = {name =  "PhysAtk" ;max = 126;};
+propList.ADD_MATK      = {name =  "Mag Atk" ;max = 126;};
+propList.ADD_DEF       = {name =  "PhysDef" ;max = 110;};
+propList.ADD_MDEF      = {name =  "Mag Def" ;max = 110;};
+propList.ADD_MHR       = {name =  "Mag Amp" ;max = 126;};
+propList.CRTATK        = {name =  "CritAtk" ;max = 189;};
+propList.CRTHR         = {name =  "CritRate";max = 14;};
+propList.CRTDR         = {name =  "CritDef" ;max = 14;};
+propList.BLK           = {name =  "Block"   ;max = 14;};
+propList.ADD_HR        = {name =  "Accuracy";max = 14;};
+propList.ADD_DR        = {name =  "Evasion" ;max = 14;};
+propList.ADD_FIRE      = {name =  "FireAtk" ;max = 99;};
+propList.ADD_ICE       = {name =  "IceAtk"  ;max = 99;};
+propList.ADD_POISON    = {name =  "PsnAtk"  ;max = 99;};
+propList.ADD_LIGHTNING = {name =  "LgtAtk"  ;max = 99;};
+propList.ADD_EARTH     = {name =  "EarthAtk";max = 99;};
+propList.ADD_SOUL      = {name =  "GhostAtk";max = 99;};
+propList.ADD_HOLY      = {name =  "HolyAtk" ;max = 99;};
+propList.ADD_DARK      = {name =  "DarkAtk" ;max = 99;};
+propList.RES_FIRE      = {name =  "FireRes" ;max = 84;};
+propList.RES_ICE       = {name =  "IceRes"  ;max = 84;};
+propList.RES_POISON    = {name =  "PsnRes"  ;max = 84;};
+propList.RES_LIGHTNING = {name =  "LgtRes"  ;max = 84;};
+propList.RES_EARTH     = {name =  "EarthRes";max = 84;};
+propList.RES_SOUL      = {name =  "GhostRes";max = 84;};
+propList.RES_HOLY      = {name =  "HolyRes" ;max = 84;};
+propList.RES_DARK      = {name =  "DarkRes" ;max = 84;};
+propList.MSPD          = {name =  "Mspd"    ;max = 1;};
+propList.SR            = {name =  "AoEAtk"  ;max = 1;};
+propList.SDR           = {name =  "AoEDef"  ;max = 4;};
+
 
 function MARKETSHOWLEVEL_ON_INIT(addon, frame)
-	_G["ON_MARKET_ITEM_LIST"] = ON_MARKET_ITEM_LIST_HOOKED;
+	if (acutil ~= nil) then
+		acutil.setupEvent(addon, "ON_MARKET_ITEM_LIST", "ON_MARKET_ITEM_LIST_HOOKED")
+	else
+		_G["ON_MARKET_ITEM_LIST"] = ON_MARKET_ITEM_LIST_HOOKED;
+	end
 end
 
 
-function GetGemInfo(itemObj)
+function GET_GEM_INFO(itemObj)
 	local gemInfo = "";
 	local fn = GET_FULL_NAME_OLD or GET_FULL_NAME;
 
@@ -104,15 +114,15 @@ function GetGemInfo(itemObj)
 		end
 	end
 
-	if #gemInfo > 0 then
-		gemInfo = "{nl}" .. gemInfo;
-	end
-
 	return gemInfo;
 
 end
 
-function GetHatProp(itemObj)
+function GET_HAT_PROP(itemObj)
+	if itemObj.ClassType ~= "Hat" then
+		return ""
+	end
+
 	local prop = "";
 	for i = 1 , 3 do
 		local propName = "";
@@ -127,36 +137,65 @@ function GetHatProp(itemObj)
 			propName = itemObj[propNameStr];
 			propValue = itemObj[propValueStr];
 
-			propValueColored = GetItemValueColor(propName, propValue, propList[propName].max);
+			propValueColored = GET_ITEM_VALUE_COLOR(propName, propValue, propList[propName].max);
 
 			prop = prop .. string.format("%s:{#%s}{ol}%4d{/}{/}", propList[propName].name, propValueColored, propValue);
 		end
-	end
-
-	if #prop > 0 then
-		prop = "{nl}" .. prop;
 	end
 
 	return prop;
 
 end
 
-function GetItemValueColor(propname,value, max)
-	local index = 0;
-
+function GET_ITEM_VALUE_COLOR(propname,value, max)
 	if propname == "MSPD" or propname == "SR" or propname == "SDR" then
-		index = 0
+		return itemColor[0];
 	else
 		if value > (max * 0.95) then
-			index = 3
+			return itemColor[3];
 		elseif value > (max * 0.85) then
-			index = 2
+			return itemColor[2];
 		elseif value > (max * 0.75) then
-			index = 1
+			return itemColor[1];
+		else
+			return itemColor[0];
 		end
 	end
+end
 
-	return itemColor[index]
+function GET_EQUIP_PROP(ctrlSet, itemObj, row)
+	local gemInfo = GET_GEM_INFO(itemObj);
+	local prop = GET_HAT_PROP(itemObj);
+
+	local propDetail = ctrlSet:CreateControl("richtext", "PROP_ITEM_" .. row, 100, 40, 0, 0);
+	tolua.cast(propDetail, 'ui::CRichText');
+	propDetail:SetFontName("brown_16_b");
+	propDetail:SetText(prop..gemInfo);
+	propDetail:Resize(400, 0)
+	propDetail:SetTextAlign(propAlign, "center");
+end
+
+
+--Market names integration
+function SHOW_MARKET_NAMES(ctrlSet, marketItem)
+	if marketItem == nil then
+		return;
+	end
+
+	if _G["MARKETNAMES"] == nil then
+		return;
+	end
+	
+	local marketName = _G["MARKETNAMES"][marketItem:GetSellerCID()];
+	if marketName == nil then
+		return;
+	end
+	
+	local buyButton = ctrlSet:GetChild("button_1");
+
+	if buyButton ~= nil then
+		buyButton:SetTextTooltip("Buy from " .. marketName.characterName .. " " .. marketName.familyName .. "!");
+	end
 end
 
 function ON_MARKET_ITEM_LIST_HOOKED(frame, msg, argStr, argNum)
@@ -198,13 +237,9 @@ function ON_MARKET_ITEM_LIST_HOOKED(frame, msg, argStr, argNum)
 		local itemLevel = GET_ITEM_LEVEL(itemObj);
 		local itemGroup = itemObj.GroupName;
 
-		if itemGroup == "Weapon" or itemGroup == "SubWeapon" then
-			local gemInfo = GetGemInfo(itemObj);
-			name:SetTextByKey("value", GET_FULL_NAME(itemObj) .. gemInfo);
-		elseif itemGroup == "Armor" then
-			local gemInfo = GetGemInfo(itemObj);
-			local prop = GetHatProp(itemObj);
-			name:SetTextByKey("value", GET_FULL_NAME(itemObj) .. prop .. gemInfo);
+		if itemGroup == "Weapon" or itemGroup == "SubWeapon" or itemGroup == "Armor" then
+			name:SetTextByKey("value", GET_FULL_NAME(itemObj));
+			GET_EQUIP_PROP(ctrlSet, itemObj, i);
 		elseif itemGroup == "Gem" or itemGroup == "Card" then
 			name:SetTextByKey("value", "Lv".. itemLevel .. ":" .. GET_FULL_NAME(itemObj));
 		elseif (itemObj.ClassName == "Scroll_SkillItem") then
@@ -213,8 +248,6 @@ function ON_MARKET_ITEM_LIST_HOOKED(frame, msg, argStr, argNum)
 		else
 			name:SetTextByKey("value", GET_FULL_NAME(itemObj));
 		end
-		name = tolua.cast(name, 'ui::CRichText');
-		name:SetTextAlign("left", "top");
 
 -- add code end
 
@@ -227,6 +260,12 @@ function ON_MARKET_ITEM_LIST_HOOKED(frame, msg, argStr, argNum)
 		local price = ctrlSet:GetChild("price");
 		price:SetTextByKey("value", GetCommaedText(marketItem.sellPrice));
 		price:SetUserValue("Price", marketItem.sellPrice);
+
+		--Marketnames integration
+		if (marketItem ~= nil) then
+			SHOW_MARKET_NAMES(ctrlSet, marketItem)
+		end
+
 		if cid == marketItem:GetSellerCID() then
 			local button_1 = ctrlSet:GetChild("button_1");
 			button_1:SetEnable(0);

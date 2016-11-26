@@ -12,10 +12,7 @@ treasuremap
 
 	■使い方
 
-**「_treasuremap-⛄-v1.0.2.ipf」以前が既にある場合は削除してください**
-
-「_treasuremap-⛄-v1.0.3.ipf」をTree of Saviorインストールフォルダの「data」フォルダ内にコピーしてください。  
-Tree of Saviorのキャラログイン時に、チャット欄に「TREASUREMAP 1.0.3 loaded」が表示されていれば導入完了です。
+[アドオンマネージャー](https://github.com/Excrulon/Tree-of-Savior-Addon-Manager)にてインストールしてください
 
 	■補足
 
@@ -37,10 +34,7 @@ It does not appear on the mini-map, also do not know whether or not opened. In a
 
 	■ How to use
 
-** Delete "_treasuremap-⛄-v1.0.2.ipf"  or earlier if it already exists **
-
-Please copy the "_treasuremap-⛄-v1.0.3.ipf" in the "data" folder of the Tree of Savior installation folder.  
-During the character login of Tree of Savior, is the introduction completion if "TREASUREMAP 1.0.3 loaded" Is displayed in the chat field.
+Addons are available on the [Addon Manager](https://github.com/Excrulon/Tree-of-Savior-Addon-Manager)
 
 	■ supplement
 
