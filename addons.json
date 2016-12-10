@@ -50,8 +50,9 @@
 		"description" : "An add-on that displays a buff icon that is not normally displayed for targeted enemies.",
 		"tags" : [
 			"ui",
-			"market",
-			"jp"
+			"icon",
+			"buff",
+			"mob"
 		]
 	}
 
