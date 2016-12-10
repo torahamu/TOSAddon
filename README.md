@@ -41,4 +41,16 @@ An add-on that adds the following information when browsing market items:
 * Card Level.
 * Any abilities and enchantments on the equipment.
 * The skill name and level of the Daino scroll.
-* Socketed gems on equipment. (v.1.0.3 update!!)
+* Socketed gems on equipment. (v.1.0.3 update!!)  
+
+showhidebuff
+--
+![alt text](http://i.imgur.com/xYBxip1.png "buf1")
+![alt text](http://i.imgur.com/BOJIWsL.png "buf2")
+
+ターゲットしている敵の、通常表示されないバフアイコンを表示するアドオンです。  
+
+----
+
+An add-on that displays a buff icon that is not normally displayed for targeted enemies.
+

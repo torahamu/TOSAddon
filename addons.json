@@ -39,5 +39,20 @@
 			"market",
 			"jp"
 		]
+	},
+	{
+		"name" : "Show Hide Buff",
+		"file" : "showhidebuff",
+		"extension" : "ipf",
+		"fileVersion" : "v1.0.0",
+		"releaseTag" : "showhidebuff",
+		"unicode" : "⛄",
+		"description" : "An add-on that displays a buff icon that is not normally displayed for targeted enemies.",
+		"tags" : [
+			"ui",
+			"market",
+			"jp"
+		]
 	}
+
 ]
