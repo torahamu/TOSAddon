@@ -1,4 +1,4 @@
-treasuremap
+showhidebuff
 --
 ![alt text](http://i.imgur.com/xYBxip1.png "buf1")
 ![alt text](http://i.imgur.com/BOJIWsL.png "buf2")
