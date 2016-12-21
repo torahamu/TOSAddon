@@ -1,4 +1,4 @@
-CHAT_SYSTEM("MARKET SHOW LEVEL JP v1.0.5 loaded!");
+CHAT_SYSTEM("MARKET SHOW LEVEL JP v1.0.6 loaded!");
 
 -- Equip Jem And Hat prop align
 local propAlign = "left";
@@ -10,6 +10,11 @@ local itemColor = {
 	[2] = "9F30FF",    -- 0.85 over
 	[3] = "FF4F00",    -- 0.95 over
 };
+
+-- Prop Text
+local AwakenText="覚醒オプション"
+local SocketText="ソケット"
+local PotentialText="ポテンシャル"
 
 -- Hat prop Name and Max Values
 local propList = {};
@@ -47,7 +52,6 @@ propList.RES_DARK      = {name = "闇防";max = 84;};
 propList.MSPD          = {name = "移動";max = 1;};
 propList.SR            = {name = "広攻";max = 1;};
 propList.SDR           = {name = "広防";max = 4;};
-
 
 function MARKETSHOWLEVEL_ON_INIT(addon, frame)
 	if (acutil ~= nil) then
@@ -106,9 +110,9 @@ function GET_GEM_INFO(itemObj)
 			end
 
 			if gemLevel <= rstLevel then
-				gemInfo = gemInfo .. "{#FF7F50}{ol}Lv" .. gemLevel .. ":" .. GET_ITEM_IMG_BY_CLS(obj, 22) .. "{/}{/}";
+				gemInfo = gemInfo .. "{#FF7F50}{ol}Lv" .. gemLevel .. ":" .. GET_ITEM_IMG_BY_CLS(obj, 20) .. "{/}{/}";
 			else
-				gemInfo = gemInfo .. "{#FFFFFF}{ol}Lv" .. gemLevel .. ":" .. GET_ITEM_IMG_BY_CLS(obj, 22) .. "{/}{/}";
+				gemInfo = gemInfo .. "{#FFFFFF}{ol}Lv" .. gemLevel .. ":" .. GET_ITEM_IMG_BY_CLS(obj, 20) .. "{/}{/}";
 			end
 
 		end
@@ -167,14 +171,50 @@ function GET_EQUIP_PROP(ctrlSet, itemObj, row)
 	local gemInfo = GET_GEM_INFO(itemObj);
 	local prop = GET_HAT_PROP(itemObj);
 
-	local propDetail = ctrlSet:CreateControl("richtext", "PROP_ITEM_" .. row, 100, 40, 0, 0);
+	local propDetail = ctrlSet:CreateControl("richtext", "PROP_ITEM_" .. row, 100, 42, 0, 0);
 	tolua.cast(propDetail, 'ui::CRichText');
 	propDetail:SetFontName("brown_16_b");
-	propDetail:SetText(prop..gemInfo);
+	propDetail:SetText("{s14}"..prop..gemInfo.."{/}");
 	propDetail:Resize(400, 0)
 	propDetail:SetTextAlign(propAlign, "center");
 end
 
+function GET_SOCKET_POTENSIAL_AWAKEN_PROP(ctrlSet, itemObj, row)
+	local nowusesocketcount = 0
+	for i = 0, itemObj.MaxSocket - 1 do
+		local nowsockettype = itemObj['Socket_' .. i]
+
+		if nowsockettype ~= 0 then
+			nowusesocketcount = nowusesocketcount + 1
+		end
+	end
+
+	local awakenProp = "";
+
+	if itemObj.IsAwaken == 1 then
+		awakenProp = "{#3300FF}{b}"..AwakenText.."["..propList[itemObj.HiddenProp].name.. " "..itemObj.HiddenPropValue.."]{/}{/}";
+	end
+
+	local maxPR = 0;
+	if itemObj.MaxPR == 0 then
+		local itemCls = GetClass("Item",itemObj.ClassName)
+		maxPR = itemCls.PR
+	else
+		maxPR = itemObj.MaxPR
+	end
+
+
+	local socketDetail = ctrlSet:CreateControl("richtext", "SOCKTE_ITEM_" .. row, 100, 7, 0, 0);
+	tolua.cast(socketDetail, 'ui::CRichText');
+	socketDetail:SetFontName("brown_16_b");
+	if itemObj.NeedAppraisal ~= 0 then
+		socketDetail:SetText("{s13}"..SocketText.."[??/??] "..PotentialText.."[??/??] "..awakenProp.."{/}");
+	else
+		socketDetail:SetText("{s13}"..SocketText.."["..nowusesocketcount.."/"..itemObj.MaxSocket.."] "..PotentialText.."["..itemObj.PR.."/"..maxPR.."] "..awakenProp.."{/}");
+	end
+	socketDetail:Resize(400, 0)
+	socketDetail:SetTextAlign(propAlign, "center");
+end
 
 --Market names integration
 function SHOW_MARKET_NAMES(ctrlSet, marketItem)
@@ -234,11 +274,18 @@ function ON_MARKET_ITEM_LIST_HOOKED(frame, msg, argStr, argNum)
 
 -- add code start
 
+
 		local itemLevel = GET_ITEM_LEVEL(itemObj);
 		local itemGroup = itemObj.GroupName;
 
 		if itemGroup == "Weapon" or itemGroup == "SubWeapon" or itemGroup == "Armor" then
 			name:SetTextByKey("value", GET_FULL_NAME(itemObj));
+			if itemObj.NeedAppraisal ~= 0 then
+				pic:SetColorTone("CC222222");
+			end
+			if itemObj.ClassType ~= "Hat" then
+				GET_SOCKET_POTENSIAL_AWAKEN_PROP(ctrlSet, itemObj, i);
+			end
 			GET_EQUIP_PROP(ctrlSet, itemObj, i);
 		elseif itemGroup == "Gem" or itemGroup == "Card" then
 			name:SetTextByKey("value", "Lv".. itemLevel .. ":" .. GET_FULL_NAME(itemObj));

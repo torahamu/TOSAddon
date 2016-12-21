@@ -19,11 +19,13 @@ An add-on that shows treasure chests on the map.
 marketshowlevel
 --
 
-|images|images|
+|JTOS|ITOS|
 |---|---|
-|![alt text](http://i.imgur.com/YC1b3hX.jpg "Gem Screenshot")|![alt text](http://i.imgur.com/u0egdkB.jpg "Card Screenshot")|
-|![alt text](http://i.imgur.com/z2JUa1g.png "Hair Screenshot")|![alt text](http://i.imgur.com/37rrlYU.png "Hair JP Screenshot")|
-|![alt text](http://i.imgur.com/3G617Gk.png "Spell Screenshot")|![alt text](http://i.imgur.com/JJYg6HJ.png "EquipJem Screenshot")|
+|![alt text](http://i.imgur.com/e9UWoYR.png "Jem JP Screenshot")|![alt text](http://i.imgur.com/TzPXeMR.png "Jem Screenshot")|
+|![alt text](http://i.imgur.com/Wmxu1hp.png "Card JP Screenshot")|![alt text](http://i.imgur.com/IAFE2P3.png "Card Screenshot")|
+|![alt text](http://i.imgur.com/dpXZhip.png "Spell JP Screenshot")|![alt text](http://i.imgur.com/PZEQ8zh.png "Spell Screenshot")|
+|![alt text](http://i.imgur.com/r96ynTn.png "Hair JP Screenshot")|![alt text](http://i.imgur.com/lYoO7FZ.png "Hair Screenshot")|
+|![alt text](http://i.imgur.com/Ssndgeh.png "Equip JP Screenshott")|![alt text](http://i.imgur.com/smvggny.png "Equip Screenshot")|
 
 
 マーケットのアイテムが以下のように表記されるようになります。  
@@ -31,7 +33,9 @@ marketshowlevel
 * カードの名前にレベルが追加されます。
 * ヘアアクセサリの能力が表記されます。(日本語表記対応)
 * スキル呪文書にスキル名とレベルが追加されます。
-* 武器や防具に刺さっているジェムを表示します。(v.1.0.3 update!!)
+* 武器や防具に刺さっているジェムを表示します。
+* ソケット数とポテンシャル数を表示します。(v.1.0.6 update!!)
+* 覚醒オプションを表示します。(v.1.0.6 update!!)
 
 ----
 
@@ -41,7 +45,9 @@ An add-on that adds the following information when browsing market items:
 * Card Level.
 * Any abilities and enchantments on the equipment.
 * The skill name and level of the Daino scroll.
-* Socketed gems on equipment. (v.1.0.3 update!!)  
+* Socketed Gems on equipment.
+* Sockets and Potentials. (v.1.0.6 update!!)
+* Awaken Option. (v.1.0.6 update!!)
 
 showhidebuff
 --
