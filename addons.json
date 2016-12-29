@@ -53,6 +53,20 @@
 			"icon",
 			"buff"
 		]
+	},
+	{
+		"name" : "Check Gem Roast",
+		"file" : "checkgemroast",
+		"extension" : "ipf",
+		"fileVersion" : "v1.0.0",
+		"releaseTag" : "checkgemroast",
+		"unicode" : "⛄",
+		"description" : "When equiping a gem that is not roasting, show warning window.",
+		"tags" : [
+			"ui",
+			"gem",
+			"warning"
+		]
 	}
 
 ]

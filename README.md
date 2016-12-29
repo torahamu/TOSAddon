@@ -68,3 +68,13 @@ showhidebuff
 
 An add-on that displays a buff icon that is not normally displayed for targeted enemies.
 
+checkgemroast
+--
+![alt text](http://i.imgur.com/KIkA8cF.png "jp Screenshot")
+
+ジェムをローストせずにつけようとするどじっ子啓示者ちゃんに警告ウィンドウを出すアドオンです。  
+
+----
+
+When equiping a gem that is not roasting, show warning window.
+
