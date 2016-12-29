@@ -11,7 +11,7 @@ treasuremap
 全体マップ上に宝箱の場所を表示するアドオンです。  
 ミニマップには表示されないし、開けたかどうかもわかりません。また、普段は開けられず、クエスト上で開ける宝箱なのかどうかもわかりません。  
 
-(v1.0.4)
+(v1.0.4)  
 宝箱の数、宝箱の中身、隠し宝箱を表示するようにしました。  
 隠し宝箱は[探索スキルトリガー]で表示されているもので、スカウトのスキル[スキャン]で入手可能です。  
 
@@ -34,7 +34,7 @@ I'm sorry. It is a Google translation
 It is an add-on that displays the location of the treasure chest to the entire map on.  
 It does not appear on the mini-map, also do not know whether or not opened. In addition, usually it is not open, do not know even whether a treasure chest open on the quest.  
 
-(v1.0.4)
+(v1.0.4)  
 Show Number of treasure box, show the contents of the treasure box, and show hidden treasure box.  
 Hidden treasure box are displayed in [Search Skill Trigger], and are available in the Scout skill [Scan].  
 
