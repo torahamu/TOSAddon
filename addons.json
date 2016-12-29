@@ -3,7 +3,7 @@
 		"name" : "Treasure Map",
 		"file" : "treasuremap",
 		"extension" : "ipf",
-		"fileVersion" : "v1.0.3",
+		"fileVersion" : "v1.0.4",
 		"releaseTag" : "treasuremap",
 		"unicode" : "⛄",
 		"description" : "An add-on that shows treasure chests on the map.",

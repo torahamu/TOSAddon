@@ -8,13 +8,21 @@ In this repository:
 
 treasuremap
 --
-![alt text](http://i.imgur.com/dAkRzhk.png "Map Screenshot")
+|JTOS|ITOS|
+|---|---|
+|![alt text](http://i.imgur.com/eA7BzT6.jpg "JP Screenshot")|![alt text](http://i.imgur.com/yJGJ0Eo.jpg "en Screenshot")|
 
 全体マップに宝箱の場所を表示するアドオンです。
+(v1.0.4)
+宝箱の数、宝箱の中身、隠し宝箱を表示するようにしました。  
+隠し宝箱は[探索スキルトリガー]で表示されているもので、スカウトのスキル[スキャン]で入手可能です。  
 
 ----
 
 An add-on that shows treasure chests on the map.
+(v1.0.4)
+Show Number of treasure box, show the contents of the treasure box, and show hidden treasure box.  
+Hidden treasure box are displayed in [Search Skill Trigger], and are available in the Scout skill [Scan].  
 
 marketshowlevel
 --
