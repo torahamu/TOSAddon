@@ -1,4 +1,4 @@
-* Sorry, This addon is JTOS only.  *
+*Sorry, This addon is JTOS only.*
 
 公式バグフィックス
 --
