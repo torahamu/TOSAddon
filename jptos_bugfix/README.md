@@ -6,12 +6,12 @@
 |---|---|
 |![alt text](http://i.imgur.com/Iyl9Yd6.png "Screenshot")|![alt text](http://i.imgur.com/hlVn2fy.png "Screenshot")|
 
-**ワープ修正**
+**ワープ修正**  
 ![alt text](http://i.imgur.com/uk58wen.png "Screenshot")
 
 	■なにこれ
 
-公式不具合の下記2つを修正します。  
+公式不具合の下記2つを修正します。
 * 「スモールクリスタラス」のアイテム詳細に追加効果が表示されていない問題
 * ワープスクロールを使用した地域が女神像に登録されない問題
 使い方は一番下を参照してください。  
@@ -25,7 +25,7 @@
 スモールクリスタラスは表示は炎属性ですが内部的には念属性攻撃です。(2016/12/31 現在)  
 表示も直されたい方は  
 
-TOSインストールフォルダ\release\languageData\Japanese\ETC.tsv  
+TOSインストールフォルダ\release\languageData\Japanese\ETC.tsv
 * ETC_20161110_025887
 * ETC_20161110_025888
 
