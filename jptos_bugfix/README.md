@@ -43,5 +43,5 @@ TOSインストールフォルダ\release\languageData\Japanese\ETC.tsv
 
 |ipfファイルへのリンク|ダウンロードボタン|
 |---|---|
-|![alt text](http://i.imgur.com/CXUVQh6.png "Screenshot")|![alt text](http://i.imgur.com/HVLKMwY.png "Screenshot")|
+|![alt text](http://i.imgur.com/HVLKMwY.png "Screenshot")|![alt text](http://i.imgur.com/CXUVQh6.png "Screenshot")|
 
