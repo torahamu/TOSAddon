@@ -6,10 +6,8 @@
 |---|---|
 |![alt text](http://i.imgur.com/Iyl9Yd6.png "Screenshot")|![alt text](http://i.imgur.com/hlVn2fy.png "Screenshot")|
 
-ワープ修正  
+**ワープ修正**
 ![alt text](http://i.imgur.com/uk58wen.png "Screenshot")
-
-### [JP]
 
 	■なにこれ
 
@@ -22,7 +20,7 @@
 
 	■補足
 
-呪文書使用地域への移動が-1になっていますが、^^別関数もHOOKせなあかんしそれが長くてめんどいので^^仕様です。
+呪文書使用地域への移動が-1になっていますが、~~別関数もHOOKせなあかんしそれが長くてめんどいので~~仕様です。
 
 スモールクリスタラスは表示は炎属性ですが内部的には念属性攻撃です。(2016/12/31 現在)  
 表示も直されたい方は  
