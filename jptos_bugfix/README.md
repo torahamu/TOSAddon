@@ -2,11 +2,12 @@
 
 公式バグフィックス
 --
-|スモールクリスタラス表示修正|ワープ修正|
+|スモールクリスタラス表示修正|  |
 |---|---|
-|![alt text](http://i.imgur.com/Iyl9Yd6.png "Screenshot")|![alt text](http://i.imgur.com/uk58wen.png "Screenshot")|
-|![alt text](http://i.imgur.com/hlVn2fy.png "Screenshot")|  |
+|![alt text](http://i.imgur.com/Iyl9Yd6.png "Screenshot")|![alt text](http://i.imgur.com/hlVn2fy.png "Screenshot")|
 
+ワープ修正  
+![alt text](http://i.imgur.com/uk58wen.png "Screenshot")
 
 ### [JP]
 
