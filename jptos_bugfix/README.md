@@ -2,7 +2,7 @@
 
 公式バグフィックス
 --
-|スモールクリスタラス表示修正|  |
+|スモールクリスタラス表示修正|念属性修正版|
 |---|---|
 |![alt text](http://i.imgur.com/Iyl9Yd6.png "Screenshot")|![alt text](http://i.imgur.com/hlVn2fy.png "Screenshot")|
 
