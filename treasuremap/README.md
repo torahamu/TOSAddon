@@ -27,23 +27,21 @@ treasuremap
 
 ### [EN]
 
-I'm sorry. It is a Google translation
+	■ What is this?
 
-	■ What this
-
-It is an add-on that displays the location of the treasure chest to the entire map on.  
-It does not appear on the mini-map, also do not know whether or not opened. In addition, usually it is not open, do not know even whether a treasure chest open on the quest.  
+An add-on that displays the locations of the treasure chests on the current map.
+Does not display on the mini-map, nor does it tell you whether the chest has already been obtained. It will also not tell you if the treasure chest is quest specific.
 
 (v1.0.4)  
-Show Number of treasure box, show the contents of the treasure box, and show hidden treasure box.  
-Hidden treasure box are displayed in [Search Skill Trigger], and are available in the Scout skill [Scan].  
+Show Number of treasure boxes, show the contents of the treasure box, and show hidden treasure boxes.  
+Hidden treasure box are displayed in [Search Skill Trigger], and are available through the Scout skill [Scan].  
 
-	■ How to use
+	■ Installation
 
 Addons are available on the [Addon Manager](https://github.com/Excrulon/Tree-of-Savior-Addon-Manager)
 
-	■ supplement
+	■ Notes
 
 The numbers behind the treasure box, represents the treasure chest level.  
-Example: Treasure Chest 4 → LV4 need is key to the treasure box  
-Treasure Chest 1 → key is not needed  
+Example: Treasure Chest 4 → A LV4 key is needed for the treasure box.  
+Treasure Chest 1 → A key is not needed.
