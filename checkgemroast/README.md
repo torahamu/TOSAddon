@@ -15,13 +15,11 @@ checkgemroast
 
 ### [EN]
 
-I'm sorry. It is a Google translation
+	■ What is this?
 
-	■ What this
+Attempting to equip a gem that is not roasted will display a warning window.
 
-When equiping a gem that is not roasting, show warning window.
+	■ Installation
 
-	■ How to use
-
-Addons are available on the [Addon Manager](https://github.com/Excrulon/Tree-of-Savior-Addon-Manager)
+Addons are available on the [Addon Manager](https://github.com/Excrulon/Tree-of-Savior-Addon-Manager).
 
