@@ -18,14 +18,12 @@ IDで爆発する敵や、矢のスタック数などが表示されるように
 
 ### [EN]
 
-I'm sorry. It is a Google translation
+	■ What is this?
 
-	■ What this
+An add-on that displays buff icon(s) that are not normally displayed on targeted enemies.
 
-An add-on that displays a buff icon that is not normally displayed for targeted enemies.
+Instance Dungeon enemies that explode, arrow stacks, etc. will be displayed.
 
-The enemies that explode with the ID, the stack number of arrows, etc. will be displayed.
-
-	■ How to use
+	■ Installation
 
 Addons are available on the [Addon Manager](https://github.com/Excrulon/Tree-of-Savior-Addon-Manager)
