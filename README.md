@@ -78,3 +78,13 @@ checkgemroast
 
 When equiping a gem that is not roasting, show warning window.
 
+
+hairenchantextend
+--
+![alt text](http://i.imgur.com/wPZyRQp.png "jp Screenshot")
+
+ヘアアクセのエンチャントオプション項目を、数値によって色を変えるアドオンです。  
+
+----
+
+An add-on that changes enchantment option color.  

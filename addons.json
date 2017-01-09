@@ -67,6 +67,20 @@
 			"gem",
 			"warning"
 		]
+	},
+	{
+		"name" : "Hair Enchant Extend",
+		"file" : "hairenchantextend",
+		"extension" : "ipf",
+		"fileVersion" : "v1.0.0",
+		"releaseTag" : "hairenchantextend",
+		"unicode" : "⛄",
+		"description" : "An add-on that changes enchantment option color.",
+		"tags" : [
+			"ui",
+			"hair",
+			"enchant"
+		]
 	}
 
 ]
