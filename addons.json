@@ -75,7 +75,7 @@
 		"fileVersion" : "v1.0.0",
 		"releaseTag" : "hairenchantextend",
 		"unicode" : "⛄",
-		"description" : "An add-on \n test \n that changes enchantment option color.",
+		"description" : "An add-on that changes enchantment option color.",
 		"tags" : [
 			"ui",
 			"hair",
