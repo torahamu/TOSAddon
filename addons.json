@@ -89,8 +89,7 @@
 		"fileVersion" : "v0.1.0",
 		"releaseTag" : "fksystemmsg",
 		"unicode" : "⛄",
-		"description" : "システムメッセージを全体のみに表示する。" + 
-"This add-on suppresses display of system messages only to the whole.",
+		"description" : "システムメッセージを全体のみに表示する。 \\\n This add-on suppresses display of system messages only to the whole.",
 		"tags" : [
 			"ui",
 			"hair",
