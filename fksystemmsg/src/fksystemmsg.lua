@@ -93,10 +93,11 @@ function DRAW_CHAT_MSG_MAIN(groupboxname, size, startindex, framename)
 				end
 			end
 			-- gbox内に表示がなければ、最初から表示しなおす
-			if ypos == 0 then
-				DRAW_CHAT_MSG(groupboxname, size, 0, framename);
-				return;
-			end
+			-- これいる？
+--			if ypos == 0 then
+--				DRAW_CHAT_MSG(groupboxname, size, 0, framename);
+--				return;
+--			end
 		end
 
 		local clusterinfo = session.ui.GetChatMsgClusterInfo(groupboxname, i)
@@ -117,6 +118,7 @@ function DRAW_CHAT_MSG_MAIN(groupboxname, size, startindex, framename)
 -- add code start
 -- システムメッセージが全体ボックスでない場合、表示を消す
 if ((msgType == "System" or msgType == "Notice") and groupboxname ~= "chatgbox_TOTAL") then
+	cluster:SetOffset( 0 , ypos);
 	cluster:Resize( 0 , 0);
 	cluster:ShowWindow(0);
 else
@@ -168,6 +170,7 @@ end
 -- add code start
 -- システムメッセージが全体ボックスでない場合、表示を消す
 if ((msgType == "System" or msgType == "Notice") and groupboxname ~= "chatgbox_TOTAL") then
+	chatCtrl:SetOffset( 0 , ypos);
 	chatCtrl:Resize( 0 , 0);
 	chatCtrl:ShowWindow(0);
 else				
@@ -235,6 +238,7 @@ end
 -- add code start
 -- システムメッセージが全体ボックスでない場合、表示を消す
 if ((msgType == "System" or msgType == "Notice") and groupboxname ~= "chatgbox_TOTAL") then
+	chatCtrl:SetOffset( 0 , ypos);
 	chatCtrl:Resize( 0 , 0);
 	chatCtrl:ShowWindow(0);
 else				
