@@ -6,7 +6,7 @@
 		"fileVersion" : "v1.0.4",
 		"releaseTag" : "treasuremap",
 		"unicode" : "⛄",
-		"description" : "An add-on that shows treasure chests on the map.",
+		"description" : "An add-on that shows treasure chests on the map.  マップ上に宝の場所を表示する。",
 		"tags" : [
 			"ui",
 			"map",
@@ -33,7 +33,7 @@
 		"fileVersion" : "v1.0.7",
 		"releaseTag" : "marketshowlevel",
 		"unicode" : "⛄",
-		"description" : "MarketShowLevel For Japan Version.",
+		"description" : "MarketShowLevel For Japan Version.  マーケットのジェムやカードのレベル表示,ヘアアクセの能力表示,スキル呪文書のスキル表示をする。",
 		"tags" : [
 			"ui",
 			"market",
@@ -47,7 +47,7 @@
 		"fileVersion" : "v1.0.0",
 		"releaseTag" : "showhidebuff",
 		"unicode" : "⛄",
-		"description" : "An add-on that displays a buff icon that is not normally displayed for targeted enemies.",
+		"description" : "An add-on that displays a buff icon that is not normally displayed for targeted enemies.  隠しバフを表示する。",
 		"tags" : [
 			"ui",
 			"icon",
@@ -61,7 +61,7 @@
 		"fileVersion" : "v1.0.0",
 		"releaseTag" : "checkgemroast",
 		"unicode" : "⛄",
-		"description" : "When equiping a gem that is not roasting, show warning window.",
+		"description" : "When equiping a gem that is not roasting, show warning window.  ジェムを炒めてない時に装着しようとすると警告ウィンドウを表示する。",
 		"tags" : [
 			"ui",
 			"gem",
@@ -75,7 +75,7 @@
 		"fileVersion" : "v1.0.1",
 		"releaseTag" : "hairenchantextend",
 		"unicode" : "⛄",
-		"description" : "An add-on that changes enchantment option color.",
+		"description" : "An add-on that changes enchantment option color.  魔法付与スクロール使用時やヘアアクセの装備確認時もオプションの値によって色を変更する。",
 		"tags" : [
 			"ui",
 			"hair",
@@ -89,7 +89,7 @@
 		"fileVersion" : "v0.1.0",
 		"releaseTag" : "fksystemmsg",
 		"unicode" : "⛄",
-		"description" : "システムメッセージを全体のみに表示する。This add-on suppresses display of system messages only to the whole.",
+		"description" : "This add-on suppresses display of system messages only to the whole.  システムメッセージを全体のみに表示する。",
 		"tags" : [
 			"ui",
 			"hair",
