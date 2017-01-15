@@ -1,4 +1,4 @@
-CHAT_SYSTEM("MARKET SHOW LEVEL JP v1.0.6 loaded!");
+CHAT_SYSTEM("MARKET SHOW LEVEL JP v1.0.7 loaded!");
 
 -- Equip Jem And Hat prop align
 local propAlign = "left";
@@ -21,7 +21,7 @@ local propList = {};
 propList.MHP           = {name = "ＨＰ";max = 2283;};
 propList.RHP           = {name = "HP回";max = 56;};
 propList.MSP           = {name = "ＳＰ";max = 450;};
-propList.RSP           = {name = "SP回";max = 56;};
+propList.RSP           = {name = "SP回";max = 42;};
 propList.PATK          = {name = "物攻";max = 126;};
 propList.ADD_MATK      = {name = "魔攻";max = 126;};
 propList.ADD_DEF       = {name = "物防";max = 110;};

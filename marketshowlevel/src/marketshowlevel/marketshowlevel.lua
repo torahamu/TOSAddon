@@ -1,4 +1,4 @@
-CHAT_SYSTEM("MARKET SHOW LEVEL v1.0.6 loaded!");
+CHAT_SYSTEM("MARKET SHOW LEVEL v1.0.7 loaded!");
 
 -- Equip Jem And Hat prop align
 local propAlign = "center";
@@ -21,7 +21,7 @@ local propList = {};
 propList.MHP           = {name =  "Max HP"  ;max = 2283;};
 propList.RHP           = {name =  "HP Rec"  ;max = 56;};
 propList.MSP           = {name =  "Max SP"  ;max = 450;};
-propList.RSP           = {name =  "SP Rec"  ;max = 56;};
+propList.RSP           = {name =  "SP Rec"  ;max = 42;};
 propList.PATK          = {name =  "PhysAtk" ;max = 126;};
 propList.ADD_MATK      = {name =  "Mag Atk" ;max = 126;};
 propList.ADD_DEF       = {name =  "PhysDef" ;max = 110;};

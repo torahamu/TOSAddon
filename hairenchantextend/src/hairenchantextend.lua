@@ -37,7 +37,7 @@ local propList = {};
 propList.MHP           = {max = 2283;};
 propList.RHP           = {max = 56;};
 propList.MSP           = {max = 450;};
-propList.RSP           = {max = 56;};
+propList.RSP           = {max = 42;};
 propList.PATK          = {max = 126;};
 propList.ADD_MATK      = {max = 126;};
 propList.ADD_DEF       = {max = 110;};
