@@ -6,7 +6,7 @@
 		"fileVersion" : "v1.0.4",
 		"releaseTag" : "treasuremap",
 		"unicode" : "⛄",
-		"description" : "An add-on that shows treasure chests on the map. <br> \n マップ上に宝の場所を表示する。",
+		"description" : "An add-on that shows treasure chests on the map.  マップ上に宝の場所を表示する。",
 		"tags" : [
 			"ui",
 			"map",
