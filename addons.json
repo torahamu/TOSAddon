@@ -81,6 +81,21 @@
 			"hair",
 			"enchant"
 		]
+	},
+	{
+		"name" : "F**k System Message",
+		"file" : "fksystemmsg",
+		"extension" : "ipf",
+		"fileVersion" : "v0.1.0",
+		"releaseTag" : "fksystemmsg",
+		"unicode" : "⛄",
+		"description" : "システムメッセージを全体のみに表示する。
+This add-on suppresses display of system messages only to the whole.",
+		"tags" : [
+			"ui",
+			"hair",
+			"enchant"
+		]
 	}
 
 ]
