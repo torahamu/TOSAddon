@@ -86,7 +86,7 @@
 		"name" : "F**k System Message",
 		"file" : "fksystemmsg",
 		"extension" : "ipf",
-		"fileVersion" : "v0.1.0",
+		"fileVersion" : "v0.1.1",
 		"releaseTag" : "fksystemmsg",
 		"unicode" : "⛄",
 		"description" : "This add-on suppresses display of system messages only to the whole.  システムメッセージを全体のみに表示する。",
