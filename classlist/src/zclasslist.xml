@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<uiframe name="zclasslist" x="0" y="0" width="800" height="800">
+	<frame fullheight="false" title="{@st43}classlist{/}" titlepos="0 -3" snapclient="true" snapframe="true" layout_gravity="left center" margin="0 0 0 0"/>
+	<input hittest="true" movable="true" moveintitlebar="false" hittestframe="true"/>
+    <option closebuttonpos="0 0" hideable="true"/>
+	<script OpenScp="OPEN_CLASSLIST" CloseScp="CLOSE_CLASSLIST"/>
+	<sound opensound="sys_popup_open_1" closesound="character_item_window_close"/>
+	<layer layerlevel="99"/>
+	<controls>
+		<tab name="ClassListTab" rect="0 0 800 40" margin="40 0 0 0" layout_gravity="left top" LBtnDownScp="CLASSLIST_TAB_CHANGE" fixwidth="false"/>
+		<tabitem name="ItemListTab" parent="classlisttab" crect="5 100 235 30" layout_gravity="left top" caption="@dicID_^*$UI_20150414_001483$*^" control="none"/>
+		<tabitem name="MonsterListTab" parent="classlisttab" crect="5 100 235 30" layout_gravity="left top" caption="@dicID_^*$UI_20150414_001484$*^" control="none"/>
+		<groupbox name="ItemList" rect="0 0 760 560" margin="0 40 0 0" layout_gravity="left top" draw="true" hittestbox="false" resizebyparent="false" resizebyresolution="false" scrollbar="true" skin="None"/>
+		<tree name="ItemTree" parent="ItemList" rect="0 0 700 560" margin="40 0 0 0" layout_gravity="left top" drawline="false" enableResizing="false"/>
+		<edit name="ItemSearch" rect="0 0 500 50" margin="30 50 0 0" layout_gravity="left bottom" EnterKeyScp="SEARCH_ITEM_CLASSLIST" fontname="white_24_ol" maxlen="30" textalign="left top"/>
+		<button name="ExecItemSearch" rect="0 0 150 50" margin="30 50 0 0" layout_gravity="right bottom" LBtnUpScp="SEARCH_ITEM_CLASSLIST" caption="@dicID_^*$UI_20150317_000124$*^" clicksound="button_click" oversound="button_over"/>
+		<groupbox name="MonsterList" rect="0 0 760 560" margin="0 40 0 0" layout_gravity="left top" draw="true" hittestbox="false" resizebyparent="false" resizebyresolution="false" scrollbar="true" skin="None"/>
+		<tree name="MonsterTree" parent="MonsterList" rect="0 0 700 560" margin="40 0 0 0" layout_gravity="left top" drawline="false" enableResizing="false"/>
+		<edit name="MonSearch" rect="0 0 500 50" margin="30 50 0 0" layout_gravity="left bottom" EnterKeyScp="SEARCH_MON_CLASSLIST" fontname="white_24_ol" maxlen="30" textalign="left top"/>
+		<button name="ExecMonSearch" rect="0 0 150 50" margin="30 50 0 0" layout_gravity="right bottom" LBtnUpScp="SEARCH_MON_CLASSLIST" caption="@dicID_^*$UI_20150317_000124$*^" clicksound="button_click" oversound="button_over"/>
+	</controls>
+</uiframe>
