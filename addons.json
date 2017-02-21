@@ -95,6 +95,21 @@
 			"hair",
 			"enchant"
 		]
+	},
+	{
+		"name" : "japari",
+		"file" : "japari",
+		"extension" : "ipf",
+		"fileVersion" : "v1.0.0",
+		"releaseTag" : "japari",
+		"unicode" : "⛄",
+		"description" : "Sorry, this addon is japanese only.  言葉が横から流れてくるよ！使い方はgithubを見てね！わーい！",
+		"tags" : [
+			"japanese",
+			"わーい！",
+			"すごーい！",
+			"たーのしー！"
+		]
 	}
 
 ]
