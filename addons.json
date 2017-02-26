@@ -110,6 +110,19 @@
 			"すごーい！",
 			"たーのしー！"
 		]
+	},
+	{
+		"name" : "chatextends",
+		"file" : "chatextends",
+		"extension" : "ipf",
+		"fileVersion" : "v1.0.0",
+		"releaseTag" : "chatextends",
+		"unicode" : "⛄",
+		"description" : "Modify chat.Please look at github for details.  チャットを色々改造します。詳細はGithubやReadmeを見てください。",
+		"tags" : [
+			"ui",
+			"chat"
+		]
 	}
 
 ]

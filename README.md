@@ -99,3 +99,26 @@ fksystemmsg
 ----
 
 This add-on suppresses display of system messages only to the whole.  
+
+
+japari
+--
+![alt text](http://i.imgur.com/mfwfTfd.jpg "jp Screenshot")
+
+画像みたいに文字が流れてくるよ！すごーい！  
+
+----
+
+Sorry, this addon is Japanese Only.  
+This addon will only flow the words of KEMONO Friend's.  
+
+
+chatextends
+--
+![alt text](http://i.imgur.com/wncq1pU.jpg "jp Screenshot")
+
+チャットを色々改造します。  
+
+----
+
+Modify chat.  

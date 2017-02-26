@@ -11,9 +11,9 @@ japari
 /japari [数字]:[数字]の個数分文字が流れてくるよ！1000個流してみたら止まったよ！すごーい！  
 /japari auto:自動でずっとしゃべり続けるよ！  
 
-/tos:？？？
-/tos 数字:？？？
-/tos auto:？？？
+/tos:？？？  
+/tos 数字:？？？  
+/tos auto:？？？  
 
 	■使い方
 
@@ -35,9 +35,9 @@ https://en.wikipedia.org/wiki/Kemono_Friends
 /japari [number]:A word flows [number].  
 /japari auto:A word flows auto.  
 
-/tos:？？？
-/tos 数字:？？？
-/tos auto:？？？
+/tos:？？？  
+/tos 数字:？？？  
+/tos auto:？？？  
 
 
 	■ Installation
