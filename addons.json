@@ -115,10 +115,10 @@
 		"name" : "chatextends",
 		"file" : "chatextends",
 		"extension" : "ipf",
-		"fileVersion" : "v1.0.1",
+		"fileVersion" : "v1.0.2",
 		"releaseTag" : "chatextends",
 		"unicode" : "⛄",
-		"description" : "Modify chat.Please look at github for details.[v1.0.1 bugfix Display of Wis.Chat overlaps.]  チャットを色々改造します。詳細はGithubやReadmeを見てください。[v1.0.1 バグフィックス ささやき表示.チャットが重なる.]",
+		"description" : "Modify chat.Please look at github for details.[v1.0.2 bugfix Display of Wis.Chat overlaps.]  チャットを色々改造します。詳細はGithubやReadmeを見てください。[v1.0.2 バグフィックス ささやき表示.チャットが重なる.]",
 		"tags" : [
 			"ui",
 			"chat"

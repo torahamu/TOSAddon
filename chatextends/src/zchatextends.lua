@@ -632,8 +632,8 @@ end
 -- チャット表示フラグ取得
 --************************************************
 function CHATEXTENDS_GET_CLUSTER_DISPLAY_FLG(cluster)
-	-- 全体ボタン押下時かwisボタン押下時は問答無用でtrue
-	if (g.CHATEXTENDS_TOTAL_FLG) or (g.CHATEXTENDS_WHISPER_FLG) then
+	-- 全体フレームは問答無用でtrue
+	if g.CHATEXTENDS_TOTAL_FLG then
 		return true;
 	end
 	-- メッセージタイプ
@@ -657,9 +657,12 @@ function CHATEXTENDS_GET_CLUSTER_DISPLAY_FLG(cluster)
 		end
 	end
 	-- msgTypeがどれでもない=ささやき
-	-- ささやきは、全体フレームかささやきフレームしか表示しない(この関数一番上で処理してる)
-	-- のため、どれでもない時は必然的にfalse
-	return false;
+	-- 一応フラグ見る
+	if g.CHATEXTENDS_WHISPER_FLG then
+		return true;
+	else
+		return false;
+	end
 end
 
 --************************************************
