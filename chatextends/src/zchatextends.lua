@@ -36,10 +36,6 @@ end
 --ライブラリ読み込み
 local acutil = require('acutil');
 
--- チャットマージン共通
-local marginLeft = 0;
-local marginRight = 25;
-
 -- 開始インデックス チャット削除したら変更
 g.CHATEXTENDS_BASE_INDEX = 0;
 
@@ -386,7 +382,7 @@ end
 --************************************************
 -- チャットフレーム内のフレーム初期化
 --************************************************
-function GBOX_INITIALIZE(chatframe,groupbox,groupboxname)
+function CHATEXTENDS_GBOX_INITIALIZE(chatframe,groupbox,groupboxname)
 	if groupbox == nil then
 
 		local gboxleftmargin = chatframe:GetUserConfig("GBOX_LEFT_MARGIN")
@@ -426,19 +422,22 @@ end
 -- 　　　　全体や一般やパーティーなどの切り替えだけでは出さない(false)
 --************************************************
 function CHATEXTENDS_MAIN(groupboxname, endindex, startindex, framename, nicoflg, recflg)
+
 	-- 全体フレームの発言以外終了
-	if (groupboxname ~= "chatgbox_TOTAL") then
+	if (groupboxname == "chatgbox_1") or (groupboxname == "chatgbox_2") or (groupboxname == "chatgbox_3") or (groupboxname == "chatgbox_4")
+	 or (groupboxname == "chatgbox_5") or (groupboxname == "chatgbox_6") or (groupboxname == "chatgbox_7") or (groupboxname == "chatgbox_8")
+	  or (groupboxname == "chatgbox_9") or (groupboxname == "chatgbox_10") or (groupboxname == "chatgbox_11") or (groupboxname == "chatgbox_12")
+	   or (groupboxname == "chatgbox_13") or (groupboxname == "chatgbox_14") or (groupboxname == "chatgbox_15") then
 		return;
 	end
 	-- 開始indexがおかしかったら0から表示
 	if startindex < 0 then
 		startindex = 0
 	end
-
 	-- フレーム初期化
 	local chatframe = ui.GetFrame(framename)
 	local groupbox = GET_CHILD(chatframe,groupboxname);
-	GBOX_INITIALIZE(chatframe,groupbox,groupboxname);
+	CHATEXTENDS_GBOX_INITIALIZE(chatframe,groupbox,groupboxname);
 
 	-- 開始indexが0と一緒なら、既に表示されているチャットを全て削除
 	if startindex == 0 then
@@ -470,7 +469,7 @@ function CHATEXTENDS_DRAW_CHAT(chatframe, groupboxname, groupbox, index, nicoflg
 	end
 
 	-- 発言フレームのY座標
-	local ypos = GET_YPOS(groupboxname, groupbox, index);
+	local ypos = CHATEXTENDS_GET_YPOS(groupboxname, groupbox, index);
 
 	-- clusterinfoがチャット発言内容などが詰まってる
 	local clusterinfo = session.ui.GetChatMsgClusterInfo(groupboxname, index)
@@ -478,29 +477,30 @@ function CHATEXTENDS_DRAW_CHAT(chatframe, groupboxname, groupbox, index, nicoflg
 		return;
 	end
 	-- チャット内容のフレーム取得
-	local cluster = GET_CLUSTER(chatframe,groupbox,clusterinfo,ypos);
+	local cluster = CHATEXTENDS_GET_CLUSTER(chatframe,groupbox,clusterinfo,ypos);
 
 	-- チャット表示
-	DRAW_CHAT(chatframe,clusterinfo,cluster, nicoflg, recflg);
+	CHATEXTENDS_DRAW_CHAT_FRAME(chatframe,clusterinfo,cluster, nicoflg, recflg);
 
 	-- サイズ調整
-	CHATEXTENDS_RESIZE_CHAT_CTRL(chatframe, cluster, index);
+	CHATEXTENDS_RESIZE_CHAT_CTRL(chatframe, cluster, groupboxname, groupbox, index);
 
 end
 
 --************************************************
 -- チャット発言表示
 --************************************************
-function DRAW_CHAT(chatframe, clusterinfo, cluster, nicoflg, recflg)
+function CHATEXTENDS_DRAW_CHAT_FRAME(chatframe, clusterinfo, cluster, nicoflg, recflg)
+
 	-- チャット表示方法（吹き出しか簡易か）
 	local textVer = IS_TEXT_VER_CHAT();
 	-- メッセージタイプ
 	local msgType = clusterinfo:GetMsgType();
 
-	local fontStyle, msgFront = GET_CHATEXTENDS_PROP(chatframe,clusterinfo,cluster);
+	local fontStyle, msgFront = CHATEXTENDS_GET_CHATEXTENDS_PROP(clusterinfo,cluster);
 	local fontSize = GET_CHAT_FONT_SIZE();
 	local tempfontSize = string.format("{s%s}", fontSize);
-	local label,txt = GET_LABEL_TXT(cluster);
+	local label,txt = CHATEXTENDS_GET_LABEL_TXT(cluster);
 	txt:SetTextByKey("font", fontStyle);
 	txt:SetTextByKey("size", fontSize);
 	-- 発言内容
@@ -524,18 +524,18 @@ function DRAW_CHAT(chatframe, clusterinfo, cluster, nicoflg, recflg)
 			end
 			local msgStingAdd = ' ';
 			if msgType == "friendmem" or  msgType == "guildmem" then
-				msgStingAdd = string.format("{%s}%s{nl}",msgFront, tempMsg);		
+				msgStingAdd = string.format("{%s}%s{nl}",msgFront, tempMsg);
 			else
-				msgStingAdd = string.format("%s : %s{nl}", msgFront, tempMsg);		
-			end																									
+				msgStingAdd = string.format("%s : %s{nl}", msgFront, tempMsg);
+			end
 			msgString = msgString .. msgStingAdd;
 		end;	
 		msgString = string.format("%s{/}", CHAT_TEXT_LINKCHAR_FONTSET(chatframe, msgString));
 		txt:SetTextByKey("text", msgString);
 	end
 
-	-- 発言はニコニコ風に出していい、かつ設定のニコフラグがON、かつシステムメッセージではない
-	if (nicoflg) and (g.settings.NICO_CHAT_FLG) and (msgType ~= "Notice") and (msgType ~= "System") then
+	-- 発言はニコニコ風に出していい、かつ設定のニコフラグがON、かつシステムメッセージではない、かつささやき窓ではない
+	if (nicoflg) and (g.settings.NICO_CHAT_FLG) and (msgType ~= "Notice") and (msgType ~= "System") and (msgType ~= clusterinfo:GetRoomID()) then
 		-- チャット発言者
 		local commnderName = clusterinfo:GetCommanderName();
 		-- 内容
@@ -575,7 +575,7 @@ end
 --************************************************
 -- サイズ調整
 --************************************************
-function CHATEXTENDS_RESIZE_CHAT_CTRL(chatframe, cluster, index)
+function CHATEXTENDS_RESIZE_CHAT_CTRL(chatframe, cluster, groupboxname, groupbox, index)
 
 	if index < g.CHATEXTENDS_BASE_INDEX then
 		cluster:Resize( cluster:GetWidth() , 0);
@@ -583,16 +583,25 @@ function CHATEXTENDS_RESIZE_CHAT_CTRL(chatframe, cluster, index)
 		return;
 	end
 
-	if GET_CLUSTER_DISPLAY_FLG(cluster) then
+	if CHATEXTENDS_GET_CLUSTER_DISPLAY_FLG(cluster) then
 		local textVer = IS_TEXT_VER_CHAT();
-		local label,txt = GET_LABEL_TXT(cluster);
+		local label,txt = CHATEXTENDS_GET_LABEL_TXT(cluster);
 		txt:SetTextFixWidth(0);
 		txt:SetTextFixHeight(false);
+
+		-- 発言フレームのY座標
+		local ypos = CHATEXTENDS_GET_YPOS(groupboxname, groupbox, index);
+
 		if textVer == 0  then
 			local lablWidth = txt:GetWidth() + 40;
 			local chatWidth = cluster:GetWidth();
 			label:Resize(lablWidth, txt:GetHeight() + 20);
 			cluster:Resize(chatWidth, label:GetY() + label:GetHeight() + 10);
+			if cluster:GetX() == 0 then
+				cluster:SetPos(0, ypos);
+			else
+				cluster:SetPos(33, ypos);
+			end
 
 			local offsetX = label:GetX() + txt:GetWidth() - 60;
 			if 35 > offsetX then
@@ -606,7 +615,8 @@ function CHATEXTENDS_RESIZE_CHAT_CTRL(chatframe, cluster, index)
 			local offsetX = chatframe:GetUserConfig("CTRLSET_OFFSETX");
 			label:Resize(chatWidth - offsetX, txt:GetHeight());
 			cluster:Resize(chatWidth, label:GetHeight());
-			cluster:SetOffset(0, cluster:GetY()-2);
+--			cluster:SetOffset(0, cluster:GetY()-2);
+			cluster:SetPos(cluster:GetX(), ypos-2);
 
 			local timeCtrl = GET_CHILD(cluster, "time", "ui::CRichText");
 			timeCtrl:SetOffset(label:GetWidth() - 60, 2);
@@ -621,13 +631,13 @@ end
 --************************************************
 -- チャット表示フラグ取得
 --************************************************
-function GET_CLUSTER_DISPLAY_FLG(cluster)
-	if g.CHATEXTENDS_TOTAL_FLG then
+function CHATEXTENDS_GET_CLUSTER_DISPLAY_FLG(cluster)
+	-- 全体ボタン押下時かwisボタン押下時は問答無用でtrue
+	if (g.CHATEXTENDS_TOTAL_FLG) or (g.CHATEXTENDS_WHISPER_FLG) then
 		return true;
 	end
 	-- メッセージタイプ
 	local msgType = cluster:GetUserValue("MSG_TYPE");
-	
 	if (msgType == "friendmem") or (msgType == "guildmem") then
 		return true;
 	elseif (msgType == "Normal") and g.CHATEXTENDS_GENERAL_FLG then
@@ -646,20 +656,25 @@ function GET_CLUSTER_DISPLAY_FLG(cluster)
 			return true;
 		end
 	end
+	-- msgTypeがどれでもない=ささやき
+	-- ささやきは、全体フレームかささやきフレームしか表示しない(この関数一番上で処理してる)
+	-- のため、どれでもない時は必然的にfalse
 	return false;
 end
 
 --************************************************
 -- チャット設定
 --************************************************
-function GET_CHATEXTENDS_PROP(chatframe,clusterinfo,cluster)
+function CHATEXTENDS_GET_CHATEXTENDS_PROP(clusterinfo,cluster)
+	-- チャットフレーム
+	-- メインでもポップアップでもこのフレームの値を使うため、引数とかじゃなくてここで明示的に取得
+	local chatframe = ui.GetFrame("chatframe");
 	-- チャット表示方法（吹き出しか簡易か）
 	local textVer = IS_TEXT_VER_CHAT();
 	-- チャット発言者
 	local commnderName = clusterinfo:GetCommanderName();
 	-- メッセージタイプ
 	local msgType = clusterinfo:GetMsgType();
-
 	-- 戻り値
 	local fontStyle = "";
 	local msgFront = "";
@@ -709,12 +724,16 @@ end
 --************************************************
 -- クラスター取得
 --************************************************
-function GET_CLUSTER(chatframe,groupbox,clusterinfo,ypos)
+function CHATEXTENDS_GET_CLUSTER(chatframe,groupbox,clusterinfo,ypos)
 	-- チャット表示方法（吹き出しか簡易か）
 	local textVer = IS_TEXT_VER_CHAT();
 	-- チャット発言内容フレーム名
 	local clustername = "cluster_"..clusterinfo:GetClusterID();
 	local cluster = nil;
+	-- チャットマージン共通
+	local marginLeft = 0;
+	local marginRight = 25;
+
 	-- 吹き出し表示なら同一時間の同一発言者のクラスター名が一致するので、あればそれ返す
 	if textVer == 0 then
 		cluster = GET_CHILD(groupbox, clustername);
@@ -737,9 +756,9 @@ function GET_CLUSTER(chatframe,groupbox,clusterinfo,ypos)
 	cluster = groupbox:CreateOrGetControlSet(chatCtrlName, clustername, horzGravity, ui.TOP, marginLeft, ypos , marginRight, 0);
 	cluster:EnableHitTest(1);
 	-- メッセージによるフラグ設定
-	SET_CLUSTER_FLG(clusterinfo,cluster);
+	CHATEXTENDS_SET_CLUSTER_FLG(clusterinfo,cluster);
 	if textVer == 0 then
-		SET_CLUSTER_INFRAME_BALLON(clusterinfo,cluster)
+		CHATEXTENDS_SET_CLUSTER_INFRAME_BALLON(clusterinfo,cluster)
 		-- 場所
 		if cluster:GetHorzGravity() == ui.RIGHT then
 			cluster:SetOffset( marginRight , cluster:GetY());
@@ -748,7 +767,7 @@ function GET_CLUSTER(chatframe,groupbox,clusterinfo,ypos)
 		end
 
 	else
-		SET_CLUSTER_INFRAME_SIMPLE(chatframe,clusterinfo,cluster)
+		CHATEXTENDS_SET_CLUSTER_INFRAME_SIMPLE(chatframe,clusterinfo,cluster)
 	end
 	return cluster
 end
@@ -757,7 +776,7 @@ end
 -- クラスター内部のフレームのフラグ設定
 -- 表示処理に使用
 --************************************************
-function SET_CLUSTER_FLG(clusterinfo,cluster)
+function CHATEXTENDS_SET_CLUSTER_FLG(clusterinfo,cluster)
 	-- メッセージタイプ
 	local msgType = clusterinfo:GetMsgType();
 	cluster:SetUserValue("MSG_TYPE", msgType);
@@ -766,11 +785,11 @@ end
 --************************************************
 -- クラスター内部のフレーム設定　吹き出し
 --************************************************
-function SET_CLUSTER_INFRAME_BALLON(clusterinfo,cluster)
+function CHATEXTENDS_SET_CLUSTER_INFRAME_BALLON(clusterinfo,cluster)
 	-- メッセージタイプ
 	local msgType = clusterinfo:GetMsgType();
 
-	local label,txt = GET_LABEL_TXT(cluster);
+	local label,txt = CHATEXTENDS_GET_LABEL_TXT(cluster);
 	local myColor, targetColor = GET_CHAT_COLOR(msgType);
 	if true == ui.IsMyChatCluster(clusterinfo) then
 		label:SetSkinName('textballoon_i');
@@ -804,9 +823,9 @@ end
 --************************************************
 -- クラスター内部のフレーム設定　簡易
 --************************************************
-function SET_CLUSTER_INFRAME_SIMPLE(chatframe,clusterinfo,cluster)
+function CHATEXTENDS_SET_CLUSTER_INFRAME_SIMPLE(chatframe,clusterinfo,cluster)
 
-	local label,txt = GET_LABEL_TXT(cluster);
+	local label,txt = CHATEXTENDS_GET_LABEL_TXT(cluster);
 	local timeCtrl = GET_CHILD(cluster, "time", "ui::CRichText");
 	timeCtrl:SetTextByKey("time", clusterinfo:GetTimeStr());
 	timeCtrl:SetOffset(10, 10);
@@ -842,7 +861,7 @@ end
 -- クラスターのラベルオブジェクトとテキストオブジェクト取得
 -- 吹き出しと簡易でテキストオブジェクトの取得元のフレームが異なる
 --************************************************
-function GET_LABEL_TXT(cluster)
+function CHATEXTENDS_GET_LABEL_TXT(cluster)
 	-- チャット表示方法（吹き出しか簡易か）
 	local textVer = IS_TEXT_VER_CHAT();
 	local label = nil;
@@ -860,7 +879,7 @@ end
 --************************************************
 -- 新しいクラスターを作成するY座標を取得する
 --************************************************
-function GET_YPOS(groupboxname, groupbox, index)
+function CHATEXTENDS_GET_YPOS(groupboxname, groupbox, index)
 	local ypos = 0;
 	if index ~= 0 then
 		local clusterinfo = session.ui.GetChatMsgClusterInfo(groupboxname, index-1)
@@ -929,8 +948,10 @@ function CHATEXTENDS_SAVE_CHAT()
 	local msgbody="";
 	for i = 0 , cnt - 2 do
 		clusterinfo = session.ui.GetChatMsgClusterInfo(groupboxname, i);
-		msgbody=clusterinfo:GetMsg();
-		file:write(CHATEXTENDS_GET_MSGBODY(clusterinfo,msgbody));
+		for j = 1 , clusterinfo:GetMsgItemCount() do
+			msgbody = clusterinfo:GetMsgItembyIndex(j-1);
+			file:write(CHATEXTENDS_GET_MSGBODY(clusterinfo,msgbody));
+		end
 	end
 	file:close();
 	if option.GetCurrentCountry()=="Japanese" then
@@ -991,6 +1012,8 @@ function CHATEXTENDS_GET_MSGTYPE_TXT(msgType)
 			return "[お知らせ　]";
 		elseif msgType == "System" then
 			return "[システム　]";
+		else
+			return "[ささやき　]";
 		end
 	else
 		return "["..msgType.."]";
