@@ -135,9 +135,6 @@ function ZCHATEXTENDS_ON_INIT(addon, frame)
 			CHAT_SET_TO_TITLENAME = CHATEXTENDS_CHAT_CHAT_SET_TO_TITLENAME;
 		end
 
-		--イベント登録
-		acutil.setupEvent(addon, "DRAW_CHAT_MSG", "CHATEXTENDS_DRAW_CHAT_MSG_POPUP_EVENT")
-
 		--コマンド登録
 		acutil.slashCommand("/deletechat", CHATEXTENDS_DELETE_CHAT);
 		acutil.slashCommand("/savechat", CHATEXTENDS_SAVE_CHAT);
@@ -167,6 +164,10 @@ function ZCHATEXTENDS_ON_INIT(addon, frame)
 		-- 必要フォルダ作る
 		CHATEXTENDS_CREATE_DIR(g.saveChatDir);
 	end
+
+	--イベント登録
+	acutil.setupEvent(addon, "DRAW_CHAT_MSG", "CHATEXTENDS_DRAW_CHAT_MSG_POPUP_EVENT")
+	acutil.setupEvent(addon, "REDRAW_CHAT_MSG", "CHATEXTENDS_REDRAW_CHAT_MSG_POPUP_EVENT")
 
 	-- フレーム制御はマップ移動毎に行う
 
@@ -367,34 +368,21 @@ function CHATEXTENDS_REDRAW_CHAT_MSG_MAIN(groupboxname, size, roomId)
 		CREATE_DEF_CHAT_GROUPBOX(chatframe);
 	end;
 
-	if roomId ~= nil then
-		framename = "chatpopup_" .. roomId;
-		local chatpopup_frame = ui.GetFrame(framename);
-		if chatpopup_frame ~= nil then
-			CREATE_DEF_CHAT_GROUPBOX(chatpopup_frame);
-		else
-			return
-		end
-	end
 	CHATEXTENDS_MAIN(groupboxname, size, 0, framename, false, false);
 end
 
---************************************************
--- チャットフレーム内のフレーム初期化
---************************************************
-function CHATEXTENDS_GBOX_INITIALIZE(chatframe,groupbox,groupboxname)
-	if groupbox == nil then
-
-		local gboxleftmargin = chatframe:GetUserConfig("GBOX_LEFT_MARGIN")
-		local gboxrightmargin = chatframe:GetUserConfig("GBOX_RIGHT_MARGIN")
-		local gboxtopmargin = chatframe:GetUserConfig("GBOX_TOP_MARGIN")
-		local gboxbottommargin = chatframe:GetUserConfig("GBOX_BOTTOM_MARGIN")
-
-		groupbox = chatframe:CreateControl("groupbox", groupboxname, chatframe:GetWidth() - (gboxleftmargin + gboxrightmargin), 
-										chatframe:GetHeight() - (gboxtopmargin + gboxbottommargin), ui.RIGHT, ui.BOTTOM, 0, 0, gboxrightmargin, gboxbottommargin);
-		-- addon.ipf/chatframe/chatframe.lua function
-		_ADD_GBOX_OPTION_FOR_CHATFRAME(groupbox)
-
+-- チャット再表示処理(ささやきなどのポップアップウィンドウ)のイベント
+function CHATEXTENDS_REDRAW_CHAT_MSG_POPUP_EVENT(frame, msg, argStr, argNum)
+	local groupboxname, size, roomId = acutil.getEventArgs(msg);
+	if roomId ~= nil then
+		local framename = "chatpopup_" .. roomId;
+		local chatpopup_frame = ui.GetFrame(framename);
+		if chatpopup_frame ~= nil then
+			CREATE_DEF_CHAT_GROUPBOX(chatpopup_frame);
+			CHATEXTENDS_MAIN(groupboxname, size, 0, framename, false, false);
+		else
+			return
+		end
 	end
 end
 
@@ -437,7 +425,16 @@ function CHATEXTENDS_MAIN(groupboxname, endindex, startindex, framename, nicoflg
 	-- フレーム初期化
 	local chatframe = ui.GetFrame(framename)
 	local groupbox = GET_CHILD(chatframe,groupboxname);
-	CHATEXTENDS_GBOX_INITIALIZE(chatframe,groupbox,groupboxname);
+	if groupbox == nil then
+		local gboxleftmargin = chatframe:GetUserConfig("GBOX_LEFT_MARGIN")
+		local gboxrightmargin = chatframe:GetUserConfig("GBOX_RIGHT_MARGIN")
+		local gboxtopmargin = chatframe:GetUserConfig("GBOX_TOP_MARGIN")
+		local gboxbottommargin = chatframe:GetUserConfig("GBOX_BOTTOM_MARGIN")
+		groupbox = chatframe:CreateControl("groupbox", groupboxname, chatframe:GetWidth() - (gboxleftmargin + gboxrightmargin), 
+										chatframe:GetHeight() - (gboxtopmargin + gboxbottommargin), ui.RIGHT, ui.BOTTOM, 0, 0, gboxrightmargin, gboxbottommargin);
+		-- addon.ipf/chatframe/chatframe.lua function
+		_ADD_GBOX_OPTION_FOR_CHATFRAME(groupbox)
+	end
 
 	-- 開始indexが0と一緒なら、既に表示されているチャットを全て削除
 	if startindex == 0 then
@@ -544,8 +541,8 @@ function CHATEXTENDS_DRAW_CHAT_FRAME(chatframe, clusterinfo, cluster, nicoflg, r
 		NICO_CHAT(string.format("[%s] : %s", commnderName, tempMsg));
 	end
 
-	-- 発言は録画していい、かつ設定の録画フラグがON、かつシステムメッセージではない
-	if (recflg) and (g.settings.REC_CHAT_FLG) and (msgType ~= "Notice") and (msgType ~= "System") then
+	-- 発言は録画していい、かつ設定の録画フラグがON、かつシステムメッセージではない、かつささやき窓ではない
+	if (recflg) and (g.settings.REC_CHAT_FLG) and (msgType ~= "Notice") and (msgType ~= "System") and (msgType ~= clusterinfo:GetRoomID()) then
 		-- ファイル名に使用する時間
 		local time = geTime.GetServerSystemTime();
 		local year = string.format("%04d",time.wYear);
