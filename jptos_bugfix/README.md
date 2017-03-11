@@ -29,4 +29,4 @@ JTOSのIDで自動マッチングを選択した時に、今何人マッチし�
 
 |ipfファイルへのリンク|ダウンロードボタン|
 |---|---|
-|![alt text](http://i.imgur.com/HVLKMwY.png "Screenshot")|![alt text](http://i.imgur.com/CXUVQh6.png "Screenshot")|
+|![alt text](http://i.imgur.com/47GQydQ.png "Screenshot")|![alt text](http://i.imgur.com/QlvrsVv.png "Screenshot")|
