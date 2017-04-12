@@ -19,7 +19,7 @@ local g = _G["ADDONS"][author][addonName];
 --設定ファイル保存先
 g.settingsDirLoc = string.format("../addons/%s", addonNameLower);
 g.settingsFileLoc = string.format("%s/settings.json", g.settingsDirLoc);
-g.saveChatDir = "../release/savechat";
+g.SAVE_DIR = "../release/screenshot";
 
 --デフォルト設定
 if not g.loaded then
@@ -152,17 +152,21 @@ function ZCHATEXTENDS_ON_INIT(addon, frame)
 			local t, err = acutil.loadJSON(g.settingsFileLoc, g.settings);
 			-- 読み込めない = ファイルがない
 			if err then
-				-- フォルダ作ってファイル作る
-				CHATEXTENDS_CREATE_DIR(g.settingsDirLoc);
+				-- ファイル作る
 				CHATEXTENDS_SAVE_SETTINGS();
 			else
 				-- 読み込めたら読み込んだ値使う
 				g.settings = t;
+				CHATEXTENDS_SAVE_SETTINGS();
+			end
+			-- savechatフォルダあればそっちをデフォルトに
+			if CHATEXTENDS_CHECK_DIR("../release/savechat") then
+				g.SAVE_DIR = "../release/savechat";
+			else
+				g.SAVE_DIR = "../release/screenshot";
 			end
 			g.loaded = true;
 		end
-		-- 必要フォルダ作る
-		CHATEXTENDS_CREATE_DIR(g.saveChatDir);
 	end
 
 	--イベント登録
@@ -553,7 +557,7 @@ function CHATEXTENDS_DRAW_CHAT_FRAME(chatframe, clusterinfo, cluster, nicoflg, r
 		local logfile=string.format("recchat_%s%s%s_%s.txt", year,month,day,GETMYPCNAME());
 
 		-- ファイル追記モード
-		file,err = io.open(g.saveChatDir.."/"..logfile, "a");
+		file,err = io.open(g.SAVE_DIR.."/"..logfile, "a");
 		local tempMsg = clusterinfo:GetMsgItembyIndex(clusterinfo:GetMsgItemCount()-1);
 		file:write(CHATEXTENDS_GET_MSGBODY(clusterinfo,tempMsg));
 		file:close();
@@ -944,32 +948,42 @@ function CHATEXTENDS_SAVE_CHAT()
 	local logfile=string.format("savechat_%s%s%s_%s%s%s_%s.txt", year,month,day,hour,min,sec,GETMYPCNAME());
 
 	-- ファイル書き込みモード
-	file,err = io.open(g.saveChatDir.."/"..logfile, "w")
-	local msgbody="";
-	for i = 0 , cnt - 2 do
-		clusterinfo = session.ui.GetChatMsgClusterInfo(groupboxname, i);
-		for j = 1 , clusterinfo:GetMsgItemCount() do
-			msgbody = clusterinfo:GetMsgItembyIndex(j-1);
-			file:write(CHATEXTENDS_GET_MSGBODY(clusterinfo,msgbody));
+	file,err = io.open(g.SAVE_DIR.."/"..logfile, "w")
+	if err then
+		if option.GetCurrentCountry()=="Japanese" then
+			ui.SysMsg("チャットの保存に失敗しました(フォルダがない？)");
+		else
+			ui.SysMsg("SAVE CHAT FAILED.(NOT DIRECTORY?)");
 		end
-	end
-	file:close();
-	if option.GetCurrentCountry()=="Japanese" then
-		ui.SysMsg("チャットを保存しました");
 	else
-		ui.SysMsg("SAVE CHAT");
+		local msgbody="";
+		for i = 0 , cnt - 2 do
+			clusterinfo = session.ui.GetChatMsgClusterInfo(groupboxname, i);
+			for j = 1 , clusterinfo:GetMsgItemCount() do
+				msgbody = clusterinfo:GetMsgItembyIndex(j-1);
+				file:write(CHATEXTENDS_GET_MSGBODY(clusterinfo,msgbody));
+			end
+		end
+		file:close();
+		if option.GetCurrentCountry()=="Japanese" then
+			ui.SysMsg("チャットを保存しました");
+		else
+			ui.SysMsg("SAVE CHAT");
+		end
 	end
 end
 
 --************************************************
--- ディレクトリ作成
+-- ファイル書き込めるか確認
 --************************************************
-function CHATEXTENDS_CREATE_DIR(dirname)
-	if option.GetCurrentCountry()=="Japanese" then
-		local tempDirStr = string.gsub(dirname, "/", "\\");
-		os.execute("mkdir "..tempDirStr)
+function CHATEXTENDS_CHECK_DIR(dirname)
+	file,err = io.open(dirname.."/test.tmp", "w")
+	if err then
+		return false
 	else
-		os.execute("mkdir "..dirname);
+		file:close();
+		os.remove(dirname.."/test.tmp");
+		return true
 	end
 end
 
