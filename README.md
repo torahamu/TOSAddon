@@ -90,17 +90,6 @@ hairenchantextend
 An add-on that changes enchantment option color.  
 
 
-fksystemmsg
---
-![alt text](http://i.imgur.com/rPotzr3.jpg "Screenshot")
-
-どこにでも現れるシステムメッセージを全体のみに表示させるようにするアドオンです。  
-
-----
-
-This add-on suppresses display of system messages only to the whole.  
-
-
 japari
 --
 ![alt text](http://i.imgur.com/mfwfTfd.jpg "jp Screenshot")
