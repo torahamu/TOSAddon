@@ -83,20 +83,6 @@
 		]
 	},
 	{
-		"name" : "F**k System Message",
-		"file" : "fksystemmsg",
-		"extension" : "ipf",
-		"fileVersion" : "v0.1.1",
-		"releaseTag" : "fksystemmsg",
-		"unicode" : "⛄",
-		"description" : "This add-on suppresses display of system messages only to the whole.  システムメッセージを全体のみに表示する。",
-		"tags" : [
-			"ui",
-			"hair",
-			"enchant"
-		]
-	},
-	{
 		"name" : "japari",
 		"file" : "japari",
 		"extension" : "ipf",
@@ -115,10 +101,10 @@
 		"name" : "chatextends",
 		"file" : "chatextends",
 		"extension" : "ipf",
-		"fileVersion" : "v1.0.4",
+		"fileVersion" : "v1.1.0",
 		"releaseTag" : "chatextends",
 		"unicode" : "⛄",
-		"description" : "Modify chat..Please look at github for details.[v1.0.4 stopped the auto-create-directory.The chat log is saved in the savechat directory, but if there is no savechat directory, save the chat log in the screenshot directory. (Because the savechat directory is not created automatically, you need to create it manually)]  チャットを色々改造します。詳細はGithubやReadmeを見てください。[v1.0.4 チャット保存フォルダの自動作成を止めました。チャットログはsavechatフォルダに保存されますが、savechatフォルダがない場合は、チャットログはscreenshotフォルダに保存します。（savechatフォルダは自動的に作成されないため、手動で作成する必要があります）]",
+		"description" : "Modify chat..Please look at github for details.[v1.1.0 Corresponds to the new chat UI.]  チャットを色々改造します。詳細はGithubやReadmeを見てください。[v1.1.0 取り急ぎ、新しいチャットUIに対応]",
 		"tags" : [
 			"ui",
 			"chat"
