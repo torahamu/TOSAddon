@@ -70,10 +70,10 @@ end
 
 --マップ読み込み時処理（1度だけ）
 function ZCHATEXTENDS_ON_INIT(addon, frame)
+	g.addon = addon;
+	g.frame = frame;
 	-- 初期設定項目は1度だけ行う
 	if g.loaded==false then
-		g.addon = addon;
-		g.frame = frame;
 
 		-- 元関数封印
 		if nil == CHATEXTENDS_DRAW_CHAT_MSG_OLD then
@@ -123,9 +123,6 @@ function ZCHATEXTENDS_ON_INIT(addon, frame)
 			g.loaded = true;
 		end
 	end
-
-	--イベント登録
-	acutil.setupEvent(addon, "DRAW_CHAT_MSG", "CHATEXTENDS_DRAW_CHAT_MSG_POPUP_EVENT")
 
 	-- チャット入力を変更
 	CHATEXTENDS_UPDATE_CHAT_FRAME();
@@ -737,7 +734,7 @@ function CHATEXTENDS_BALLON_DRAW(groupboxname, groupbox, clustername, clusterinf
 				fontStyle = g.frame:GetUserConfig("BALLONCHAT_FONTSTYLE_MEMBER");
 			elseif msgType == "guildmem" then
 				fontStyle = g.frame:GetUserConfig("BALLONCHAT_FONTSTYLE_MEMBER");
-			end;
+			end
 			local txt = GET_CHILD(label, "text");
 			txt:SetTextByKey("font", fontStyle);
 			txt:SetTextByKey("size", fontSize);
