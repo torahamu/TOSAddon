@@ -1,9 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <uiframe name="zchatextends" x="0" y="0" width="10" height="10">
 	<frame fasthide="true" layout_gravity="left top"/>
-    <input moveable="false" hittestframe="false"/>
-    <layer layerlevel="10"/>
-    <draw drawframe="false" drawtitlebarframe="false" drawtitlebar="false"/>
-    <option closebutton="false" hideable="false"/>
+	<draw drawframe="false" drawnotitlebar="false" drawtitlebar="false"/>
+	<input moveable="false" minwidth="500" minheight="260" hittestframe="false" moveintitlebar="false" resize="true" resizerange="-1 230 -1 1010"/>
+	<option visible="true" hideable="true" useimageitem="true" closebutton="false" savelayout="true"/>
+	<layer layerlevel="79"/>
+	<script OpenScp="CHATFRAME_OPEN" CloseScp="CHATFRAME_CLOSE" ResizeScp="CHATFRAME_RESIZE"/>
+	<userconfig TextLeftMargin="50" BalloonMarginWidth="20" BalloonMarginHeight="20" COLOR_WHI_MY="FF7cd8ff" COLOR_WHI_TO="FFb4ddef" COLOR_NORMAL_MY="FFffe86a" COLOR_NORMAL="FFFFFFFF" COLOR_SHOUT_MY="FFff7c0f" COLOR_SHOUT="FFffa800" COLOR_PARTY_MY="FF93c95a" COLOR_PARTY="FFbceb89" COLOR_PARTY_INFO="FFbceb89" COLOR_GUILD_INFO ="FFBE80CE" COLOR_GUILD_MY="FFa735dc" COLOR_GUILD="FFbe80ce" OTHERS_BALLON_LEFT_MARGIN="15" GBOX_LEFT_MARGIN="42" GBOX_TOP_MARGIN="28" GBOX_BOTTOM_MARGIN="0" GBOX_RIGHT_MARGIN="0" BALLONCHAT_FONTSTYLE="{#050505}" BALLONCHAT_FONTSTYLE_SYSTEM="{#DD0000}" BALLONCHAT_FONTSTYLE_MEMBER="{#000000}" TEXTCHAT_FONTSTYLE_NORMAL_MY="{#FFFAB8}{b}{ol}{ds}" TEXTCHAT_FONTSTYLE_SHOUT_MY="{#FFD03F}{b}{ol}{ds}" TEXTCHAT_FONTSTYLE_PARTY_MY="{#73FF97}{b}{ol}{ds}" TEXTCHAT_FONTSTYLE_GUILD_MY="{#DC99FF}{b}{ol}{ds}" TEXTCHAT_FONTSTYLE_WHISPER_MY="{#8EEBFF}{b}{ol}{ds}" TEXTCHAT_FONTSTYLE_NORMAL="{#FFFFFF}{ol}" TEXTCHAT_FONTSTYLE_SHOUT="{#da6e0f}{ol}" TEXTCHAT_FONTSTYLE_PARTY="{#86E57F}{ol}" TEXTCHAT_FONTSTYLE_GUILD="{#A566FF}{ol}" TEXTCHAT_FONTSTYLE_WHISPER="{#2ec2d4}{ol}" TEXTCHAT_FONTSTYLE_NOTICE="{#FF0000}{ol}" TEXTCHAT_FONTSTYLE_SYSTEM="{#FFE400}{ol}" CTRLSET_OFFSETX="63" TEXTCHAT_FONTSTYLE_LINK="{#FFFF00}"/>
+	<animation frameOpenAnim="dialog_start" frameCloseAnim="dialog_end"/>
     <controls/>
 </uiframe>
