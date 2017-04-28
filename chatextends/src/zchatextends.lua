@@ -928,8 +928,7 @@ function CHATEXTENDS_SAVE_CHAT()
 	else
 		for i = 0 , cnt - 2 do
 			clusterinfo = session.ui.GetChatMsgInfo(groupboxname, i);
-			file:write(clusterinfo:GetMsg());
---			file:write(CHATEXTENDS_GET_MSGBODY(clusterinfo,clusterinfo:GetMsg()));
+			file:write(CHATEXTENDS_GET_MSGBODY(clusterinfo,clusterinfo:GetMsg()));
 		end
 		file:close();
 		if option.GetCurrentCountry()=="Japanese" then
