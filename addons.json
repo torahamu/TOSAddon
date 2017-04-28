@@ -101,10 +101,10 @@
 		"name" : "chatextends",
 		"file" : "chatextends",
 		"extension" : "ipf",
-		"fileVersion" : "v1.1.0",
+		"fileVersion" : "v1.2.2",
 		"releaseTag" : "chatextends",
 		"unicode" : "⛄",
-		"description" : "description" : "Modify chat..Please look at github for details.[v1.1.0 Corresponds to the new chat UI.]  チャットを色々改造します。詳細はGithubやReadmeを見てください。[v1.1.0 取り急ぎ、新しいチャットUIに対応]",,
+		"description" : "description" : "Modify chat..Please look at github for details.[v1.2.2 Corresponds to the new chat UI.]  チャットを色々改造します。詳細はGithubやReadmeを見てください。[v1.2.2 取り急ぎ、新しいチャットUIに対応]",,
 		"tags" : [
 			"ui",
 			"chat"
