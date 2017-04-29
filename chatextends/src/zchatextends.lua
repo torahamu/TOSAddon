@@ -631,7 +631,6 @@ function CHATEXTENDS_DRAW_CHAT_MSG(groupboxname, startindex, chatframe)
 				end
 
 				local tempfontSize = string.format("{s%s}", fontSize);
-				local msgString = clusterinfo:GetMsg();
 
 				msgString = string.format("%s%s{/}{/}", tempfontSize, msgString);
 				txt:SetTextByKey("font", fontStyle);

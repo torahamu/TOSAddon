@@ -101,10 +101,10 @@
 		"name" : "chatextends",
 		"file" : "chatextends",
 		"extension" : "ipf",
-		"fileVersion" : "v1.2.2",
+		"fileVersion" : "v1.2.3",
 		"releaseTag" : "chatextends",
 		"unicode" : "⛄",
-		"description" : "Modify chat..Please look at github for details.[v1.2.2 Add Ballon Chat(Font size change does not work). Add Setting, Add setting, hide the type of remark on simple chat.]  チャットを色々改造します。詳細はGithubやReadmeを見てください。[v1.2.2 吹き出し表示にする設定を追加(今のところフォントサイズ変更は動きません)。簡易表示時に発言の種類を出さない設定を追加]",
+		"description" : "Modify chat..Please look at github for details.[v1.2.3 Ballon Chat Bugfix. Font Size Bugfix]  チャットを色々改造します。詳細はGithubやReadmeを見てください。[v1.2.3 吹き出し表示のバグフィックス。フォントサイズのバグフィックス]",
 		"tags" : [
 			"ui",
 			"chat"
