@@ -37,6 +37,37 @@ if not g.loaded then
   };
 end
 
+-- フォント設定
+g.fontsettings = {
+	COLOR_WHI_MY="FF7cd8ff";
+	COLOR_WHI_TO="FFb4ddef";
+	COLOR_NORMAL_MY="FFffe86a";
+	COLOR_NORMAL="FFFFFFFF";
+	COLOR_SHOUT_MY="FFff7c0f";
+	COLOR_SHOUT="FFffa800";
+	COLOR_PARTY_MY="FF93c95a";
+	COLOR_PARTY="FFbceb89";
+	COLOR_PARTY_INFO="FFbceb89";
+	COLOR_GUILD_INFO="FFBE80CE";
+	COLOR_GUILD_MY="FFa735dc";
+	COLOR_GUILD="FFbe80ce";
+	BALLONCHAT_FONTSTYLE="{#050505}";
+	BALLONCHAT_FONTSTYLE_SYSTEM="{#DD0000}";
+	BALLONCHAT_FONTSTYLE_MEMBER="{#000000}";
+	TEXTCHAT_FONTSTYLE_NORMAL_MY="{#FFFAB8}{b}{ol}{ds}";
+	TEXTCHAT_FONTSTYLE_SHOUT_MY="{#FFD03F}{b}{ol}{ds}";
+	TEXTCHAT_FONTSTYLE_PARTY_MY="{#73FF97}{b}{ol}{ds}";
+	TEXTCHAT_FONTSTYLE_GUILD_MY="{#DC99FF}{b}{ol}{ds}";
+	TEXTCHAT_FONTSTYLE_WHISPER_MY="{#8EEBFF}{b}{ol}{ds}";
+	TEXTCHAT_FONTSTYLE_NORMAL="{#FFFFFF}{ol}";
+	TEXTCHAT_FONTSTYLE_SHOUT="{#da6e0f}{ol}";
+	TEXTCHAT_FONTSTYLE_PARTY="{#86E57F}{ol}";
+	TEXTCHAT_FONTSTYLE_GUILD="{#A566FF}{ol}";
+	TEXTCHAT_FONTSTYLE_WHISPER="{#2ec2d4}{ol}";
+	TEXTCHAT_FONTSTYLE_NOTICE="{#FF0000}{ol}";
+	TEXTCHAT_FONTSTYLE_SYSTEM="{#FFE400}{ol}";
+}
+
 --ライブラリ読み込み
 local acutil = require('acutil');
 
@@ -63,17 +94,16 @@ else
 	enable_type_txt = "Display the type of remark{nl}at the time of simple chat"
 end
 
-
 function CHATEXTENDS_SAVE_SETTINGS()
 	acutil.saveJSON(g.settingsFileLoc, g.settings);
 end
 
 --マップ読み込み時処理（1度だけ）
 function ZCHATEXTENDS_ON_INIT(addon, frame)
-	g.addon = addon;
-	g.frame = frame;
 	-- 初期設定項目は1度だけ行う
 	if g.loaded==false then
+		g.addon = addon;
+		g.frame = frame;
 
 		-- 元関数封印
 		if nil == CHATEXTENDS_DRAW_CHAT_MSG_OLD then
@@ -89,9 +119,14 @@ function ZCHATEXTENDS_ON_INIT(addon, frame)
 			CHAT_OPEN_INIT = CHATEXTENDS_CHAT_OPEN_INIT;
 		end
 
-		if nil == CHATEXTENDS_CHAT_TYPE_SELECTION_OLD then
-			CHATEXTENDS_CHAT_TYPE_SELECTION_OLD = CHAT_TYPE_SELECTION;
-			CHAT_TYPE_SELECTION = CHATEXTENDS_CHAT_TYPE_SELECTION;
+		if nil == CHATEXTENDS_CHAT_SET_FONTSIZE_N_COLOR_OLD then
+			CHATEXTENDS_CHAT_SET_FONTSIZE_N_COLOR_OLD = CHAT_SET_FONTSIZE_N_COLOR;
+			CHAT_SET_FONTSIZE_N_COLOR = CHATEXTENDS_CHAT_SET_FONTSIZE_N_COLOR;
+		end
+
+		if nil == CHATEXTENDS_SetChatType_OLD then
+			CHATEXTENDS_SetChatType_OLD = _G['ui'].SetChatType;
+			_G['ui'].SetChatType = CHATEXTENDS_SetChatType;
 		end
 
 		if nil == CHATEXTENDS_ProcessTabKey_OLD then
@@ -124,9 +159,6 @@ function ZCHATEXTENDS_ON_INIT(addon, frame)
 		end
 	end
 
-	-- チャット入力を変更
-	CHATEXTENDS_UPDATE_CHAT_FRAME();
-
 	-- 設定項目をチャットオプションに追加
 	CHATEXTENDS_CREATE_CHATOPTION_FRAME();
 end
@@ -135,7 +167,7 @@ end
 function CHATEXTENDS_UPDATE_CHAT_FRAME()
 	local chat_frame = ui.GetFrame("chat");
 	chat_frame:Resize(750,chat_frame:GetHeight());
-	chat_frame:SetOffset(chat_frame:GetX(),chat_frame:GetY()+100);
+	chat_frame:SetOffset(chat_frame:GetX(),805);
 	chat_frame:EnableMove(0);
 	local edit_bg=GET_CHILD(chat_frame,"edit_bg");
 	edit_bg:Resize(742,36);
@@ -302,7 +334,10 @@ end
 
 -- チャットオープン処理
 function CHATEXTENDS_CHAT_OPEN_INIT()
-	-- 処理いらんので空欄
+	-- 元関数呼び出し
+	CHATEXTENDS_CHAT_OPEN_INIT_OLD();
+	-- チャット入力を変更
+	CHATEXTENDS_UPDATE_CHAT_FRAME();
 end
 
 -- チェックボックスのイベント
@@ -375,32 +410,30 @@ function CHATEXTENDS_CHAT_CHAT_SET_TO_TITLENAME(chatType, targetName, count)
 end
 
 -- チャットタイプ選択フック
-function CHATEXTENDS_CHAT_TYPE_SELECTION(frame, ctrl)
-	local typeIvalue = ctrl:GetUserIValue("CHAT_TYPE_CONFIG_VALUE");
-	if (nil == typeIvalue) or (0 == typeIvalue) or (typeIvalue > 5) then
-		return;
-	end;
-
+function CHATEXTENDS_SetChatType(typeIvalue)
 	-- 一度チャット内容を取得
 	local str = GET_CHAT_TEXT();
 	-- この命令でチャット内容が消える
-	ui.SetChatType(typeIvalue-1);
+	CHATEXTENDS_SetChatType_OLD(typeIvalue);
 	-- チャット内容復旧
 	SET_CHAT_TEXT(str);
-	CHAT_TYPE_LISTSET(typeIvalue);
-	CHAT_TYPE_CLOSE(frame);
 end
 
 -- タブキー押下時のフック
 function CHATEXTENDS_ProcessTabKey()
-	-- 一度チャット内容を取得
-	local str = GET_CHAT_TEXT();
-	-- この命令でチャット内容が消える
-	CHATEXTENDS_ProcessTabKey_OLD();
-	-- チャット内容復旧
-	SET_CHAT_TEXT(str);
+	local frame = ui.GetFrame('chat');
+	local chatEditCtrl = frame:GetChild('mainchat');
+	if chatEditCtrl:IsHaveFocus() == 1 then
+		-- 一度チャット内容を取得
+		local str = GET_CHAT_TEXT();
+		-- この命令でチャット内容が消える
+		CHATEXTENDS_ProcessTabKey_OLD();
+		-- チャット内容復旧
+		SET_CHAT_TEXT(str);
+	else
+		CHATEXTENDS_ProcessTabKey_OLD();
+	end
 end
-
 
 --************************************************
 -- DRAW_CHAT_MSGのフック
@@ -465,6 +498,7 @@ function CHATEXTENDS_DRAW_CHAT_MSG(groupboxname, startindex, chatframe)
 		local colorCls = GetClassByType("ChatColorStyle", colorType)
 
 		local fontSize = GET_CHAT_FONT_SIZE();
+
 		local offsetX = chatframe:GetUserConfig("CTRLSET_OFFSETX");
 		if g.settings.BALLON_FLG then
 			CHATEXTENDS_BALLON_DRAW(groupboxname, groupbox, clustername, clusterinfo, commnderName, msgType, marginRight, marginLeft, ypos, fontSize)
@@ -526,27 +560,27 @@ function CHATEXTENDS_DRAW_CHAT_MSG(groupboxname, startindex, chatframe)
 
 					if msgType == "Normal" then
 
-						fontStyle = CHATEXTENDS_CHAT_TEXT_IS_MINE_AND_SETFONT(g.frame, msgIsMine, "TEXTCHAT_FONTSTYLE_NORMAL");
+						fontStyle = CHATEXTENDS_CHAT_TEXT_IS_MINE_AND_SETFONT(msgIsMine, "TEXTCHAT_FONTSTYLE_NORMAL");
 						msgFront = CHATEXTENDS_GET_TYPE_CHARNAME(ScpArgMsg("ChatType_1"), commnderNameUIText);
 
 					elseif msgType == "Shout" then
 
-						fontStyle = CHATEXTENDS_CHAT_TEXT_IS_MINE_AND_SETFONT(g.frame, msgIsMine, "TEXTCHAT_FONTSTYLE_SHOUT");
+						fontStyle = CHATEXTENDS_CHAT_TEXT_IS_MINE_AND_SETFONT(msgIsMine, "TEXTCHAT_FONTSTYLE_SHOUT");
 						msgFront = CHATEXTENDS_GET_TYPE_CHARNAME(ScpArgMsg("ChatType_2"), commnderNameUIText);
 
 					elseif msgType == "Party" then
 
-						fontStyle = CHATEXTENDS_CHAT_TEXT_IS_MINE_AND_SETFONT(g.frame, msgIsMine, "TEXTCHAT_FONTSTYLE_PARTY");
+						fontStyle = CHATEXTENDS_CHAT_TEXT_IS_MINE_AND_SETFONT(msgIsMine, "TEXTCHAT_FONTSTYLE_PARTY");
 						msgFront = CHATEXTENDS_GET_TYPE_CHARNAME(ScpArgMsg("ChatType_3"), commnderNameUIText);
 
 					elseif msgType == "Guild" then
 
-						fontStyle = CHATEXTENDS_CHAT_TEXT_IS_MINE_AND_SETFONT(g.frame, msgIsMine, "TEXTCHAT_FONTSTYLE_GUILD");
+						fontStyle = CHATEXTENDS_CHAT_TEXT_IS_MINE_AND_SETFONT(msgIsMine, "TEXTCHAT_FONTSTYLE_GUILD");
 						msgFront = CHATEXTENDS_GET_TYPE_CHARNAME(ScpArgMsg("ChatType_4"), commnderNameUIText);
 
 					elseif msgType == "Notice" then
 
-						fontStyle = CHATEXTENDS_CHAT_TEXT_IS_MINE_AND_SETFONT(g.frame, msgIsMine, "TEXTCHAT_FONTSTYLE_NOTICE");
+						fontStyle = CHATEXTENDS_CHAT_TEXT_IS_MINE_AND_SETFONT(msgIsMine, "TEXTCHAT_FONTSTYLE_NOTICE");
 						msgFront = string.format("[%s]", ScpArgMsg("ChatType_8"));
 
 					elseif msgType == "Whisper" then
@@ -556,7 +590,7 @@ function CHATEXTENDS_DRAW_CHAT_MSG(groupboxname, startindex, chatframe)
 
 						txt:SetUserValue("ROOM_ID", clusterinfo:GetRoomID());
 
-						fontStyle = CHATEXTENDS_CHAT_TEXT_IS_MINE_AND_SETFONT(g.frame, msgIsMine, "TEXTCHAT_FONTSTYLE_WHISPER");
+						fontStyle = CHATEXTENDS_CHAT_TEXT_IS_MINE_AND_SETFONT(msgIsMine, "TEXTCHAT_FONTSTYLE_WHISPER");
 
 						msgFront = CHATEXTENDS_GET_TYPE_CHARNAME(ScpArgMsg("ChatType_5"), commnderNameUIText);
 
@@ -567,7 +601,7 @@ function CHATEXTENDS_DRAW_CHAT_MSG(groupboxname, startindex, chatframe)
 
 						txt:SetUserValue("ROOM_ID", clusterinfo:GetRoomID());
 
-						fontStyle = CHATEXTENDS_CHAT_TEXT_IS_MINE_AND_SETFONT(g.frame, msgIsMine, "TEXTCHAT_FONTSTYLE_WHISPER");
+						fontStyle = CHATEXTENDS_CHAT_TEXT_IS_MINE_AND_SETFONT(msgIsMine, "TEXTCHAT_FONTSTYLE_WHISPER");
 
 						msgFront = CHATEXTENDS_GET_TYPE_CHARNAME(ScpArgMsg("ChatType_6"), commnderNameUIText);
 					else
@@ -596,7 +630,10 @@ function CHATEXTENDS_DRAW_CHAT_MSG(groupboxname, startindex, chatframe)
 					msgString = string.format("%s%s{nl}", msgFront, tempMsg);
 				end
 
-				msgString = string.format("%s{/}", msgString);
+				local tempfontSize = string.format("{s%s}", fontSize);
+				local msgString = clusterinfo:GetMsg();
+
+				msgString = string.format("%s%s{/}{/}", tempfontSize, msgString);
 				txt:SetTextByKey("font", fontStyle);
 				txt:SetTextByKey("size", fontSize);
 				txt:SetTextByKey("text", CHAT_TEXT_LINKCHAR_FONTSET(mainchatFrame, msgString));
@@ -651,13 +688,12 @@ end
 -- ***************************************
 -- 簡易表示のメッセージ色
 -- ***************************************
-function CHATEXTENDS_CHAT_TEXT_IS_MINE_AND_SETFONT(chatframe, msgIsMine, fontName)
-	local result;
+function CHATEXTENDS_CHAT_TEXT_IS_MINE_AND_SETFONT(msgIsMine, fontName)
+	local result = fontName;
 	if true == msgIsMine then
 		result = fontName .. "_MY";
-		return chatframe:GetUserConfig(result);
 	end
-	return chatframe:GetUserConfig(fontName);
+	return g.fontsettings[result];
 end
 
 
@@ -717,6 +753,8 @@ end
 -- ***************************************
 function CHATEXTENDS_BALLON_DRAW(groupboxname, groupbox, clustername, clusterinfo, commnderName, msgType, marginRight, marginLeft, ypos, fontSize)
 	local cluster = GET_CHILD(groupbox, clustername);
+	local tempfontSize = string.format("{s%s}", fontSize);
+
 	if cluster ~= nil then
 
 		-- システムメッセージ削除処理
@@ -725,20 +763,22 @@ function CHATEXTENDS_BALLON_DRAW(groupboxname, groupbox, clustername, clusterinf
 			cluster:Resize( 0 , 0);
 			cluster:ShowWindow(0);
 		else
-			local fontStyle = g.frame:GetUserConfig("BALLONCHAT_FONTSTYLE");
+			local fontStyle = g.fontsettings.BALLONCHAT_FONTSTYLE;
 			local label = cluster:GetChild('bg');
 
 			if msgType == "System" then
-				fontStyle = g.frame:GetUserConfig("BALLONCHAT_FONTSTYLE_SYSTEM");
+				fontStyle = g.fontsettings.BALLONCHAT_FONTSTYLE_SYSTEM;
 			elseif msgType == "friendmem" then
-				fontStyle = g.frame:GetUserConfig("BALLONCHAT_FONTSTYLE_MEMBER");
+				fontStyle = g.fontsettings.BALLONCHAT_FONTSTYLE_MEMBER;
 			elseif msgType == "guildmem" then
-				fontStyle = g.frame:GetUserConfig("BALLONCHAT_FONTSTYLE_MEMBER");
+				fontStyle = g.fontsettings.BALLONCHAT_FONTSTYLE_MEMBER;
 			end
 			local txt = GET_CHILD(label, "text");
+			local msgString = clusterinfo:GetMsg();
+			msgString = string.format("%s%s{/}{/}", tempfontSize, msgString);
 			txt:SetTextByKey("font", fontStyle);
 			txt:SetTextByKey("size", fontSize);
-			txt:SetTextByKey("text", clusterinfo:GetMsg());
+			txt:SetTextByKey("text", msgString);
 
 			local timeBox = GET_CHILD(cluster, "timebox");
 			CHATEXTENDS_RESIZE_CHAT_CTRL_BALLON(cluster, label, txt, timeBox)
@@ -777,16 +817,16 @@ function CHATEXTENDS_BALLON_DRAW(groupboxname, groupbox, clustername, clusterinf
 			chatCtrl:EnableHitTest(1);
 
 			local label = chatCtrl:GetChild('bg');
-			local fontStyle = g.frame:GetUserConfig("BALLONCHAT_FONTSTYLE");
+			local fontStyle = g.fontsettings.BALLONCHAT_FONTSTYLE;
 			if msgType == "friendmem" then
-				fontStyle = g.frame:GetUserConfig("BALLONCHAT_FONTSTYLE_MEMBER");
+				fontStyle = g.fontsettings.BALLONCHAT_FONTSTYLE_MEMBER;
 			elseif msgType == "guildmem" then
-				fontStyle = g.frame:GetUserConfig("BALLONCHAT_FONTSTYLE_MEMBER");
+				fontStyle = g.fontsettings.BALLONCHAT_FONTSTYLE_MEMBER;
 			elseif msgType ~= "System" then
 				chatCtrl:SetEventScript(ui.RBUTTONDOWN, 'CHAT_RBTN_POPUP');
 				chatCtrl:SetUserValue("TARGET_NAME", commnderName);
 			elseif msgType == "System" then
-				fontStyle = g.frame:GetUserConfig("BALLONCHAT_FONTSTYLE_SYSTEM");
+				fontStyle = g.fontsettings.BALLONCHAT_FONTSTYLE_SYSTEM;
 			end
 
 			local myColor, targetColor = CHATEXTENDS_GET_CHAT_COLOR(msgType);
@@ -795,9 +835,11 @@ function CHATEXTENDS_BALLON_DRAW(groupboxname, groupbox, clustername, clusterinf
 			local timeCtrl = GET_CHILD(timeBox, "time", "ui::CRichText");
 			local nameText = GET_CHILD(chatCtrl, "name", "ui::CRichText");
 
+			local msgString = clusterinfo:GetMsg();
+			msgString = string.format("%s%s{/}{/}", tempfontSize, msgString);
 			txt:SetTextByKey("font", fontStyle);
 			txt:SetTextByKey("size", fontSize);
-			txt:SetTextByKey("text", clusterinfo:GetMsg());
+			txt:SetTextByKey("text", msgString);
 
 			local labelMarginX = 0
 			local labelMarginY = 0
@@ -813,6 +855,8 @@ function CHATEXTENDS_BALLON_DRAW(groupboxname, groupbox, clustername, clusterinf
 					nameText:SetText('{img chat_system_icon 65 18 }{/}');
 				else
 					nameText:SetText('{@st61}'..commnderName..'{/}');
+					nameText:SetEventScript(ui.RBUTTONDOWN, 'CHAT_RBTN_POPUP');
+					nameText:SetUserValue("TARGET_NAME", commnderName);
 				end
 
 				local iconPicture = GET_CHILD(chatCtrl, "iconPicture", "ui::CPicture");
@@ -835,28 +879,28 @@ end
 
 function CHATEXTENDS_GET_CHAT_COLOR(msgType)
 
-	local myColor = g.frame:GetUserConfig("COLOR_WHI_MY");
-	local targetColor = g.frame:GetUserConfig("COLOR_WHI_TO");
+	local myColor = g.fontsettings.COLOR_WHI_MY;
+	local targetColor = g.fontsettings.COLOR_WHI_TO;
 	
 	if msgType == 'Normal' then
-		myColor = g.frame:GetUserConfig("COLOR_NORMAL_MY");
-		targetColor = g.frame:GetUserConfig("COLOR_NORMAL");
+		myColor = g.fontsettings.COLOR_NORMAL_MY;
+		targetColor = g.fontsettings.COLOR_NORMAL;
 	elseif msgType == 'Shout' then
-		myColor = g.frame:GetUserConfig("COLOR_SHOUT_MY");
-		targetColor = g.frame:GetUserConfig("COLOR_SHOUT");
+		myColor = g.fontsettings.COLOR_SHOUT_MY;
+		targetColor = g.fontsettings.COLOR_SHOUT;
 	elseif msgType == 'Party' then
-		myColor = g.frame:GetUserConfig("COLOR_PARTY_MY");
-		targetColor = g.frame:GetUserConfig("COLOR_PARTY");	
+		myColor = g.fontsettings.COLOR_PARTY_MY;
+		targetColor = g.fontsettings.COLOR_PARTY;	
 	elseif msgType == 'Guild' then
-		myColor = g.frame:GetUserConfig("COLOR_GUILD_MY");
-		targetColor = g.frame:GetUserConfig("COLOR_GUILD");	
+		myColor = g.fontsettings.COLOR_GUILD_MY;
+		targetColor = g.fontsettings.COLOR_GUILD;	
 	elseif msgType == "friendmem" then
-		targetColor = g.frame:GetUserConfig("COLOR_PARTY_INFO");
+		targetColor = g.fontsettings.COLOR_PARTY_INFO;
 	elseif msgType == "guildmem" then
-		targetColor = g.frame:GetUserConfig("COLOR_GUILD_INFO");
+		targetColor = g.fontsettings.COLOR_GUILD_INFO;
 	elseif msgType == "System" then
-		myColor = g.frame:GetUserConfig("COLOR_NORMAL_MY");
-		targetColor = g.frame:GetUserConfig("COLOR_NORMAL");
+		myColor = g.fontsettings.COLOR_NORMAL_MY;
+		targetColor = g.fontsettings.COLOR_NORMAL;
 	end
 
 	return myColor, targetColor;
@@ -958,15 +1002,15 @@ function CHATEXTENDS_GET_MSGBODY(clusterinfo,msgbody)
 	local tempstr="";
 	logbody=string.format("%s %s %s:%s{nl}", clusterinfo:GetTimeStr(), CHATEXTENDS_GET_MSGTYPE_TXT(clusterinfo:GetMsgType()),clusterinfo:GetCommanderName(),msgbody);
 	logbody=string.gsub(logbody,"{nl}", "\n");
-	logbody=string.gsub(logbody,"{.-}", "");
+--	logbody=string.gsub(logbody,"{.-}", "");
 
 	-- stinrg.gsub内で直接dictionary.ReplaceDicIDInCompStr("%1")とやったが使えなかった
 	-- ので、一時変数に入れる
-	tempstr=string.match(logbody, "(@dicID.+\*\^)");
-	if tempstr ~= nil then
-		tempstr = dictionary.ReplaceDicIDInCompStr(tempstr);
-		logbody=string.gsub(logbody,"(@dicID.+\*\^)", tempstr);
-	end
+--	tempstr=string.match(logbody, "(@dicID.+\*\^)");
+--	if tempstr ~= nil then
+--		tempstr = dictionary.ReplaceDicIDInCompStr(tempstr);
+--		logbody=string.gsub(logbody,"(@dicID.+\*\^)", tempstr);
+--	end
 	return logbody;
 end
 
@@ -998,16 +1042,90 @@ function CHATEXTENDS_GET_MSGTYPE_TXT(msgType)
 end
 
 --************************************************
--- 削除処理
+-- サイズ変更
 --************************************************
-function CHATEXTENDS_DELETE_CHAT()
-	local groupboxname = "chatgbox_TOTAL";
-	local chatframe = ui.GetFrame("chatframe");
-	local groupbox = GET_CHILD(chatframe,groupboxname);
-	local cnt = groupbox:GetChildCount();
-	-- 対象フレーム内の、指定した名前で始まるフレームを全て削除
-	DESTROY_CHILD_BYNAME(groupbox, "cluster_");
-	g.CHATEXTENDS_BASE_INDEX = cnt - 2;
-	-- メイン表示
-	CHATEXTENDS_MAIN(groupboxname, 0, chatframe)
+function CHATEXTENDS_CHAT_SET_FONTSIZE_N_COLOR(chatframe) 
+
+	if chatframe == nil then
+		return;
+	end
+
+	local offsetX = chatframe:GetUserConfig("CTRLSET_OFFSETX");
+	local targetSize = GET_CHAT_FONT_SIZE();
+	local count = chatframe:GetChildCount();
+	for  i = 0, count-1 do 
+		local groupBox  = chatframe:GetChildByIndex(i);
+		local childName = groupBox:GetName();
+
+		if string.sub(childName, 1, 9) == "chatgbox_" then
+			if groupBox:GetClassName() == "groupbox" then
+				groupBox = AUTO_CAST(groupBox);
+				local beforeHeight = 1;
+				local lastChild = nil;
+				local ctrlSetCount = groupBox:GetChildCount();
+				for j = 0 , ctrlSetCount - 1 do
+					local chatCtrl = groupBox:GetChildByIndex(j);
+					if chatCtrl:GetClassName() == "controlset" then
+						local label = chatCtrl:GetChild('bg');
+						if g.settings.BALLON_FLG then
+							local txt = GET_CHILD(label, "text", "ui::CRichText");
+
+							if txt == nil then
+								txt = GET_CHILD(chatCtrl, "text", "ui::CRichText");
+							end;	
+
+							local msgString = CHAT_TEXT_CHAR_RESIZE(txt:GetTextByKey("text"), targetSize);
+							txt:SetTextByKey("text", msgString);
+							txt:SetTextByKey("size", targetSize);
+							local timeBox = GET_CHILD(chatCtrl, "timebox");
+							CHATEXTENDS_RESIZE_CHAT_CTRL_BALLON(chatCtrl, label, txt, timeBox)
+						else
+
+							local txt = GET_CHILD(chatCtrl, "text", "ui::CRichText");
+							local msgString = CHAT_TEXT_CHAR_RESIZE(txt:GetTextByKey("text"), targetSize);
+							
+							
+							local roomid = txt:GetUserValue("ROOM_ID")
+
+							if roomid ~= "None" then
+
+								local colorType = session.chat.GetRoomConfigColorType(roomid)
+								local colorCls = GetClassByType("ChatColorStyle", colorType)
+
+								if colorCls ~= nil then
+									fontStyle = "{#"..colorCls.TextColor.."}{b}{ol}"
+									txt:SetTextByKey("font", fontStyle);
+								end
+							end
+
+							txt:SetTextByKey("text", msgString);
+							txt:SetTextByKey("size", targetSize);	
+							local timeBox = GET_CHILD(chatCtrl, "time");
+							RESIZE_CHAT_CTRL(chatframe, chatCtrl, label, txt, timeBox, offsetX)
+						end
+							
+						beforeHeight = chatCtrl:GetY() + chatCtrl:GetHeight();
+						lastChild = chatCtrl;
+					end
+				end
+
+				GBOX_AUTO_ALIGN(groupBox, 0, 0, 0, true, false);
+				if lastChild ~= nil then
+					local afterHeight = lastChild:GetY() + lastChild:GetHeight();					
+					local heightRatio = afterHeight / beforeHeight;
+					
+					groupBox:UpdateData();
+					groupBox:SetScrollPos(groupBox:GetCurLine() * (heightRatio * 1.1));
+				end
+			end
+		end
+	end
+
+    if string.find(chatframe:GetName(),"chatpopup") ~= nil then
+           CHATPOPUP_FOLD_BY_SIZE(chatframe)
+    end
+
+	chatframe:Invalidate();
+
 end
+
