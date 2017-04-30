@@ -104,7 +104,7 @@
 		"fileVersion" : "v2.2.4",
 		"releaseTag" : "chatextends",
 		"unicode" : "⛄",
-		"description" : "Modify chat.v2.0 Support for new UI.Please look at github for details.[v2.2.4 Bug fix emoticon. Make the background of the chat frame black.]  チャットを色々改造します。詳細はGithubやReadmeを見てください。[v2.2.4 エモーションのバグフィックス。チャットフレームの背景色を黒にした。]",
+		"description" : "Modify chat.v2.0 Support for new UI.Please look at github for details.[v2.2.4 Bug fix emoticon. Make the background of the chat frame black.]  チャットを色々改造します。v2から新UIに対応しました。詳細はGithubやReadmeを見てください。[v2.2.4 エモーションのバグフィックス。チャットフレームの背景色を黒にした。]",
 		"tags" : [
 			"ui",
 			"chat"
