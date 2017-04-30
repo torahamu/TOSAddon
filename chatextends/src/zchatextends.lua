@@ -102,6 +102,18 @@ end
 function ZCHATEXTENDS_ON_INIT(addon, frame)
 	-- 初期設定項目は1度だけ行う
 	if g.loaded==false then
+		local mainchatFrame = ui.GetFrame("chatframe")
+		if mainchatFrame ~= nil then
+			local groupbox = GET_CHILD(mainchatFrame, "chatgbox_TOTAL");
+			if groupbox ~= nil then
+				groupbox = tolua.cast(groupbox, "ui::CGroupBox");
+				groupbox:SetSkinName("chat_Whisper_talkskin_cusoron");
+			else
+				print("groupbox nil!!")
+			end
+		else
+			print("mainchatFrame nil!!")
+		end
 		g.addon = addon;
 		g.frame = frame;
 
@@ -123,6 +135,12 @@ function ZCHATEXTENDS_ON_INIT(addon, frame)
 			CHATEXTENDS_CHAT_SET_FONTSIZE_N_COLOR_OLD = CHAT_SET_FONTSIZE_N_COLOR;
 			CHAT_SET_FONTSIZE_N_COLOR = CHATEXTENDS_CHAT_SET_FONTSIZE_N_COLOR;
 		end
+
+		if nil == CHATEXTENDS_CHAT_ADD_GBOX_OPTION_FOR_CHATFRAME_OLD then
+			CHATEXTENDS_CHAT_ADD_GBOX_OPTION_FOR_CHATFRAME_OLD = _ADD_GBOX_OPTION_FOR_CHATFRAME;
+			_ADD_GBOX_OPTION_FOR_CHATFRAME = CHATEXTENDS_CHAT_ADD_GBOX_OPTION_FOR_CHATFRAME;
+		end
+
 
 		if nil == CHATEXTENDS_SetChatType_OLD then
 			CHATEXTENDS_SetChatType_OLD = _G['ui'].SetChatType;
@@ -159,6 +177,8 @@ function ZCHATEXTENDS_ON_INIT(addon, frame)
 		end
 	end
 
+	-- チャット入力を変更
+	CHATEXTENDS_UPDATE_CHAT_FRAME()
 	-- 設定項目をチャットオプションに追加
 	CHATEXTENDS_CREATE_CHATOPTION_FRAME();
 end
@@ -166,8 +186,8 @@ end
 -- チャット入力を変更
 function CHATEXTENDS_UPDATE_CHAT_FRAME()
 	local chat_frame = ui.GetFrame("chat");
-	chat_frame:Resize(750,chat_frame:GetHeight());
-	chat_frame:SetOffset(chat_frame:GetX(),805);
+	chat_frame:Resize(750,chat_frame:GetOriginalHeight());
+	chat_frame:SetOffset(chat_frame:GetX(),chat_frame:GetY() + 100);
 	chat_frame:EnableMove(0);
 	local edit_bg=GET_CHILD(chat_frame,"edit_bg");
 	edit_bg:Resize(742,36);
@@ -337,7 +357,13 @@ function CHATEXTENDS_CHAT_OPEN_INIT()
 	-- 元関数呼び出し
 	CHATEXTENDS_CHAT_OPEN_INIT_OLD();
 	-- チャット入力を変更
-	CHATEXTENDS_UPDATE_CHAT_FRAME();
+	local chat_frame = ui.GetFrame("chat");
+	local mainchat=GET_CHILD(chat_frame,"mainchat");
+	local titleCtrl = GET_CHILD(chat_frame,'edit_to_bg');
+	local offsetX = 100;
+	mainchat:SetGravity(ui.LEFT, ui.TOP);
+	mainchat:Resize(600 - titleCtrl:GetWidth() - offsetX + 10, mainchat:GetOriginalHeight())
+	mainchat:SetOffset(titleCtrl:GetWidth() + offsetX, mainchat:GetOriginalY());
 end
 
 -- チェックボックスのイベント
@@ -504,7 +530,7 @@ function CHATEXTENDS_DRAW_CHAT_MSG(groupboxname, startindex, chatframe)
 			CHATEXTENDS_BALLON_DRAW(groupboxname, groupbox, clustername, clusterinfo, commnderName, msgType, marginRight, marginLeft, ypos, fontSize)
 		else
 
-			local chatCtrl = groupbox:CreateOrGetControlSet('chatTextVer', clustername, ui.LEFT, ui.TOP, marginLeft, ypos , marginRight, 1);
+			local chatCtrl = groupbox:CreateOrGetControlSet('chatTextVer', clustername, ui.LEFT, ui.TOP, marginLeft, ypos + 5 , marginRight, 1);
 
 			-- システムメッセージ削除処理
 			if ( g.settings.SYSTEM_TOTAL_FLG and (msgType == "System" or msgType == "Notice") and groupboxname ~= "chatgbox_TOTAL") then
@@ -625,14 +651,15 @@ function CHATEXTENDS_DRAW_CHAT_MSG(groupboxname, startindex, chatframe)
 
 				local tempMsg = clusterinfo:GetMsg()
 				if msgType == "friendmem" or  msgType == "guildmem" then
-					msgString = string.format("{%s}%s{nl}",msgFront, tempMsg);
+					msgString = string.format("{%s}%s",msgFront, tempMsg);
 				else
-					msgString = string.format("%s%s{nl}", msgFront, tempMsg);
+					msgString = string.format("%s%s", msgFront, tempMsg);
 				end
 
 				local tempfontSize = string.format("{s%s}", fontSize);
 
-				msgString = string.format("%s%s{/}{/}", tempfontSize, msgString);
+				msgString = string.gsub(msgString, "({img emoticon.-}){/}{/}", "%1");
+				msgString = string.format("%s%s{/}{/}{nl}", tempfontSize, msgString);
 				txt:SetTextByKey("font", fontStyle);
 				txt:SetTextByKey("size", fontSize);
 				txt:SetTextByKey("text", CHAT_TEXT_LINKCHAR_FONTSET(mainchatFrame, msgString));
@@ -647,6 +674,7 @@ function CHATEXTENDS_DRAW_CHAT_MSG(groupboxname, startindex, chatframe)
 				end
 
 				RESIZE_CHAT_CTRL(groupbox, chatCtrl, label, txt, timeCtrl, offsetX);
+
 			end
 		end
 		-- ニコニコ表示
@@ -774,6 +802,7 @@ function CHATEXTENDS_BALLON_DRAW(groupboxname, groupbox, clustername, clusterinf
 			end
 			local txt = GET_CHILD(label, "text");
 			local msgString = clusterinfo:GetMsg();
+			msgString = string.gsub(msgString, "({img emoticon.-}){/}{/}", "%1");
 			msgString = string.format("%s%s{/}{/}", tempfontSize, msgString);
 			txt:SetTextByKey("font", fontStyle);
 			txt:SetTextByKey("size", fontSize);
@@ -835,6 +864,7 @@ function CHATEXTENDS_BALLON_DRAW(groupboxname, groupbox, clustername, clusterinf
 			local nameText = GET_CHILD(chatCtrl, "name", "ui::CRichText");
 
 			local msgString = clusterinfo:GetMsg();
+			msgString = string.gsub(msgString, "({img emoticon.-}){/}{/}", "%1");
 			msgString = string.format("%s%s{/}{/}", tempfontSize, msgString);
 			txt:SetTextByKey("font", fontStyle);
 			txt:SetTextByKey("size", fontSize);
@@ -1001,15 +1031,15 @@ function CHATEXTENDS_GET_MSGBODY(clusterinfo,msgbody)
 	local tempstr="";
 	logbody=string.format("%s %s %s:%s{nl}", clusterinfo:GetTimeStr(), CHATEXTENDS_GET_MSGTYPE_TXT(clusterinfo:GetMsgType()),clusterinfo:GetCommanderName(),msgbody);
 	logbody=string.gsub(logbody,"{nl}", "\n");
---	logbody=string.gsub(logbody,"{.-}", "");
+	logbody=string.gsub(logbody,"{.-}", "");
 
 	-- stinrg.gsub内で直接dictionary.ReplaceDicIDInCompStr("%1")とやったが使えなかった
 	-- ので、一時変数に入れる
---	tempstr=string.match(logbody, "(@dicID.+\*\^)");
---	if tempstr ~= nil then
---		tempstr = dictionary.ReplaceDicIDInCompStr(tempstr);
---		logbody=string.gsub(logbody,"(@dicID.+\*\^)", tempstr);
---	end
+	tempstr=string.match(logbody, "(@dicID.+\*\^)");
+	if tempstr ~= nil then
+		tempstr = dictionary.ReplaceDicIDInCompStr(tempstr);
+		logbody=string.gsub(logbody,"(@dicID.+\*\^)", tempstr);
+	end
 	return logbody;
 end
 
@@ -1128,3 +1158,39 @@ function CHATEXTENDS_CHAT_SET_FONTSIZE_N_COLOR(chatframe)
 
 end
 
+--************************************************
+-- フレームスキン変更
+--************************************************
+function CHATEXTENDS_CHAT_ADD_GBOX_OPTION_FOR_CHATFRAME(gbox)
+
+	gbox = AUTO_CAST(gbox)
+	
+	local parentframe = gbox:GetParent()
+
+	
+	gbox:SetLeftScroll(1)
+	-- skin change
+--	gbox:SetSkinName("chat_window")
+	gbox:SetSkinName("chat_Whisper_talkskin_cusoron")
+	gbox:EnableVisibleVector(true);
+	gbox:EnableHitTest(1);
+	gbox:EnableHittestGroupBox(true);
+	gbox:LimitChildCount(500);
+	gbox:SetEventScript(ui.SCROLL, "SCROLL_CHAT");
+	gbox:EnableAutoResize(true,true);
+
+	if string.find(parentframe:GetName(),"chatpopup_") == nil then
+		gbox:ShowWindow(0)
+		gbox:SetScrollBarBottomMargin(26)
+	else
+		gbox:SetScrollBarBottomMargin(0)
+		gbox:ShowWindow(1)
+	end
+
+    local opacity = session.chat.GetChatUIOpacity()
+	local colorToneStr = string.format("%02X", opacity);
+	colorToneStr = colorToneStr .. "FFFFFF";
+
+	CHAT_SET_CHAT_FRAME_OPACITY(parentframe, colorToneStr)
+
+end

@@ -101,10 +101,10 @@
 		"name" : "chatextends",
 		"file" : "chatextends",
 		"extension" : "ipf",
-		"fileVersion" : "v1.2.3",
+		"fileVersion" : "v2.2.4",
 		"releaseTag" : "chatextends",
 		"unicode" : "⛄",
-		"description" : "Modify chat..Please look at github for details.[v1.2.3 Ballon Chat Bugfix. Font Size Bugfix]  チャットを色々改造します。詳細はGithubやReadmeを見てください。[v1.2.3 吹き出し表示のバグフィックス。フォントサイズのバグフィックス]",
+		"description" : "Modify chat.v2.0 Support for new UI.Please look at github for details.[v2.2.4 Bug fix emoticon. Make the background of the chat frame black.]  チャットを色々改造します。詳細はGithubやReadmeを見てください。[v2.2.4 エモーションのバグフィックス。チャットフレームの背景色を黒にした。]",
 		"tags" : [
 			"ui",
 			"chat"
