@@ -6,7 +6,7 @@
 		"fileVersion" : "v1.1.0",
 		"releaseTag" : "treasuremap",
 		"unicode" : "⛄",
-		"description" : "An add-on that shows treasure chests on the map.[v1.1.0 The already opened treasure box is displayed as "opened".]  マップ上に宝の場所を表示する。[v1.1.0 開けた宝箱は「opened」と表示されます]",
+		"description" : "An add-on that shows treasure chests on the map.[v1.1.0 The already opened treasure box is displayed as 'opened'.]  マップ上に宝の場所を表示する。[v1.1.0 開けた宝箱は「opened」と表示されます]",
 		"tags" : [
 			"ui",
 			"map",
