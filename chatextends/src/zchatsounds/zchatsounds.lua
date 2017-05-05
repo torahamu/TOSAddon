@@ -1,5 +1,3 @@
---dofile("D:/addon/TOSAddon/chatextends/zchatsounds/zchatsounds.lua")
-
 local addonName = "CHATEXTENDS";
 local addonNameLower = string.lower(addonName);
 

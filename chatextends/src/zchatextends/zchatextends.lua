@@ -1,5 +1,3 @@
---dofile("D:/addon/TOSAddon/chatextends/zchatextends/zchatextends.lua")
-
 --******************************************
 -- CHAT_EXTENDS
 -- チャットフレームを拡張したアドオン
