@@ -1,3 +1,5 @@
+--dofile("D:/addon/TOSAddon/chatextends/zchatextends/zchatextends.lua")
+
 --******************************************
 -- CHAT_EXTENDS
 -- チャットフレームを拡張したアドオン
@@ -9,6 +11,7 @@ local addonName = "CHATEXTENDS";
 local addonNameLower = string.lower(addonName);
 --作者名
 local author = "torahamu";
+local author_sound = "torahamu_sound";
 
 --アドオン内で使用する領域を作成。以下、ファイル内のスコープではグローバル変数gでアクセス可
 _G["ADDONS"] = _G["ADDONS"] or {};
@@ -74,6 +77,9 @@ local acutil = require('acutil');
 -- 読み込みフラグ
 g.loaded=false
 
+-- チャットタイプ
+g.chattype=0
+
 --lua読み込み時のメッセージ
 CHAT_SYSTEM(string.format("%s.lua is loaded", addonName));
 
@@ -85,6 +91,7 @@ if option.GetCurrentCountry()=="Japanese" then
 	rectxt = "チャット内容を記録し続ける";
 	ballontxt = "吹き出しで表示する";
 	enable_type_txt = "簡易表示の時に{nl}発言の種類を表示する"
+	sounds_txt = "チャットサウンド設定"
 else
 	headertxt = "extends setting";
 	systemtxt = "Display system messages{nl}only in the total frame";
@@ -92,6 +99,7 @@ else
 	rectxt = "Record Chat Content";
 	ballontxt = "Ballon Chat";
 	enable_type_txt = "Display the type of remark{nl}at the time of simple chat"
+	sounds_txt = "Chat Sounds Setting"
 end
 
 function CHATEXTENDS_SAVE_SETTINGS()
@@ -101,18 +109,14 @@ end
 --マップ読み込み時処理（1度だけ）
 function ZCHATEXTENDS_ON_INIT(addon, frame)
 	-- 初期設定項目は1度だけ行う
-	if g.loaded==false then
+	if not g.loaded then
 		local mainchatFrame = ui.GetFrame("chatframe")
 		if mainchatFrame ~= nil then
 			local groupbox = GET_CHILD(mainchatFrame, "chatgbox_TOTAL");
 			if groupbox ~= nil then
 				groupbox = tolua.cast(groupbox, "ui::CGroupBox");
 				groupbox:SetSkinName("chat_Whisper_talkskin_cusoron");
-			else
-				print("groupbox nil!!")
 			end
-		else
-			print("mainchatFrame nil!!")
 		end
 		g.addon = addon;
 		g.frame = frame;
@@ -140,7 +144,6 @@ function ZCHATEXTENDS_ON_INIT(addon, frame)
 			CHATEXTENDS_CHAT_ADD_GBOX_OPTION_FOR_CHATFRAME_OLD = _ADD_GBOX_OPTION_FOR_CHATFRAME;
 			_ADD_GBOX_OPTION_FOR_CHATFRAME = CHATEXTENDS_CHAT_ADD_GBOX_OPTION_FOR_CHATFRAME;
 		end
-
 
 		if nil == CHATEXTENDS_SetChatType_OLD then
 			CHATEXTENDS_SetChatType_OLD = _G['ui'].SetChatType;
@@ -176,11 +179,22 @@ function ZCHATEXTENDS_ON_INIT(addon, frame)
 			g.loaded = true;
 		end
 	end
+	-- イベント登録
+	addon:RegisterMsg("GAME_START_3SEC", "CHATEXTENDS_SET_CHAT_TYPE_3SEC");
+	acutil.setupEvent(addon, "DRAW_CHAT_MSG", "CHATEXTENDS_SOUND_DRAW_CHAT_MSG_EVENT");
 
 	-- チャット入力を変更
 	CHATEXTENDS_UPDATE_CHAT_FRAME()
 	-- 設定項目をチャットオプションに追加
 	CHATEXTENDS_CREATE_CHATOPTION_FRAME();
+
+end
+
+-- 発言種類設定
+function CHATEXTENDS_SET_CHAT_TYPE_3SEC()
+	ui.SetChatType(g.chattype);
+	-- なぜか開くので
+	ui.CloseFrame("chat");
 end
 
 -- チャット入力を変更
@@ -350,6 +364,16 @@ function CHATEXTENDS_CREATE_CHATOPTION_FRAME()
 		enable_type_flg_chk:SetCheck(0);
 	end
 
+	local soundbtn = chat_option_frame:CreateOrGetControl("button", "CHATEXTENDS_SOUNDS_BUTTON", 320, 315, 150, 30);
+	soundbtn = tolua.cast(soundbtn, "ui::CButton");
+	soundbtn:SetFontName("white_16_ol");
+	soundbtn:SetText(sounds_txt);
+	soundbtn:SetClickSound("button_click");
+	soundbtn:SetOverSound("button_cursor_over_2");
+	soundbtn:SetAnimation("MouseOnAnim", "btn_mouseover");
+	soundbtn:SetAnimation("MouseOffAnim", "btn_mouseoff");
+	soundbtn:SetEventScript(ui.LBUTTONDOWN, "CHATEXTENDS_SOUND_FRAME_OPEN");
+
 end
 
 -- チャットオープン処理
@@ -443,6 +467,7 @@ function CHATEXTENDS_SetChatType(typeIvalue)
 	CHATEXTENDS_SetChatType_OLD(typeIvalue);
 	-- チャット内容復旧
 	SET_CHAT_TEXT(str);
+	g.chattype = ui.GetChatType();
 end
 
 -- タブキー押下時のフック
@@ -456,6 +481,7 @@ function CHATEXTENDS_ProcessTabKey()
 		CHATEXTENDS_ProcessTabKey_OLD();
 		-- チャット内容復旧
 		SET_CHAT_TEXT(str);
+		g.chattype = ui.GetChatType();
 	else
 		CHATEXTENDS_ProcessTabKey_OLD();
 	end
@@ -474,6 +500,7 @@ end
 function CHATEXTENDS_DRAW_CHAT_MSG(groupboxname, startindex, chatframe)
 	local mainchatFrame = ui.GetFrame("chatframe")
 	local groupbox = GET_CHILD(chatframe, groupboxname);
+	CHATEXTENDS_CHAT_SET_OPACITY(groupbox);
 	local size = session.ui.GetMsgInfoSize(groupboxname)
 	local nicoflg = true;
 	local recflg = true;
@@ -1162,12 +1189,10 @@ end
 -- フレームスキン変更
 --************************************************
 function CHATEXTENDS_CHAT_ADD_GBOX_OPTION_FOR_CHATFRAME(gbox)
-
 	gbox = AUTO_CAST(gbox)
 	
 	local parentframe = gbox:GetParent()
 
-	
 	gbox:SetLeftScroll(1)
 	-- skin change
 --	gbox:SetSkinName("chat_window")
@@ -1187,7 +1212,18 @@ function CHATEXTENDS_CHAT_ADD_GBOX_OPTION_FOR_CHATFRAME(gbox)
 		gbox:ShowWindow(1)
 	end
 
-    local opacity = session.chat.GetChatUIOpacity()
+	CHATEXTENDS_CHAT_SET_OPACITY(gbox)
+
+end
+
+--************************************************
+-- 背景色設定
+--************************************************
+function CHATEXTENDS_CHAT_SET_OPACITY(gbox)
+	local parentframe = gbox:GetParent()
+
+    local opacity = session.chat.GetChatUIOpacity();
+
 	local colorToneStr = string.format("%02X", opacity);
 	colorToneStr = colorToneStr .. "FFFFFF";
 

@@ -3,10 +3,10 @@
 		"name" : "Treasure Map",
 		"file" : "treasuremap",
 		"extension" : "ipf",
-		"fileVersion" : "v1.0.4",
+		"fileVersion" : "v1.1.0",
 		"releaseTag" : "treasuremap",
 		"unicode" : "⛄",
-		"description" : "An add-on that shows treasure chests on the map.  マップ上に宝の場所を表示する。",
+		"description" : "An add-on that shows treasure chests on the map.[v1.1.0 The already opened treasure box is displayed as "opened".]  マップ上に宝の場所を表示する。[v1.1.0 開けた宝箱は「opened」と表示されます]",
 		"tags" : [
 			"ui",
 			"map",
@@ -101,10 +101,10 @@
 		"name" : "chatextends",
 		"file" : "chatextends",
 		"extension" : "ipf",
-		"fileVersion" : "v2.2.4",
+		"fileVersion" : "v2.3.0",
 		"releaseTag" : "chatextends",
 		"unicode" : "⛄",
-		"description" : "Modify chat.v2.0 Support for new UI.Please look at github for details.[v2.2.4 Bug fix emoticon. Make the background of the chat frame black.]  チャットを色々改造します。v2から新UIに対応しました。詳細はGithubやReadmeを見てください。[v2.2.4 エモーションのバグフィックス。チャットフレームの背景色を黒にした。]",
+		"description" : "Modify chat.v2.0 Support for new UI.Please look at github for details.[v2.3.0 Add Chat sound. You can use it from chat options.]  チャットを色々改造します。v2から新UIに対応しました。詳細はGithubやReadmeを見てください。[v2.3.0 チャットサウンド機能を追加しました。]",
 		"tags" : [
 			"ui",
 			"chat"

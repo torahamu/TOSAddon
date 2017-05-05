@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<uiframe name="zchatsounds" x="0" y="0" width="10" height="10">
+	<frame title="" stretch="true" snapclient="true" snapframe="true" layout_gravity="center center" margin="0 0 0 0" hideable="false"/>
+    <option visible="true" alwaysVisible="false" hideable="false"/>
+	<input hittest="true" movable="true" moveintitlebar="false" hittestframe="true"/>
+    <layer layerlevel="99"/>
+	<draw drawnotitlebar="false" drawtitlebar="false" drawframe="true"/>
+	<skin frameskin="wiki_add"/>
+	<controls>
+	</controls>
+</uiframe>
