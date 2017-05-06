@@ -106,6 +106,7 @@ end
 
 --マップ読み込み時処理（1度だけ）
 function ZCHATSOUNDS_ON_INIT(addon, frame)
+	frame:ShowWindow(0);
 	if not g.loaded then
 		local t, err = acutil.loadJSON(g.settingsFileLoc, g.settings);
 		-- 読み込めない = ファイルがない

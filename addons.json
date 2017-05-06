@@ -101,7 +101,7 @@
 		"name" : "chatextends",
 		"file" : "chatextends",
 		"extension" : "ipf",
-		"fileVersion" : "v2.3.1",
+		"fileVersion" : "v2.3.2",
 		"releaseTag" : "chatextends",
 		"unicode" : "⛄",
 		"description" : "Modify chat.v2.0 Support for new UI.Please look at github for details.[v2.3.1 Add Chat sound. You can use it from chat options.]  チャットを色々改造します。v2から新UIに対応しました。詳細はGithubやReadmeを見てください。[v2.3.1 チャットサウンド機能を追加しました。]",
