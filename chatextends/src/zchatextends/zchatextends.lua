@@ -498,7 +498,6 @@ end
 function CHATEXTENDS_DRAW_CHAT_MSG(groupboxname, startindex, chatframe)
 	local mainchatFrame = ui.GetFrame("chatframe")
 	local groupbox = GET_CHILD(chatframe, groupboxname);
-	CHATEXTENDS_CHAT_SET_OPACITY(groupbox);
 	local size = session.ui.GetMsgInfoSize(groupboxname)
 	local nicoflg = true;
 	local recflg = true;
@@ -514,12 +513,13 @@ function CHATEXTENDS_DRAW_CHAT_MSG(groupboxname, startindex, chatframe)
 		return 1;
 	end
 
+	CHATEXTENDS_CHAT_SET_OPACITY(groupbox);
+
 	if startindex == 0 then
 		DESTROY_CHILD_BYNAME(groupbox, "cluster_");
 		nicoflg = false;
 		recflg = false;
 	end
-
 
 	local marginLeft = 20;
 	local marginRight = 0;
@@ -894,7 +894,6 @@ function CHATEXTENDS_BALLON_DRAW(groupboxname, groupbox, clustername, clusterinf
 			txt:SetTextByKey("font", fontStyle);
 			txt:SetTextByKey("size", fontSize);
 			txt:SetTextByKey("text", msgString);
-
 			local labelMarginX = 0
 			local labelMarginY = 0
 
@@ -947,7 +946,7 @@ function CHATEXTENDS_GET_CHAT_COLOR(msgType)
 		targetColor = g.fontsettings.COLOR_PARTY;	
 	elseif msgType == 'Guild' then
 		myColor = g.fontsettings.COLOR_GUILD_MY;
-		targetColor = g.fontsettings.COLOR_GUILD;	
+		targetColor = g.fontsettings.COLOR_GUILD;
 	elseif msgType == "friendmem" then
 		targetColor = g.fontsettings.COLOR_PARTY_INFO;
 	elseif msgType == "guildmem" then
@@ -1087,8 +1086,10 @@ function CHATEXTENDS_GET_MSGTYPE_TXT(msgType)
 			return "[お知らせ　]";
 		elseif msgType == "System" then
 			return "[システム　]";
-		else
+		elseif msgType == "Whisper" then
 			return "[ささやき　]";
+		elseif msgType == "Group" then
+			return "[グループ　]";
 		end
 	else
 		return "["..msgType.."]";
