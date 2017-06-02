@@ -111,7 +111,7 @@
 		]
 	},
 	{
-		"name" : "removereditemalert",
+		"name" : "Remove RedItem Alert",
 		"file" : "removereditemalert",
 		"extension" : "ipf",
 		"fileVersion" : "v1.0.0",
