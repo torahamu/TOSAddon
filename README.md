@@ -111,3 +111,15 @@ chatextends
 ----
 
 Modify chat.  
+
+
+removereditemalert
+--
+![alt text](http://i.imgur.com/U6zoF1P.png "jp Screenshot")
+
+ログアウトする時に期限が切れそうなアイテムがあると出てくるウィンドウを、表示させなくするアドオンです。  
+
+----
+
+It is an add-on that will not display the window that appears if there are items that are about to expire when logging out.  
+
