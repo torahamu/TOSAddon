@@ -109,19 +109,6 @@
 			"ui",
 			"chat"
 		]
-	},
-	{
-		"name" : "removereditemalert",
-		"file" : "removereditemalert",
-		"extension" : "ipf",
-		"fileVersion" : "v1.0.0",
-		"releaseTag" : "removereditemalert",
-		"unicode" : "⛄",
-		"description" : "It is an add-on that will not display the window that appears if there are items that are about to expire when logging out.  ログアウトする時に期限が切れそうなアイテムがあると出てくるウィンドウを、表示させなくするアドオンです。",
-		"tags" : [
-			"ui",
-			"alert"
-		]
 	}
 
 ]
