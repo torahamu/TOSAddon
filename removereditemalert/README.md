@@ -1,4 +1,4 @@
-removereditemalert
+Remove RedItem Alert
 --
 ![alt text](http://i.imgur.com/U6zoF1P.png "jp Screenshot")
 
