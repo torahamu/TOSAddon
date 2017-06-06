@@ -122,6 +122,19 @@
 			"ui",
 			"alert"
 		]
+	},
+	{
+		"name" : "Job Change Command",
+		"file" : "jobchangecommand",
+		"extension" : "ipf",
+		"fileVersion" : "v1.0.0",
+		"releaseTag" : "jobchangecommand",
+		"unicode" : "⛄",
+		"description" : "You will be able to display class change job screen with [/job] command.  クラス転職画面を「/job」コマンドで表示出来るようになります。",
+		"tags" : [
+			"ui",
+			"alert"
+		]
 	}
 
 ]
