@@ -180,6 +180,8 @@ function ZCHATEXTENDS_ON_INIT(addon, frame)
 	-- イベント登録
 	addon:RegisterMsg("GAME_START_3SEC", "CHATEXTENDS_SET_CHAT_TYPE_3SEC");
 	acutil.setupEvent(addon, "DRAW_CHAT_MSG", "CHATEXTENDS_SOUND_DRAW_CHAT_MSG_EVENT");
+	acutil.setupEvent(addon, "DRAW_CHAT_MSG", "CHATEXTENDS_NICO_CHAT_DRAW");
+	acutil.setupEvent(addon, "DRAW_CHAT_MSG", "CHATEXTENDS_CHAT_REC");
 
 	-- チャット入力を変更
 	CHATEXTENDS_UPDATE_CHAT_FRAME()
@@ -499,8 +501,6 @@ function CHATEXTENDS_DRAW_CHAT_MSG(groupboxname, startindex, chatframe)
 	local mainchatFrame = ui.GetFrame("chatframe")
 	local groupbox = GET_CHILD(chatframe, groupboxname);
 	local size = session.ui.GetMsgInfoSize(groupboxname)
-	local nicoflg = true;
-	local recflg = true;
 
 	if groupbox == nil then
 		return 1;
@@ -509,16 +509,18 @@ function CHATEXTENDS_DRAW_CHAT_MSG(groupboxname, startindex, chatframe)
 	if groupbox:IsVisible() == 0 then
 		return 1;
 	end
-	if chatframe:IsVisible() == 0 then
-		return 1;
-	end
 
 	CHATEXTENDS_CHAT_SET_OPACITY(groupbox);
 
+if groupboxname ~= "chatgbox_TOTAL" then
+print("--START--------------------------------------")
+print("groupboxname:"..tostring(groupboxname))
+print("startindex:"..tostring(startindex))
+end
+
+
 	if startindex == 0 then
 		DESTROY_CHILD_BYNAME(groupbox, "cluster_");
-		nicoflg = false;
-		recflg = false;
 	end
 
 	local marginLeft = 20;
@@ -544,6 +546,14 @@ function CHATEXTENDS_DRAW_CHAT_MSG(groupboxname, startindex, chatframe)
 		local clustername = "cluster_"..clusterinfo:GetMsgInfoID();
 		local msgType = clusterinfo:GetMsgType();
 		local commnderName = clusterinfo:GetCommanderName();
+		local tempCommnderName = string.gsub(commnderName,"( %[.+%])", "");
+if groupboxname ~= "chatgbox_TOTAL" then
+print("i:"..tostring(i))
+print("commnderName:"..tostring(commnderName))
+print("tempCommnderName:"..tostring(tempCommnderName))
+print("GETMYFAMILYNAME():"..tostring(GETMYFAMILYNAME()))
+print("clusterinfo:GetMsg():"..tostring(clusterinfo:GetMsg()))
+end
 
 		local colorType = session.chat.GetRoomConfigColorType(clusterinfo:GetRoomID())
 		local colorCls = GetClassByType("ChatColorStyle", colorType)
@@ -568,7 +578,7 @@ function CHATEXTENDS_DRAW_CHAT_MSG(groupboxname, startindex, chatframe)
 				chatCtrl:EnableAutoResize(true,false);
 
 
-				if commnderName ~= GETMYFAMILYNAME() then
+				if tempCommnderName ~= GETMYFAMILYNAME() then
 					chatCtrl:SetSkinName("")
 				end
 				local commnderNameUIText = commnderName .. " : "
@@ -582,7 +592,7 @@ function CHATEXTENDS_DRAW_CHAT_MSG(groupboxname, startindex, chatframe)
 				local fontStyle = nil;
 				local msgIsMine = false;
 
-				if commnderName == GETMYFAMILYNAME() then
+				if tempCommnderName == GETMYFAMILYNAME() then
 					msgIsMine = true;
 					label:SetColorTone("FF000000");
 					label:SetAlpha(60);
@@ -702,10 +712,6 @@ function CHATEXTENDS_DRAW_CHAT_MSG(groupboxname, startindex, chatframe)
 
 			end
 		end
-		-- ニコニコ表示
-		CHATEXTENDS_NICO_CHAT_DRAW(nicoflg, groupboxname, clusterinfo, msgType, chatframe);
-		-- チャット保存
-		CHATEXTENDS_CHAT_REC(recflg, groupboxname, clusterinfo, msgType, chatframe)
 	end
 
 
@@ -721,19 +727,12 @@ function CHATEXTENDS_DRAW_CHAT_MSG(groupboxname, startindex, chatframe)
 	local changedLineCount = afterLineCount - beforeLineCount;
 	local curLine = groupbox:GetCurLine();
 
-	if (config.GetXMLConfig("ToggleBottomChat") == 1) or (scrollend == true) then
-		groupbox:SetScrollPos(99999);
-	else 
-		groupbox:SetScrollPos(curLine + changedLineCount);
-	end
+	groupbox:SetScrollPos(99999);
+	UPDATE_READ_FLAG_BY_GBOX_NAME(groupboxname)
 
-	local gboxtype = string.sub(groupboxname,string.len("chatgbox_") + 1)
-	local tonumberret = tonumber(gboxtype)
-
-    if tonumberret ~= nil and tonumberret > (2^CHAT_TAB_TYPE_COUNT) - 1 then
-		UPDATE_READ_FLAG_BY_GBOX_NAME("chatgbox_" .. gboxtype)
-	end
-
+if groupboxname ~= "chatgbox_TOTAL" then
+print("--END----------------------------------------")
+end
 	return 1
 end
 
@@ -763,40 +762,101 @@ end
 -- ***************************************
 -- ニコニコ表示用
 -- ***************************************
-function CHATEXTENDS_NICO_CHAT_DRAW(nicoflg, groupboxname, clusterinfo, msgType, chatframe)
-	-- 設定のニコフラグがON
-	if (g.settings.NICO_CHAT_FLG) then
-	-- 発言はニコニコ風に出していい、かつメインフレーム、かつシステムメッセージではない、かつ全体フレーム
-		if (nicoflg) and (chatframe == ui.GetFrame("chatframe")) and (msgType ~= "Notice") and (msgType ~= "System") and (groupboxname == "chatgbox_TOTAL") then
-			-- 内容
-			local nicoMsg = string.gsub(clusterinfo:GetMsg(), "({/}{/})", "%1{@st64}");
-			NICO_CHAT(string.format("[%s] : %s", clusterinfo:GetCommanderName(), nicoMsg));
-		end
+function CHATEXTENDS_NICO_CHAT_DRAW(frame, msg)
+	local groupboxname, startindex, chatframe = acutil.getEventArgs(msg);
+
+	-- 設定のニコフラグがOFFなら終了
+	if g.settings.NICO_CHAT_FLG == false then
+		return;
+	end
+
+	-- 再描画とかで開始インデックスが0以下なら終了
+	if startindex <= 0 then
+		return;
+	end
+	-- メインのチャットフレームの文言のみ
+	if chatframe ~= ui.GetFrame("chatframe") then
+		return;
+	end
+	-- メインの全体発言のみ
+	if groupboxname ~= "chatgbox_TOTAL" then
+		return;
+	end
+
+	local groupbox = GET_CHILD(chatframe,groupboxname);
+	-- 取れなかったら(ありえるのか？)終了
+	if groupbox == nil then
+		return;
+	end
+
+	local clusterinfo = session.ui.GetChatMsgInfo(groupboxname, startindex)
+	-- 取れなかったら(ありえるのか？)終了
+	if clusterinfo == nil then
+		return;
+	end
+	local msgType = clusterinfo:GetMsgType();
+
+	-- 発言はシステムメッセージではない
+	if (msgType ~= "Notice") and (msgType ~= "System") then
+		-- 内容
+		local nicoMsg = string.gsub(clusterinfo:GetMsg(), "({/}{/})", "%1{@st64}");
+		NICO_CHAT(string.format("[%s] : %s", clusterinfo:GetCommanderName(), nicoMsg));
 	end
 end
 
 -- ***************************************
 -- 発言レコード保存
 -- ***************************************
-function CHATEXTENDS_CHAT_REC(recflg, groupboxname, clusterinfo, msgType, chatframe)
+function CHATEXTENDS_CHAT_REC(frame, msg)
+	local groupboxname, startindex, chatframe = acutil.getEventArgs(msg);
+
+	-- 設定の録画フラグがOFFなら終了
+	if g.settings.REC_CHAT_FLG == false then
+		return;
+	end
+
+	-- 再描画とかで開始インデックスが0以下なら終了
+	if startindex <= 0 then
+		return;
+	end
+	-- メインのチャットフレームの文言のみ
+	if chatframe ~= ui.GetFrame("chatframe") then
+		return;
+	end
+	-- メインの全体発言のみ
+	if groupboxname ~= "chatgbox_TOTAL" then
+		return;
+	end
+
+	local groupbox = GET_CHILD(chatframe,groupboxname);
+	-- 取れなかったら(ありえるのか？)終了
+	if groupbox == nil then
+		return;
+	end
+
+	local clusterinfo = session.ui.GetChatMsgInfo(groupboxname, startindex)
+	-- 取れなかったら(ありえるのか？)終了
+	if clusterinfo == nil then
+		return;
+	end
+	local msgType = clusterinfo:GetMsgType();
+
 	-- 設定の録画フラグがON
-	if (g.settings.REC_CHAT_FLG) then
-		-- 発言は録画していい、かつメインフレーム、かつシステムメッセージではない、かつ全体フレーム
-		if (recflg) and (chatframe == ui.GetFrame("chatframe")) and (msgType ~= "Notice") and (msgType ~= "System") and (groupboxname == "chatgbox_TOTAL") then
-			-- ファイル名に使用する時間
-			local time = geTime.GetServerSystemTime();
-			local year = string.format("%04d",time.wYear);
-			local month = string.format("%02d",time.wMonth);
-			local day = string.format("%02d",time.wDay);
+	-- 発言はシステムメッセージではない
+	if (msgType ~= "Notice") and (msgType ~= "System") then
+		-- ファイル名に使用する時間
+		local time = geTime.GetServerSystemTime();
+		local year = string.format("%04d",time.wYear);
+		local month = string.format("%02d",time.wMonth);
+		local day = string.format("%02d",time.wDay);
 
-			-- ファイル名は recchat_YYYYMMDD_キャラ名.txt
-			local logfile=string.format("recchat_%s%s%s_%s.txt", year,month,day,GETMYPCNAME());
+		-- ファイル名は recchat_YYYYMMDD_キャラ名.txt
+		local logfile=string.format("recchat_%s%s%s_%s.txt", year,month,day,GETMYPCNAME());
 
-			-- ファイル追記モード
-			file,err = io.open(g.SAVE_DIR.."/"..logfile, "a");
-			file:write(CHATEXTENDS_GET_MSGBODY(clusterinfo,clusterinfo:GetMsg()));
-			file:close();
-		end
+		-- ファイル追記モード
+		file,err = io.open(g.SAVE_DIR.."/"..logfile, "a");
+		file:write(CHATEXTENDS_GET_MSGBODY(clusterinfo,clusterinfo:GetMsg()));
+		file:close();
 	end
 end
 
@@ -806,6 +866,7 @@ end
 function CHATEXTENDS_BALLON_DRAW(groupboxname, groupbox, clustername, clusterinfo, commnderName, msgType, marginRight, marginLeft, ypos, fontSize)
 	local cluster = GET_CHILD(groupbox, clustername);
 	local tempfontSize = string.format("{s%s}", fontSize);
+	local tempCommnderName = string.gsub(commnderName,"( %[.+%])", "");
 
 	if cluster ~= nil then
 
@@ -853,7 +914,7 @@ function CHATEXTENDS_BALLON_DRAW(groupboxname, groupbox, clustername, clusterinf
 	else
 
 		local chatCtrlName = 'chatu';
-		if commnderName == GETMYFAMILYNAME() then
+		if tempCommnderName == GETMYFAMILYNAME() then
 			chatCtrlName = 'chati';
 		end
 		local horzGravity = ui.LEFT;
