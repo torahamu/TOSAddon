@@ -35,8 +35,6 @@ if not g.loaded then
 	BALLON_FLG=false;
 	-- タイプ表示フラグ
 	ENABLE_TYPE_FLG=true;
-	-- 自動更新有無
-	AUTO_READ_FLG=true;
   };
 end
 
@@ -145,6 +143,11 @@ function ZCHATEXTENDS_ON_INIT(addon, frame)
 		if nil == CHATEXTENDS_CHAT_ADD_GBOX_OPTION_FOR_CHATFRAME_OLD then
 			CHATEXTENDS_CHAT_ADD_GBOX_OPTION_FOR_CHATFRAME_OLD = _ADD_GBOX_OPTION_FOR_CHATFRAME;
 			_ADD_GBOX_OPTION_FOR_CHATFRAME = CHATEXTENDS_CHAT_ADD_GBOX_OPTION_FOR_CHATFRAME;
+		end
+
+		if nil == CHATEXTENDS_CHAT_TOGGLE_BOTTOM_CHAT_OLD then
+			CHATEXTENDS_CHAT_TOGGLE_BOTTOM_CHAT_OLD = TOGGLE_BOTTOM_CHAT;
+			TOGGLE_BOTTOM_CHAT = CHATEXTENDS_CHAT_TOGGLE_BOTTOM_CHAT;
 		end
 
 		if nil == CHATEXTENDS_SetChatType_OLD then
@@ -376,12 +379,8 @@ function CHATEXTENDS_CREATE_CHATOPTION_FRAME()
 	auto_read_flg_chk:SetAnimation("MouseOnAnim", "btn_mouseover");
 	auto_read_flg_chk:SetAnimation("MouseOffAnim", "btn_mouseoff");
 	auto_read_flg_chk:SetOverSound('button_over');
-	auto_read_flg_chk:SetEventScript(ui.LBUTTONUP, "CHATEXTENDS_TOGGLE_AUTO_READ_FLG");
-	if g.settings.AUTO_READ_FLG then
-		auto_read_flg_chk:SetCheck(1);
-	else
-		auto_read_flg_chk:SetCheck(0);
-	end
+	auto_read_flg_chk:SetEventScript(ui.LBUTTONUP, "TOGGLE_BOTTOM_CHAT");
+	auto_read_flg_chk:SetCheck(config.GetXMLConfig("ToggleBottomChat"));
 
 	local soundbtn = chat_option_frame:CreateOrGetControl("button", "CHATEXTENDS_SOUNDS_BUTTON", 320, 365, 150, 30);
 	soundbtn = tolua.cast(soundbtn, "ui::CButton");
@@ -449,6 +448,7 @@ function CHATEXTENDS_TOGGLE_BALLON_FLG(frame, ctrl, argStr, argNum)
 	CHATEXTENDS_SAVE_SETTINGS();
 	ui.ReDrawAllChatMsg();
 end
+
 -- チェックボックスのイベント
 function CHATEXTENDS_TOGGLE_ENABLE_TYPE_FLG(frame, ctrl, argStr, argNum)
 	if ctrl:IsChecked() == 1 then
@@ -462,16 +462,27 @@ function CHATEXTENDS_TOGGLE_ENABLE_TYPE_FLG(frame, ctrl, argStr, argNum)
 	end
 end
 
--- チェックボックスのイベント
-function CHATEXTENDS_TOGGLE_AUTO_READ_FLG(frame, ctrl, argStr, argNum)
-	if ctrl:IsChecked() == 1 then
-		g.settings.AUTO_READ_FLG = true;
-	else
-		g.settings.AUTO_READ_FLG = false;
-	end
-	CHATEXTENDS_SAVE_SETTINGS();
-end
+-- チェックボックスとチャット左下矢印のイベント
+function CHATEXTENDS_CHAT_TOGGLE_BOTTOM_CHAT()
+	local IsBottomChat = config.GetXMLConfig("ToggleBottomChat")
 
+	local frame = ui.GetFrame("chatframe")
+	local bottomlockbtn = GET_CHILD_RECURSIVELY(frame,"bottomlockbtn")
+
+	if IsBottomChat == 1 then
+		config.ChangeXMLConfig("ToggleBottomChat",0)
+		bottomlockbtn:SetImage("chat_down_btn");
+	else
+		config.ChangeXMLConfig("ToggleBottomChat",1)
+		bottomlockbtn:SetImage("chat_down_btn2");
+	end
+
+	local chat_option_frame = ui.GetFrame("chat_option");
+	local auto_read_flg_chk = GET_CHILD(chat_option_frame, "CHATEXTENDS_AUTO_READ_FLG");
+	auto_read_flg_chk = tolua.cast(auto_read_flg_chk, "ui::CCheckBox");
+	auto_read_flg_chk:SetCheck(config.GetXMLConfig("ToggleBottomChat"));
+
+end
 
 -- チャットサイズの設定
 -- タイプを変えたりささやき相手の名前表示したりしたら、入力フレームがリサイズされるので、その対策
@@ -746,7 +757,7 @@ function CHATEXTENDS_DRAW_CHAT_MSG(groupboxname, startindex, chatframe)
 	local changedLineCount = afterLineCount - beforeLineCount;
 	local curLine = groupbox:GetCurLine();
 
-	if (startindex == 0) or (g.settings.AUTO_READ_FLG) or (scrollend == true) then
+	if (startindex == 0) or (config.GetXMLConfig("ToggleBottomChat") == 1) or (scrollend == true) then
 		groupbox:SetScrollPos(99999);
 	else 
 		groupbox:SetScrollPos(curLine);
