@@ -101,10 +101,10 @@
 		"name" : "chatextends",
 		"file" : "chatextends",
 		"extension" : "ipf",
-		"fileVersion" : "v2.3.4",
+		"fileVersion" : "v2.4.0",
 		"releaseTag" : "chatextends",
 		"unicode" : "⛄",
-		"description" : "Modify chat.v2.0 Support for new UI.Please look at github for details.[v2.3.4 Bugfix:Added chat windows are not updated.]  チャットを色々改造します。v2から新UIに対応しました。詳細はGithubやReadmeを見てください。[v2.3.4 バグフィックス：追加したチャットウィンドウが更新されない]",
+		"description" : "Modify chat.v2.0 Support for new UI.Please look at github for details.[v2.4.0 Add Option. Always update chat]  チャットを色々改造します。v2から新UIに対応しました。詳細はGithubやReadmeを見てください。[v2.4.0 チャットを常に更新する、というオプションを追加]",
 		"tags" : [
 			"ui",
 			"chat"

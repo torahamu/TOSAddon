@@ -35,6 +35,8 @@ if not g.loaded then
 	BALLON_FLG=false;
 	-- タイプ表示フラグ
 	ENABLE_TYPE_FLG=true;
+	-- 自動更新有無
+	AUTO_READ_FLG=true;
   };
 end
 
@@ -89,6 +91,7 @@ if option.GetCurrentCountry()=="Japanese" then
 	rectxt = "チャット内容を記録し続ける";
 	ballontxt = "吹き出しで表示する";
 	enable_type_txt = "簡易表示の時に{nl}発言の種類を表示する"
+	auto_read_txt = "チャットを常に更新する"
 	sounds_txt = "チャットサウンド設定"
 else
 	headertxt = "extends setting";
@@ -97,6 +100,7 @@ else
 	rectxt = "Record Chat Content";
 	ballontxt = "Ballon Chat";
 	enable_type_txt = "Display the type of remark{nl}at the time of simple chat"
+	auto_read_txt = "Always update chat"
 	sounds_txt = "Chat Sounds Setting"
 end
 
@@ -364,7 +368,22 @@ function CHATEXTENDS_CREATE_CHATOPTION_FRAME()
 		enable_type_flg_chk:SetCheck(0);
 	end
 
-	local soundbtn = chat_option_frame:CreateOrGetControl("button", "CHATEXTENDS_SOUNDS_BUTTON", 320, 315, 150, 30);
+	local auto_read_flg_chk = chat_option_frame:CreateOrGetControl('checkbox', "CHATEXTENDS_AUTO_READ_FLG", 315, 315, 120, 24);
+	auto_read_flg_chk = tolua.cast(auto_read_flg_chk, "ui::CCheckBox");
+	auto_read_flg_chk:SetFontName("white_16_ol");
+	auto_read_flg_chk:SetText(auto_read_txt);
+	auto_read_flg_chk:SetClickSound('button_click_big');
+	auto_read_flg_chk:SetAnimation("MouseOnAnim", "btn_mouseover");
+	auto_read_flg_chk:SetAnimation("MouseOffAnim", "btn_mouseoff");
+	auto_read_flg_chk:SetOverSound('button_over');
+	auto_read_flg_chk:SetEventScript(ui.LBUTTONUP, "CHATEXTENDS_TOGGLE_AUTO_READ_FLG");
+	if g.settings.AUTO_READ_FLG then
+		auto_read_flg_chk:SetCheck(1);
+	else
+		auto_read_flg_chk:SetCheck(0);
+	end
+
+	local soundbtn = chat_option_frame:CreateOrGetControl("button", "CHATEXTENDS_SOUNDS_BUTTON", 320, 365, 150, 30);
 	soundbtn = tolua.cast(soundbtn, "ui::CButton");
 	soundbtn:SetFontName("white_16_ol");
 	soundbtn:SetText(sounds_txt);
@@ -443,6 +462,15 @@ function CHATEXTENDS_TOGGLE_ENABLE_TYPE_FLG(frame, ctrl, argStr, argNum)
 	end
 end
 
+-- チェックボックスのイベント
+function CHATEXTENDS_TOGGLE_AUTO_READ_FLG(frame, ctrl, argStr, argNum)
+	if ctrl:IsChecked() == 1 then
+		g.settings.AUTO_READ_FLG = true;
+	else
+		g.settings.AUTO_READ_FLG = false;
+	end
+	CHATEXTENDS_SAVE_SETTINGS();
+end
 
 
 -- チャットサイズの設定
@@ -512,13 +540,6 @@ function CHATEXTENDS_DRAW_CHAT_MSG(groupboxname, startindex, chatframe)
 
 	CHATEXTENDS_CHAT_SET_OPACITY(groupbox);
 
-if groupboxname ~= "chatgbox_TOTAL" then
-print("--START--------------------------------------")
-print("groupboxname:"..tostring(groupboxname))
-print("startindex:"..tostring(startindex))
-end
-
-
 	if startindex == 0 then
 		DESTROY_CHILD_BYNAME(groupbox, "cluster_");
 	end
@@ -528,10 +549,11 @@ end
 	local ypos = 0;
 
 	for i = startindex , size - 1 do
+		local beforeclusterinfo = nil
 		if i ~= 0 then
-			local clusterinfo = session.ui.GetChatMsgInfo(groupboxname, i-1)
-			if clusterinfo ~= nil then
-				local beforechildname = "cluster_"..clusterinfo:GetMsgInfoID()
+			beforeclusterinfo = session.ui.GetChatMsgInfo(groupboxname, i-1)
+			if beforeclusterinfo ~= nil then
+				local beforechildname = "cluster_"..beforeclusterinfo:GetMsgInfoID()
 				local beforechild = GET_CHILD(groupbox, beforechildname);
 				if beforechild ~= nil then
 					ypos = beforechild:GetY() + beforechild:GetHeight();
@@ -547,13 +569,6 @@ end
 		local msgType = clusterinfo:GetMsgType();
 		local commnderName = clusterinfo:GetCommanderName();
 		local tempCommnderName = string.gsub(commnderName,"( %[.+%])", "");
-if groupboxname ~= "chatgbox_TOTAL" then
-print("i:"..tostring(i))
-print("commnderName:"..tostring(commnderName))
-print("tempCommnderName:"..tostring(tempCommnderName))
-print("GETMYFAMILYNAME():"..tostring(GETMYFAMILYNAME()))
-print("clusterinfo:GetMsg():"..tostring(clusterinfo:GetMsg()))
-end
 
 		local colorType = session.chat.GetRoomConfigColorType(clusterinfo:GetRoomID())
 		local colorCls = GetClassByType("ChatColorStyle", colorType)
@@ -562,13 +577,17 @@ end
 
 		local offsetX = chatframe:GetUserConfig("CTRLSET_OFFSETX");
 		if g.settings.BALLON_FLG then
-			CHATEXTENDS_BALLON_DRAW(groupboxname, groupbox, clustername, clusterinfo, commnderName, msgType, marginRight, marginLeft, ypos, fontSize)
+			CHATEXTENDS_BALLON_DRAW(groupboxname, groupbox, clustername, clusterinfo, commnderName, msgType, marginRight, marginLeft, ypos, fontSize, beforeclusterinfo)
 		else
 
 			local chatCtrl = groupbox:CreateOrGetControlSet('chatTextVer', clustername, ui.LEFT, ui.TOP, marginLeft, ypos + 5 , marginRight, 1);
 
 			-- システムメッセージ削除処理
 			if ( g.settings.SYSTEM_TOTAL_FLG and (msgType == "System" or msgType == "Notice") and groupboxname ~= "chatgbox_TOTAL") then
+				chatCtrl:SetOffset( 0 , ypos);
+				chatCtrl:Resize( 0 , 0);
+				chatCtrl:ShowWindow(0);
+			elseif beforeclusterinfo ~= nil and (tostring(beforeclusterinfo:GetRoomID()) == tostring(clusterinfo:GetRoomID())) and (tostring(beforeclusterinfo:GetCommanderName()) == tostring(clusterinfo:GetCommanderName())) and (tostring(beforeclusterinfo:GetMsg()) == tostring(clusterinfo:GetMsg())) and (tostring(beforeclusterinfo:GetTimeStr()) == tostring(clusterinfo:GetTimeStr())) then
 				chatCtrl:SetOffset( 0 , ypos);
 				chatCtrl:Resize( 0 , 0);
 				chatCtrl:ShowWindow(0);
@@ -727,12 +746,14 @@ end
 	local changedLineCount = afterLineCount - beforeLineCount;
 	local curLine = groupbox:GetCurLine();
 
-	groupbox:SetScrollPos(99999);
+	if (startindex == 0) or (g.settings.AUTO_READ_FLG) or (scrollend == true) then
+		groupbox:SetScrollPos(99999);
+	else 
+		groupbox:SetScrollPos(curLine);
+	end
+
 	UPDATE_READ_FLAG_BY_GBOX_NAME(groupboxname)
 
-if groupboxname ~= "chatgbox_TOTAL" then
-print("--END----------------------------------------")
-end
 	return 1
 end
 
@@ -863,131 +884,88 @@ end
 -- ***************************************
 -- 吹き出し表示
 -- ***************************************
-function CHATEXTENDS_BALLON_DRAW(groupboxname, groupbox, clustername, clusterinfo, commnderName, msgType, marginRight, marginLeft, ypos, fontSize)
-	local cluster = GET_CHILD(groupbox, clustername);
+function CHATEXTENDS_BALLON_DRAW(groupboxname, groupbox, clustername, clusterinfo, commnderName, msgType, marginRight, marginLeft, ypos, fontSize, beforeclusterinfo)
 	local tempfontSize = string.format("{s%s}", fontSize);
 	local tempCommnderName = string.gsub(commnderName,"( %[.+%])", "");
 
-	if cluster ~= nil then
-
-		-- システムメッセージ削除処理
-		if ( g.settings.SYSTEM_TOTAL_FLG and (msgType == "System" or msgType == "Notice") and groupboxname ~= "chatgbox_TOTAL") then
-			cluster:SetOffset( 0 , ypos);
-			cluster:Resize( 0 , 0);
-			cluster:ShowWindow(0);
-		else
-			local fontStyle = g.fontsettings.BALLONCHAT_FONTSTYLE;
-			local label = cluster:GetChild('bg');
-
-			if msgType == "System" then
-				fontStyle = g.fontsettings.BALLONCHAT_FONTSTYLE_SYSTEM;
-			elseif msgType == "friendmem" then
-				fontStyle = g.fontsettings.BALLONCHAT_FONTSTYLE_MEMBER;
-			elseif msgType == "guildmem" then
-				fontStyle = g.fontsettings.BALLONCHAT_FONTSTYLE_MEMBER;
-			end
-			local txt = GET_CHILD(label, "text");
-			local msgString = clusterinfo:GetMsg();
-			msgString = string.gsub(msgString, "({img emoticon.-}){/}{/}", "%1");
-			msgString = string.format("%s%s{/}{/}", tempfontSize, msgString);
-			txt:SetTextByKey("font", fontStyle);
-			txt:SetTextByKey("size", fontSize);
-			txt:SetTextByKey("text", msgString);
-
-			local timeBox = GET_CHILD(cluster, "timebox");
-			CHATEXTENDS_RESIZE_CHAT_CTRL_BALLON(cluster, label, txt, timeBox)
-
-			if cluster:GetHorzGravity() == ui.RIGHT then
-				cluster:SetOffset( marginRight , ypos + 5); 
-			else
-				cluster:SetOffset( marginLeft , ypos + 5); 
-			end
-
-			local slflag = string.find(clusterinfo:GetMsg(),'a SL%a')
-			if slflag == nil then
-				label:EnableHitTest(0)
-			else
-				label:EnableHitTest(1)
-			end
-		end
-
+	local chatCtrlName = 'chatu';
+	if tempCommnderName == GETMYFAMILYNAME() then
+		chatCtrlName = 'chati';
+	end
+	local horzGravity = ui.LEFT;
+	if chatCtrlName == 'chati' then
+		horzGravity = ui.RIGHT;
+	end
+	local chatCtrl = groupbox:CreateOrGetControlSet(chatCtrlName, clustername, horzGravity, ui.TOP, marginLeft, ypos + 5, marginRight, 0);
+	-- システムメッセージ削除処理
+	if ( g.settings.SYSTEM_TOTAL_FLG and (msgType == "System" or msgType == "Notice") and groupboxname ~= "chatgbox_TOTAL") then
+		chatCtrl:SetOffset( 0 , ypos);
+		chatCtrl:Resize( 0 , 0);
+		chatCtrl:ShowWindow(0);
+	elseif beforeclusterinfo ~= nil and (tostring(beforeclusterinfo:GetRoomID()) == tostring(clusterinfo:GetRoomID())) and (tostring(beforeclusterinfo:GetCommanderName()) == tostring(clusterinfo:GetCommanderName())) and (tostring(beforeclusterinfo:GetMsg()) == tostring(clusterinfo:GetMsg())) and (tostring(beforeclusterinfo:GetTimeStr()) == tostring(clusterinfo:GetTimeStr())) then
+		chatCtrl:SetOffset( 0 , ypos);
+		chatCtrl:Resize( 0 , 0);
+		chatCtrl:ShowWindow(0);
 	else
+		chatCtrl:EnableHitTest(1);
 
-		local chatCtrlName = 'chatu';
-		if tempCommnderName == GETMYFAMILYNAME() then
-			chatCtrlName = 'chati';
+		local label = chatCtrl:GetChild('bg');
+		local fontStyle = g.fontsettings.BALLONCHAT_FONTSTYLE;
+		if msgType == "friendmem" then
+			fontStyle = g.fontsettings.BALLONCHAT_FONTSTYLE_MEMBER;
+		elseif msgType == "guildmem" then
+			fontStyle = g.fontsettings.BALLONCHAT_FONTSTYLE_MEMBER;
+		elseif msgType ~= "System" then
+			chatCtrl:SetEventScript(ui.RBUTTONDOWN, 'CHAT_RBTN_POPUP');
+			chatCtrl:SetUserValue("TARGET_NAME", commnderName);
+		elseif msgType == "System" then
+			fontStyle = g.fontsettings.BALLONCHAT_FONTSTYLE_SYSTEM;
 		end
-		local horzGravity = ui.LEFT;
+
+		local myColor, targetColor = CHATEXTENDS_GET_CHAT_COLOR(msgType);
+		local txt = GET_CHILD(label, "text", "ui::CRichText");
+		local timeBox = GET_CHILD(chatCtrl, "timebox", "ui::CGroupBox");
+		local timeCtrl = GET_CHILD(timeBox, "time", "ui::CRichText");
+		local nameText = GET_CHILD(chatCtrl, "name", "ui::CRichText");
+
+		local msgString = clusterinfo:GetMsg();
+		msgString = string.gsub(msgString, "({img emoticon.-}){/}{/}", "%1");
+		msgString = string.format("%s%s{/}{/}", tempfontSize, msgString);
+		txt:SetTextByKey("font", fontStyle);
+		txt:SetTextByKey("size", fontSize);
+		txt:SetTextByKey("text", msgString);
+		local labelMarginX = 0
+		local labelMarginY = 0
+
 		if chatCtrlName == 'chati' then
-			horzGravity = ui.RIGHT;
-		end
-		local chatCtrl = groupbox:CreateOrGetControlSet(chatCtrlName, clustername, horzGravity, ui.TOP, marginLeft, ypos + 5, marginRight, 0);
-		-- システムメッセージ削除処理
-		if ( g.settings.SYSTEM_TOTAL_FLG and (msgType == "System" or msgType == "Notice") and groupboxname ~= "chatgbox_TOTAL") then
-			chatCtrl:SetOffset( 0 , ypos);
-			chatCtrl:Resize( 0 , 0);
-			chatCtrl:ShowWindow(0);
+			label:SetSkinName('textballoon_i');
+			label:SetColorTone(myColor);
 		else
-			chatCtrl:EnableHitTest(1);
-
-			local label = chatCtrl:GetChild('bg');
-			local fontStyle = g.fontsettings.BALLONCHAT_FONTSTYLE;
-			if msgType == "friendmem" then
-				fontStyle = g.fontsettings.BALLONCHAT_FONTSTYLE_MEMBER;
-			elseif msgType == "guildmem" then
-				fontStyle = g.fontsettings.BALLONCHAT_FONTSTYLE_MEMBER;
-			elseif msgType ~= "System" then
-				chatCtrl:SetEventScript(ui.RBUTTONDOWN, 'CHAT_RBTN_POPUP');
-				chatCtrl:SetUserValue("TARGET_NAME", commnderName);
-			elseif msgType == "System" then
-				fontStyle = g.fontsettings.BALLONCHAT_FONTSTYLE_SYSTEM;
-			end
-
-			local myColor, targetColor = CHATEXTENDS_GET_CHAT_COLOR(msgType);
-			local txt = GET_CHILD(label, "text", "ui::CRichText");
-			local timeBox = GET_CHILD(chatCtrl, "timebox", "ui::CGroupBox");
-			local timeCtrl = GET_CHILD(timeBox, "time", "ui::CRichText");
-			local nameText = GET_CHILD(chatCtrl, "name", "ui::CRichText");
-
-			local msgString = clusterinfo:GetMsg();
-			msgString = string.gsub(msgString, "({img emoticon.-}){/}{/}", "%1");
-			msgString = string.format("%s%s{/}{/}", tempfontSize, msgString);
-			txt:SetTextByKey("font", fontStyle);
-			txt:SetTextByKey("size", fontSize);
-			txt:SetTextByKey("text", msgString);
-			local labelMarginX = 0
-			local labelMarginY = 0
-
-			if chatCtrlName == 'chati' then
-				label:SetSkinName('textballoon_i');
-				label:SetColorTone(myColor);
+			label:SetColorTone(targetColor);
+			if commnderName == "guildmem" or commnderName == "friendmem" then
+				chatCtrl:RemoveChild("name");
+			elseif commnderName == 'System' then
+				nameText:SetText('{img chat_system_icon 65 18 }{/}');
 			else
-				label:SetColorTone(targetColor);
-				if commnderName == "guildmem" or commnderName == "friendmem" then
-					chatCtrl:RemoveChild("name");
-				elseif commnderName == 'System' then
-					nameText:SetText('{img chat_system_icon 65 18 }{/}');
-				else
-					nameText:SetText('{@st61}'..commnderName..'{/}');
-					nameText:SetEventScript(ui.RBUTTONDOWN, 'CHAT_RBTN_POPUP');
-					nameText:SetUserValue("TARGET_NAME", commnderName);
-				end
-
-				local iconPicture = GET_CHILD(chatCtrl, "iconPicture", "ui::CPicture");
-				iconPicture:ShowWindow(0);
+				nameText:SetText('{@st61}'..commnderName..'{/}');
+				nameText:SetEventScript(ui.RBUTTONDOWN, 'CHAT_RBTN_POPUP');
+				nameText:SetUserValue("TARGET_NAME", commnderName);
 			end
 
-			timeCtrl:SetTextByKey("time", clusterinfo:GetTimeStr());
-
-			local slflag = string.find(clusterinfo:GetMsg(),'a SL%a')
-			if slflag == nil then
-				label:EnableHitTest(0)
-			else
-				label:EnableHitTest(1)
-			end
-			UPDATE_READ_FLAG_BY_GBOX_NAME(groupboxname);
-			CHATEXTENDS_RESIZE_CHAT_CTRL_BALLON(chatCtrl, label, txt, timeBox);
+			local iconPicture = GET_CHILD(chatCtrl, "iconPicture", "ui::CPicture");
+			iconPicture:ShowWindow(0);
 		end
+
+		timeCtrl:SetTextByKey("time", clusterinfo:GetTimeStr());
+
+		local slflag = string.find(clusterinfo:GetMsg(),'a SL%a')
+		if slflag == nil then
+			label:EnableHitTest(0)
+		else
+			label:EnableHitTest(1)
+		end
+		UPDATE_READ_FLAG_BY_GBOX_NAME(groupboxname);
+		CHATEXTENDS_RESIZE_CHAT_CTRL_BALLON(chatCtrl, label, txt, timeBox);
 	end
 end
 
