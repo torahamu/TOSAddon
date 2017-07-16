@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<uiframe name="altarget" x="0" y="0" width="225" height="150">
+	<frame fullheight="false" fasthide="false" layout_gravity="center center" margin="0 -75 0 0" scale_align="right center"/>
+	<skin frameskin="none"/>
+	<draw drawnotitlebar="false" drawtitlebar="false"/>
+	<layer layerlevel="0"/>
+  <option hideable="false" alwaysVisible="false" autoopen="false"/>
+	<animation frameOpenAnim="chat_balloon_start" frameCloseAnim="chat_balloon_end2"/>
+  <controls>
+		<picture name="itembgimg" rect="0 0 120 120" margin="0 0 0 0" layout_gravity="center top" changecursor="false" hittest="false" image="gacha_01" stretch="true"/>
+    <picture name="itemimg" rect="0 0 70 70" margin="0 25 0 0" layout_gravity="center top" changecursor="false" hittest="false" image="gacha_01" stretch="true"/>
+		<richtext name="title" rect="0 0 80 30" margin="0 0 0 0" layout_gravity="center top" caption="{@st43}{/}"/>
+		<richtext name="hit" rect="0 20 80 30" margin="0 0 0 0" layout_gravity="center top" caption="{@st43}{/}"/>
+		<richtext name="avoid" rect="0 40 80 30" margin="0 0 0 0" layout_gravity="center top" caption="{@st43}{/}"/>
+		<richtext name="cri" rect="0 60 80 30" margin="0 0 0 0" layout_gravity="center top" caption="{@st43}{/}"/>
+		<richtext name="gematoria" rect="0 80 80 30" margin="0 0 0 0" layout_gravity="center top" caption="{@st43}{/}"/>
+		<richtext name="notaricon" rect="0 100 80 30" margin="0 0 0 0" layout_gravity="center top" caption="{@st43}{/}"/>
+	</controls>
+</uiframe>
