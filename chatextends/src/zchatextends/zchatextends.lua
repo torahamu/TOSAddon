@@ -9,7 +9,6 @@ local addonName = "CHATEXTENDS";
 local addonNameLower = string.lower(addonName);
 --作者名
 local author = "torahamu";
-local author_sound = "torahamu_sound";
 
 --アドオン内で使用する領域を作成。以下、ファイル内のスコープではグローバル変数gでアクセス可
 _G["ADDONS"] = _G["ADDONS"] or {};
@@ -38,10 +37,14 @@ if not g.loaded then
   };
 end
 
--- フォント設定
+-- デフォルトフォント設定
 g.fontsettings = {
+	COLOR_GRO_MY="FF7cd8ff";
+	COLOR_GRO="FFb4ddef";
 	COLOR_WHI_MY="FF7cd8ff";
 	COLOR_WHI_TO="FFb4ddef";
+	COLOR_SYSTEM_MY="FFffe86a";
+	COLOR_SYSTEM="FFFFFFFF";
 	COLOR_NORMAL_MY="FFffe86a";
 	COLOR_NORMAL="FFFFFFFF";
 	COLOR_SHOUT_MY="FFff7c0f";
@@ -60,11 +63,50 @@ g.fontsettings = {
 	TEXTCHAT_FONTSTYLE_PARTY_MY="{#73FF97}{b}{ol}{ds}";
 	TEXTCHAT_FONTSTYLE_GUILD_MY="{#DC99FF}{b}{ol}{ds}";
 	TEXTCHAT_FONTSTYLE_WHISPER_MY="{#8EEBFF}{b}{ol}{ds}";
+	TEXTCHAT_FONTSTYLE_GROUP_MY="{#8EEBFF}{b}{ol}{ds}";
 	TEXTCHAT_FONTSTYLE_NORMAL="{#FFFFFF}{ol}";
 	TEXTCHAT_FONTSTYLE_SHOUT="{#da6e0f}{ol}";
 	TEXTCHAT_FONTSTYLE_PARTY="{#86E57F}{ol}";
 	TEXTCHAT_FONTSTYLE_GUILD="{#A566FF}{ol}";
 	TEXTCHAT_FONTSTYLE_WHISPER="{#2ec2d4}{ol}";
+	TEXTCHAT_FONTSTYLE_GROUP="{#2ec2d4}{ol}";
+	TEXTCHAT_FONTSTYLE_NOTICE="{#FF0000}{ol}";
+	TEXTCHAT_FONTSTYLE_SYSTEM="{#FFE400}{ol}";
+}
+
+-- 実際に使うフォント設定
+g.usefontsettings = {
+	COLOR_GRO_MY="FF7cd8ff";
+	COLOR_GRO="FFb4ddef";
+	COLOR_WHI_MY="FF7cd8ff";
+	COLOR_WHI_TO="FFb4ddef";
+	COLOR_SYSTEM_MY="FFffe86a";
+	COLOR_SYSTEM="FFFFFFFF";
+	COLOR_NORMAL_MY="FFffe86a";
+	COLOR_NORMAL="FFFFFFFF";
+	COLOR_SHOUT_MY="FFff7c0f";
+	COLOR_SHOUT="FFffa800";
+	COLOR_PARTY_MY="FF93c95a";
+	COLOR_PARTY="FFbceb89";
+	COLOR_PARTY_INFO="FFbceb89";
+	COLOR_GUILD_INFO="FFBE80CE";
+	COLOR_GUILD_MY="FFa735dc";
+	COLOR_GUILD="FFbe80ce";
+	BALLONCHAT_FONTSTYLE="{#050505}";
+	BALLONCHAT_FONTSTYLE_SYSTEM="{#DD0000}";
+	BALLONCHAT_FONTSTYLE_MEMBER="{#000000}";
+	TEXTCHAT_FONTSTYLE_NORMAL_MY="{#FFFAB8}{b}{ol}{ds}";
+	TEXTCHAT_FONTSTYLE_SHOUT_MY="{#FFD03F}{b}{ol}{ds}";
+	TEXTCHAT_FONTSTYLE_PARTY_MY="{#73FF97}{b}{ol}{ds}";
+	TEXTCHAT_FONTSTYLE_GUILD_MY="{#DC99FF}{b}{ol}{ds}";
+	TEXTCHAT_FONTSTYLE_WHISPER_MY="{#8EEBFF}{b}{ol}{ds}";
+	TEXTCHAT_FONTSTYLE_GROUP_MY="{#8EEBFF}{b}{ol}{ds}";
+	TEXTCHAT_FONTSTYLE_NORMAL="{#FFFFFF}{ol}";
+	TEXTCHAT_FONTSTYLE_SHOUT="{#da6e0f}{ol}";
+	TEXTCHAT_FONTSTYLE_PARTY="{#86E57F}{ol}";
+	TEXTCHAT_FONTSTYLE_GUILD="{#A566FF}{ol}";
+	TEXTCHAT_FONTSTYLE_WHISPER="{#2ec2d4}{ol}";
+	TEXTCHAT_FONTSTYLE_GROUP="{#2ec2d4}{ol}";
 	TEXTCHAT_FONTSTYLE_NOTICE="{#FF0000}{ol}";
 	TEXTCHAT_FONTSTYLE_SYSTEM="{#FFE400}{ol}";
 }
@@ -215,7 +257,8 @@ function CHATEXTENDS_UPDATE_CHAT_FRAME()
 	local mainchat=GET_CHILD(chat_frame,"mainchat");
 	local titleCtrl = GET_CHILD(chat_frame,'edit_to_bg');
 	titleCtrl:SetGravity(ui.LEFT, ui.TOP);
-	local offsetX = 100;
+	local btn_ChatType = GET_CHILD(chat_frame,'button_type');
+	local offsetX = btn_ChatType:GetOriginalWidth();
 	mainchat:SetGravity(ui.LEFT, ui.TOP);
 	mainchat:Resize(600 - titleCtrl:GetWidth() - offsetX + 10, mainchat:GetOriginalHeight())
 	mainchat:SetOffset(titleCtrl:GetWidth() + offsetX, mainchat:GetOriginalY());
@@ -235,15 +278,14 @@ function CHATEXTENDS_UPDATE_CHAT_FRAME()
 	local party_button = chat_frame:CreateOrGetControl("button", "CHATEXTENDS_PARTY_BUTTON", 107, 0, 36, 36);
 	tolua.cast(party_button, "ui::CButton");
 	party_button:SetGravity(ui.RIGHT, ui.TOP);
-	party_button:SetOffset(107, -1);
+	party_button:SetOffset(107, 0);
 	party_button:SetClickSound("button_click");
 	party_button:SetOverSound("button_cursor_over_2");
 	party_button:SetAnimation("MouseOnAnim", "btn_mouseover");
 	party_button:SetAnimation("MouseOffAnim", "btn_mouseoff");
 	party_button:SetEventScript(ui.LBUTTONDOWN, "LINK_PARTY_INVITE");
-	party_button:SetImage("link_party");
-	party_button:SetImage("button_party");
-	party_button:Resize(37, 37);
+	party_button:SetImage("btn_partyshare");
+	party_button:Resize(33, 33);
 
 	local button_emo=GET_CHILD(chat_frame,"button_emo");
 	button_emo:SetOffset(39,0);
@@ -402,7 +444,8 @@ function CHATEXTENDS_CHAT_OPEN_INIT()
 	local chat_frame = ui.GetFrame("chat");
 	local mainchat=GET_CHILD(chat_frame,"mainchat");
 	local titleCtrl = GET_CHILD(chat_frame,'edit_to_bg');
-	local offsetX = 100;
+	local btn_ChatType = GET_CHILD(chat_frame,'button_type');
+	local offsetX = btn_ChatType:GetOriginalWidth();
 	mainchat:SetGravity(ui.LEFT, ui.TOP);
 	mainchat:Resize(600 - titleCtrl:GetWidth() - offsetX + 10, mainchat:GetOriginalHeight())
 	mainchat:SetOffset(titleCtrl:GetWidth() + offsetX, mainchat:GetOriginalY());
@@ -491,7 +534,8 @@ function CHATEXTENDS_CHAT_CHAT_SET_TO_TITLENAME(chatType, targetName, count)
 	local chat_frame = ui.GetFrame('chat');
 	local mainchat = GET_CHILD(chat_frame, 'mainchat');
 	local titleCtrl = GET_CHILD(chat_frame,'edit_to_bg');
-	local offsetX = 100;
+	local btn_ChatType = GET_CHILD(chat_frame,'button_type');
+	local offsetX = btn_ChatType:GetOriginalWidth();
 
 	mainchat:Resize(600 - titleCtrl:GetWidth() - offsetX + 10, mainchat:GetOriginalHeight())
 	mainchat:SetOffset(titleCtrl:GetWidth() + offsetX, mainchat:GetOriginalY());
@@ -580,7 +624,6 @@ function CHATEXTENDS_DRAW_CHAT_MSG(groupboxname, startindex, chatframe)
 		local msgType = clusterinfo:GetMsgType();
 		local commnderName = clusterinfo:GetCommanderName();
 		local tempCommnderName = string.gsub(commnderName,"( %[.+%])", "");
-
 		local colorType = session.chat.GetRoomConfigColorType(clusterinfo:GetRoomID())
 		local colorCls = GetClassByType("ChatColorStyle", colorType)
 
@@ -776,7 +819,7 @@ function CHATEXTENDS_CHAT_TEXT_IS_MINE_AND_SETFONT(msgIsMine, fontName)
 	if true == msgIsMine then
 		result = fontName .. "_MY";
 	end
-	return g.fontsettings[result];
+	return g.usefontsettings[result];
 end
 
 
@@ -921,16 +964,16 @@ function CHATEXTENDS_BALLON_DRAW(groupboxname, groupbox, clustername, clusterinf
 		chatCtrl:EnableHitTest(1);
 
 		local label = chatCtrl:GetChild('bg');
-		local fontStyle = g.fontsettings.BALLONCHAT_FONTSTYLE;
+		local fontStyle = g.usefontsettings.BALLONCHAT_FONTSTYLE;
 		if msgType == "friendmem" then
-			fontStyle = g.fontsettings.BALLONCHAT_FONTSTYLE_MEMBER;
+			fontStyle = g.usefontsettings.BALLONCHAT_FONTSTYLE_MEMBER;
 		elseif msgType == "guildmem" then
-			fontStyle = g.fontsettings.BALLONCHAT_FONTSTYLE_MEMBER;
+			fontStyle = g.usefontsettings.BALLONCHAT_FONTSTYLE_MEMBER;
 		elseif msgType ~= "System" then
 			chatCtrl:SetEventScript(ui.RBUTTONDOWN, 'CHAT_RBTN_POPUP');
 			chatCtrl:SetUserValue("TARGET_NAME", commnderName);
 		elseif msgType == "System" then
-			fontStyle = g.fontsettings.BALLONCHAT_FONTSTYLE_SYSTEM;
+			fontStyle = g.usefontsettings.BALLONCHAT_FONTSTYLE_SYSTEM;
 		end
 
 		local myColor, targetColor = CHATEXTENDS_GET_CHAT_COLOR(msgType);
@@ -982,28 +1025,31 @@ end
 
 function CHATEXTENDS_GET_CHAT_COLOR(msgType)
 
-	local myColor = g.fontsettings.COLOR_WHI_MY;
-	local targetColor = g.fontsettings.COLOR_WHI_TO;
+	local myColor = g.usefontsettings.COLOR_WHI_MY;
+	local targetColor = g.usefontsettings.COLOR_WHI_TO;
 	
 	if msgType == 'Normal' then
-		myColor = g.fontsettings.COLOR_NORMAL_MY;
-		targetColor = g.fontsettings.COLOR_NORMAL;
+		myColor = g.usefontsettings.COLOR_NORMAL_MY;
+		targetColor = g.usefontsettings.COLOR_NORMAL;
 	elseif msgType == 'Shout' then
-		myColor = g.fontsettings.COLOR_SHOUT_MY;
-		targetColor = g.fontsettings.COLOR_SHOUT;
+		myColor = g.usefontsettings.COLOR_SHOUT_MY;
+		targetColor = g.usefontsettings.COLOR_SHOUT;
 	elseif msgType == 'Party' then
-		myColor = g.fontsettings.COLOR_PARTY_MY;
-		targetColor = g.fontsettings.COLOR_PARTY;	
+		myColor = g.usefontsettings.COLOR_PARTY_MY;
+		targetColor = g.usefontsettings.COLOR_PARTY;	
 	elseif msgType == 'Guild' then
-		myColor = g.fontsettings.COLOR_GUILD_MY;
-		targetColor = g.fontsettings.COLOR_GUILD;
+		myColor = g.usefontsettings.COLOR_GUILD_MY;
+		targetColor = g.usefontsettings.COLOR_GUILD;
 	elseif msgType == "friendmem" then
-		targetColor = g.fontsettings.COLOR_PARTY_INFO;
+		targetColor = g.usefontsettings.COLOR_PARTY_INFO;
 	elseif msgType == "guildmem" then
-		targetColor = g.fontsettings.COLOR_GUILD_INFO;
+		targetColor = g.usefontsettings.COLOR_GUILD_INFO;
 	elseif msgType == "System" then
-		myColor = g.fontsettings.COLOR_NORMAL_MY;
-		targetColor = g.fontsettings.COLOR_NORMAL;
+		myColor = g.usefontsettings.COLOR_SYSTEM_MY;
+		targetColor = g.usefontsettings.COLOR_SYSTEM;
+	elseif msgType == "Group" then
+		myColor = g.usefontsettings.COLOR_GRO_MY;
+		targetColor = g.usefontsettings.COLOR_GRO;
 	end
 
 	return myColor, targetColor;
