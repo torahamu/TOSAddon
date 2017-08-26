@@ -123,3 +123,27 @@ removereditemalert
 
 It is an add-on that will not display the window that appears if there are items that are about to expire when logging out.  
 
+
+altarget
+--
+|JTOS|ITOS|
+|---|---|
+|![alt text](http://i.imgur.com/EeQlTWj.png "JP Screenshot")|![alt text](http://i.imgur.com/8SX8eqt.png "Screenshot")|
+
+ターゲットの強調、および情報の表示をします。  
+
+----
+
+Target emphasis and information display.  
+
+
+TuriOfSavior
+--
+![alt text](http://i.imgur.com/xYjVej3.png "Screenshot")
+![alt text](http://i.imgur.com/crj8hR3.png "Screenshot")
+
+釣りーオブセイヴァーのウィンドウを改良します。  
+
+----
+
+Improvement of fishing window.  

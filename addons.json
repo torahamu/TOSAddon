@@ -148,6 +148,20 @@
 			"ui",
 			"target"
 		]
+	},
+	{
+		"name" : "Turi of Savior",
+		"file" : "turiofsavior",
+		"extension" : "ipf",
+		"fileVersion" : "v1.0.0",
+		"releaseTag" : "turiofsavior",
+		"unicode" : "⛄",
+		"description" : "Improvement of fishing window.  釣りーオブセイヴァーのウィンドウを改良します。",
+		"tags" : [
+			"ui",
+			"fish",
+			"fishing"
+		]
 	}
 
 ]
