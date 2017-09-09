@@ -37,43 +37,6 @@ if not g.loaded then
   };
 end
 
--- デフォルトフォント設定
-g.fontsettings = {
-	COLOR_GRO_MY="FF7cd8ff";
-	COLOR_GRO="FFb4ddef";
-	COLOR_WHI_MY="FF7cd8ff";
-	COLOR_WHI_TO="FFb4ddef";
-	COLOR_SYSTEM_MY="FFffe86a";
-	COLOR_SYSTEM="FFFFFFFF";
-	COLOR_NORMAL_MY="FFffe86a";
-	COLOR_NORMAL="FFFFFFFF";
-	COLOR_SHOUT_MY="FFff7c0f";
-	COLOR_SHOUT="FFffa800";
-	COLOR_PARTY_MY="FF93c95a";
-	COLOR_PARTY="FFbceb89";
-	COLOR_PARTY_INFO="FFbceb89";
-	COLOR_GUILD_INFO="FFBE80CE";
-	COLOR_GUILD_MY="FFa735dc";
-	COLOR_GUILD="FFbe80ce";
-	BALLONCHAT_FONTSTYLE="{#050505}";
-	BALLONCHAT_FONTSTYLE_SYSTEM="{#DD0000}";
-	BALLONCHAT_FONTSTYLE_MEMBER="{#000000}";
-	TEXTCHAT_FONTSTYLE_NORMAL_MY="{#FFFAB8}{b}{ol}{ds}";
-	TEXTCHAT_FONTSTYLE_SHOUT_MY="{#FFD03F}{b}{ol}{ds}";
-	TEXTCHAT_FONTSTYLE_PARTY_MY="{#73FF97}{b}{ol}{ds}";
-	TEXTCHAT_FONTSTYLE_GUILD_MY="{#DC99FF}{b}{ol}{ds}";
-	TEXTCHAT_FONTSTYLE_WHISPER_MY="{#8EEBFF}{b}{ol}{ds}";
-	TEXTCHAT_FONTSTYLE_GROUP_MY="{#8EEBFF}{b}{ol}{ds}";
-	TEXTCHAT_FONTSTYLE_NORMAL="{#FFFFFF}{ol}";
-	TEXTCHAT_FONTSTYLE_SHOUT="{#da6e0f}{ol}";
-	TEXTCHAT_FONTSTYLE_PARTY="{#86E57F}{ol}";
-	TEXTCHAT_FONTSTYLE_GUILD="{#A566FF}{ol}";
-	TEXTCHAT_FONTSTYLE_WHISPER="{#2ec2d4}{ol}";
-	TEXTCHAT_FONTSTYLE_GROUP="{#2ec2d4}{ol}";
-	TEXTCHAT_FONTSTYLE_NOTICE="{#FF0000}{ol}";
-	TEXTCHAT_FONTSTYLE_SYSTEM="{#FFE400}{ol}";
-}
-
 -- 実際に使うフォント設定
 g.usefontsettings = {
 	COLOR_GRO_MY="FF7cd8ff";
@@ -634,7 +597,7 @@ function CHATEXTENDS_DRAW_CHAT_MSG(groupboxname, startindex, chatframe)
 			CHATEXTENDS_BALLON_DRAW(groupboxname, groupbox, clustername, clusterinfo, commnderName, msgType, marginRight, marginLeft, ypos, fontSize, beforeclusterinfo)
 		else
 
-			local chatCtrl = groupbox:CreateOrGetControlSet('chatTextVer', clustername, ui.LEFT, ui.TOP, marginLeft, ypos + 5 , marginRight, 1);
+			local chatCtrl = groupbox:CreateOrGetControlSet('chatTextVer', clustername, ui.LEFT, ui.TOP, marginLeft, ypos , marginRight, 1);
 
 			-- システムメッセージ削除処理
 			if ( g.settings.SYSTEM_TOTAL_FLG and (msgType == "System" or msgType == "Notice") and groupboxname ~= "chatgbox_TOTAL") then
@@ -735,7 +698,11 @@ function CHATEXTENDS_DRAW_CHAT_MSG(groupboxname, startindex, chatframe)
 
 						txt:SetUserValue("ROOM_ID", clusterinfo:GetRoomID());
 
-						fontStyle = CHATEXTENDS_CHAT_TEXT_IS_MINE_AND_SETFONT(msgIsMine, "TEXTCHAT_FONTSTYLE_WHISPER");
+						if colorCls ~= nil then
+							fontStyle = "{#"..colorCls.TextColor.."}{ol}"
+						else
+							fontStyle = CHATEXTENDS_CHAT_TEXT_IS_MINE_AND_SETFONT(msgIsMine, "TEXTCHAT_FONTSTYLE_WHISPER");
+						end
 
 						msgFront = CHATEXTENDS_GET_TYPE_CHARNAME(ScpArgMsg("ChatType_6"), commnderNameUIText);
 					else
@@ -976,11 +943,13 @@ function CHATEXTENDS_BALLON_DRAW(groupboxname, groupbox, clustername, clusterinf
 			fontStyle = g.usefontsettings.BALLONCHAT_FONTSTYLE_SYSTEM;
 		end
 
-		local myColor, targetColor = CHATEXTENDS_GET_CHAT_COLOR(msgType);
+		local myColor, targetColor = CHATEXTENDS_GET_CHAT_COLOR(msgType, clusterinfo:GetRoomID());
 		local txt = GET_CHILD(label, "text", "ui::CRichText");
 		local timeBox = GET_CHILD(chatCtrl, "timebox", "ui::CGroupBox");
 		local timeCtrl = GET_CHILD(timeBox, "time", "ui::CRichText");
 		local nameText = GET_CHILD(chatCtrl, "name", "ui::CRichText");
+
+		txt:SetUserValue("ROOM_ID", clusterinfo:GetRoomID());
 
 		local msgString = clusterinfo:GetMsg();
 		msgString = string.gsub(msgString, "({img emoticon.-}){/}{/}", "%1");
@@ -1023,12 +992,18 @@ function CHATEXTENDS_BALLON_DRAW(groupboxname, groupbox, clustername, clusterinf
 	end
 end
 
-function CHATEXTENDS_GET_CHAT_COLOR(msgType)
+function CHATEXTENDS_GET_CHAT_COLOR(msgType, roomID)
 
 	local myColor = g.usefontsettings.COLOR_WHI_MY;
 	local targetColor = g.usefontsettings.COLOR_WHI_TO;
-	
-	if msgType == 'Normal' then
+
+	local colorType = session.chat.GetRoomConfigColorType(roomID)
+	local colorCls = GetClassByType("ChatColorStyle", colorType)
+
+	if colorCls ~= nil then
+		myColor = "FF"..colorCls.TextColor;
+		targetColor = "FF"..colorCls.TextColor;
+	elseif msgType == 'Normal' then
 		myColor = g.usefontsettings.COLOR_NORMAL_MY;
 		targetColor = g.usefontsettings.COLOR_NORMAL;
 	elseif msgType == 'Shout' then
@@ -1228,6 +1203,19 @@ function CHATEXTENDS_CHAT_SET_FONTSIZE_N_COLOR(chatframe)
 							local msgString = CHAT_TEXT_CHAR_RESIZE(txt:GetTextByKey("text"), targetSize);
 							txt:SetTextByKey("text", msgString);
 							txt:SetTextByKey("size", targetSize);
+
+							local roomid = txt:GetUserValue("ROOM_ID")
+
+							if roomid ~= "None" then
+
+								local colorType = session.chat.GetRoomConfigColorType(roomid)
+								local colorCls = GetClassByType("ChatColorStyle", colorType)
+
+								if colorCls ~= nil then
+									label:SetColorTone("FF".. colorCls.TextColor);
+								end
+							end
+
 							local timeBox = GET_CHILD(chatCtrl, "timebox");
 							CHATEXTENDS_RESIZE_CHAT_CTRL_BALLON(chatCtrl, label, txt, timeBox)
 						else

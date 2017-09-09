@@ -101,10 +101,10 @@
 		"name" : "chatextends",
 		"file" : "chatextends",
 		"extension" : "ipf",
-		"fileVersion" : "v2.4.2",
+		"fileVersion" : "v2.4.3",
 		"releaseTag" : "chatextends",
 		"unicode" : "⛄",
-		"description" : "Modify chat.v2.0 Support for new UI.Please look at github for details.[v2.4.2 Slight modification]  チャットを色々改造します。v2から新UIに対応しました。詳細はGithubやReadmeを見てください。[v2.4.2 UI変更へのちょっとした修正]",
+		"description" : "Modify chat.v2.0 Support for new UI.Please look at github for details.[v2.4.3 Correspond to change in color of chat group]  チャットを色々改造します。v2から新UIに対応しました。詳細はGithubやReadmeを見てください。[v2.4.3 チャットグループの色変更に対応]",
 		"tags" : [
 			"ui",
 			"chat"
