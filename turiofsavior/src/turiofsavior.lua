@@ -21,10 +21,11 @@ function TURIOFSAVIOR_ON_INIT(addon, frame)
 	g.addon = addon;
 	g.frame = frame;
 
-	if nil == TURIOFSAVIOR_FISHING_OPEN_UI_OLD then
-		TURIOFSAVIOR_FISHING_OPEN_UI_OLD = FISHING_OPEN_UI;
-		FISHING_OPEN_UI = TURIOFSAVIOR_FISHING_OPEN_UI;
+	if nil == TURIOFSAVIOR_FISHING_START_LBTN_CLICK_OLD then
+		TURIOFSAVIOR_FISHING_START_LBTN_CLICK_OLD = FISHING_START_LBTN_CLICK;
+		FISHING_START_LBTN_CLICK = TURIOFSAVIOR_FISHING_START_LBTN_CLICK;
 	end
+
 	if nil == TURIOFSAVIOR_FISHING_ITEM_BAG_OPEN_UI_OLD then
 		TURIOFSAVIOR_FISHING_ITEM_BAG_OPEN_UI_OLD = FISHING_ITEM_BAG_OPEN_UI;
 		FISHING_ITEM_BAG_OPEN_UI = TURIOFSAVIOR_FISHING_ITEM_BAG_OPEN_UI;
@@ -48,86 +49,20 @@ else
 	firetextbody = "fire";
 end
 
-function TURIOFSAVIOR_FISHING_OPEN_UI(fishingPlaceHandle, fishingRodID)
-	local frame = ui.GetFrame('fishing');
+function TURIOFSAVIOR_FISHING_START_LBTN_CLICK(parent, ctrl)
+	-- 処理は元の関数にお任せ
+	TURIOFSAVIOR_FISHING_START_LBTN_CLICK_OLD(parent, ctrl);
 
-	local baitList = {};
-	local i = 1;
-
-	-- 手持ちアイテム内検索
-	local list = session.GetInvItemList();
-	local listIndex = list:Head();
-	while 1 do
-		if listIndex == list:InvalidIndex() then
-			break;
-		end
-		local item = list:Element(listIndex);
-		local itemIES = GetIES(item:GetObject());
-		-- 手持ちアイテムに餌があれば、リスト追加
-		if itemIES.GroupName == "PasteBait" then
-			baitList[i] = {ClassID = item.type; Name = itemIES.Name; Count = item.count;};
-			i = i + 1;
-		end
-		listIndex = list:Next(listIndex);
-	end
-
-	-- 餌未所持は終了
-	if #baitList == 0 then
-		ui.SysMsg("餌がありません。")
+	local topFrame = parent:GetTopParentFrame();
+	local pasteBaitSlotset = GET_CHILD_RECURSIVELY(topFrame, 'pasteBaitSlotset');
+	local selectedSlot = pasteBaitSlotset:GetSelectedSlot(0);
+	if selectedSlot == nil then
+		ui.SysMsg(ClMsg('YouNeedPasteBait'));
 		return;
 	end
+	local pasteBaitID = selectedSlot:GetUserIValue('PASTE_BAIT_ID');
+	topFrame:SetUserValue('PASTE_BAIT_ID', pasteBaitID);
 
-	-- フレーム作成
-	TURIOFSAVIOR_FISHING_INIT_UI_LIST(frame, fishingPlaceHandle, fishingRodID, baitList);
-
-	frame:ShowWindow(1);
-	packet.RequestItemList(IT_FISHING);
-	ui.OpenFrame('inventory');
-	-- Fishing UI Open Sound --
-	imcSound.PlaySoundEvent("sys_event_window_open_1");
-	control.EnableControl(0);
-end
-
-function TURIOFSAVIOR_FISHING_INIT_UI_LIST(frame, fishingPlaceHandle, fishingRodID, baitList)
-	local fishingPlace = world.GetActor(fishingPlaceHandle);
-	local fishingRod = GetClassByType('Item', fishingRodID);
-	if fishingPlace == nil or fishingRod == nil then
-		return;
-	end
-
-	-- 既存フレームにある餌置く四角の枠削除
-	local pasteBaitSlot = GET_CHILD(frame, "pasteBaitSlot");
-	if nil ~= pasteBaitSlot then
-		pasteBaitSlot:ClearIcon();
-		frame:RemoveChild("pasteBaitSlot");
-	end
-
-	frame:SetUserValue('FISHING_PLACE_HANDLE', fishingPlaceHandle);
-	frame:SetUserValue('FISHING_ROD_ID', fishingRodID);
-	frame:SetUserValue('PASTE_BAIT_ID', 0);
-
-	-- 餌をリストで追加
-	local dropList = GET_CHILD(frame, "BaitDropList");
-	if nil ~= dropList then
-		frame:RemoveChild("BaitDropList");
-	end
-	dropList = frame:CreateOrGetControl("droplist", "BaitDropList", 0, 0, 200, 20);
-	tolua.cast(dropList, "ui::CDropList");
-	dropList:SetSkinName("droplist_normal");
-	dropList:SetTextAlign("left", "center");
-	dropList:SetGravity(ui.CENTER_HORZ, ui.CENTER_VERT);
-	for k, v in ipairs(baitList) do
-		dropList:AddItem(k, string.format("{#FFFFFF}{ol}{b}{s16}%s(%d)",v.Name,v.Count), 0, "TURIOFSAVIOR_SET_VALUE('"..v.ClassID.."')");
-	end
-	dropList:SelectItem(0)
-	frame:SetUserValue('PASTE_BAIT_ID', baitList[1].ClassID);
-
-end
-
--- 餌リスト選択時の処理
-function TURIOFSAVIOR_SET_VALUE(classid,item)
-	local frame = ui.GetFrame('fishing');
-	frame:SetUserValue('PASTE_BAIT_ID', classid);
 end
 
 -- 釣りの時のウィンドウ
