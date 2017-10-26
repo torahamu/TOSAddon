@@ -44,7 +44,7 @@
 		"name" : "Show Hide Buff",
 		"file" : "showhidebuff",
 		"extension" : "ipf",
-		"fileVersion" : "v1.0.0",
+		"fileVersion" : "v1.0.1",
 		"releaseTag" : "showhidebuff",
 		"unicode" : "⛄",
 		"description" : "An add-on that displays a buff icon that is not normally displayed for targeted enemies.  隠しバフを表示する。",
