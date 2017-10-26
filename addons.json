@@ -140,7 +140,7 @@
 		"name" : "altarget",
 		"file" : "altarget",
 		"extension" : "ipf",
-		"fileVersion" : "v1.0.0",
+		"fileVersion" : "v1.0.1",
 		"releaseTag" : "altarget",
 		"unicode" : "⛄",
 		"description" : "Display targeted enemy information.  ターゲットした敵の情報を表示する。",
