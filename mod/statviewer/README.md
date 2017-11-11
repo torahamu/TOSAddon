@@ -23,12 +23,13 @@ Excrulonさんのstatviewerアドオンを改造しました。
 3. statviewer_exファイルをダウンロードします。  
 4. tosインストールフォルダのdataフォルダにstatviewer_exファイルを置きます。  
 
-|statviewerをインストール|statviewerファイルを削除||
-|---|---||
-|![alt text](https://i.imgur.com/A2G2RxH.png "Screenshot")|![alt text](https://i.imgur.com/JpbjkVu.png "Screenshot")||
+|statviewerをインストール|statviewerファイルを削除|
+|---|---|
+|![alt text](https://i.imgur.com/A2G2RxH.png "Screenshot")|![alt text](https://i.imgur.com/JpbjkVu.png "Screenshot")|
+  
 |ipfファイルへのリンク|ダウンロードボタン|statviewer_exファイルを置く|
 |---|---|---|
-|![alt text](https://i.imgur.com/GRVjgDS.png "Screenshot")|![alt text](blob:https://i.imgur.com/T66jtM2.png "Screenshot")|![alt text](https://i.imgur.com/sUeZXLH.png "Screenshot")
+|![alt text](https://i.imgur.com/GRVjgDS.png "Screenshot")|![alt text](https://i.imgur.com/T66jtM2.png "Screenshot")|![alt text](https://i.imgur.com/sUeZXLH.png "Screenshot")
 
 
 ### [EN]
@@ -52,6 +53,7 @@ Please install it manually.
 |Install statviewer|Delete statviewer file|
 |---|---|
 |![alt text](https://i.imgur.com/A2G2RxH.png "Screenshot")|![alt text](https://i.imgur.com/JpbjkVu.png "Screenshot")|
+  
 |Link to ipf file|Download button|Put statviewer_ex file|
 |---|---|---|
 |![alt text](https://i.imgur.com/GRVjgDS.png "Screenshot")|![alt text](https://i.imgur.com/T66jtM2.png "Screenshot")|![alt text](https://i.imgur.com/sUeZXLH.png "Screenshot")
