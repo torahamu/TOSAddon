@@ -19,7 +19,7 @@ Excrulonさんのchannelsurferアドオンを動くようにしました。
 
 |ipfファイルへのリンク|ダウンロードボタン|channelsurfer_exファイルを置く|
 |---|---|---|
-|![alt text](https://i.imgur.com/GRVjgDS.png "Screenshot")|![alt text](https://i.imgur.com/T66jtM2.png "Screenshot")|![alt text](https://i.imgur.com/DllKYWy.png "Screenshot")
+|![alt text](https://i.imgur.com/t6uacn9.png "Screenshot")|![alt text](https://i.imgur.com/RiZjE7j.png "Screenshot")|![alt text](https://i.imgur.com/DllKYWy.png "Screenshot")
 
 
 ### [EN]
@@ -36,10 +36,6 @@ Please install it manually.
 1. Download the channelsurfer_ex file.  
 2. Put the channelsurfer_ex file in the data folder of the tos installation folder.  
 
-|Install statviewer|Delete statviewer file|
-|---|---|
-|![alt text](https://i.imgur.com/A2G2RxH.png "Screenshot")|![alt text](https://i.imgur.com/JpbjkVu.png "Screenshot")|
-  
-|Link to ipf file|Download button|Put statviewer_ex file|
+|Link to ipf file|Download button|Put channelsurfer_ex file|
 |---|---|---|
-|![alt text](https://i.imgur.com/GRVjgDS.png "Screenshot")|![alt text](https://i.imgur.com/T66jtM2.png "Screenshot")|![alt text](https://i.imgur.com/DllKYWy.png "Screenshot")
+|![alt text](https://i.imgur.com/t6uacn9.png "Screenshot")|![alt text](https://i.imgur.com/RiZjE7j.png "Screenshot")|![alt text](https://i.imgur.com/DllKYWy.png "Screenshot")
