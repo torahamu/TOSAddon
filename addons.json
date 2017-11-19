@@ -162,6 +162,19 @@
 			"fish",
 			"fishing"
 		]
+	},
+	{
+		"name" : "Stat Viewer Ex",
+		"file" : "statviewer_ex",
+		"extension" : "ipf",
+		"fileVersion" : "v1.1.0",
+		"releaseTag" : "statviewer_ex",
+		"unicode" : "⛄",
+		"description" : "This is a modified version of Excrulon's statviewer addon.  Excrulonさんのstatviewerアドオンを改造しました。",
+		"tags" : [
+			"ui",
+			"status"
+		]
 	}
 
 ]
