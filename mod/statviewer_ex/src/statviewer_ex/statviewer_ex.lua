@@ -1,4 +1,4 @@
-local acutil = require('acutil');
+-- local acutil = require('acutil');
 
 local label = {
 	["PATK"]      = {name="物理攻撃: "   ;ename="PATK: "     ;kname="물리공격: "};
@@ -22,6 +22,7 @@ local label = {
 	["MSPD"]      = {name="スピード: "   ;ename="MSPD: "     ;kname="스피드    : "};
 	["WHEIGHT"]   = {name="所持量　: "   ;ename="WHEIGHT: "  ;kname="소지량    : "};
 };
+local ctrlPos = {}
 
 function STATVIEWER_EX_ON_INIT(addon, frame)
 	STATVIEWER_EX_LOAD_SETTINGS();
@@ -31,7 +32,8 @@ function STATVIEWER_EX_ON_INIT(addon, frame)
 	_G["STATVIEWER_EX"].isDragging = false;
 	frame:SetEventScript(ui.LBUTTONDOWN, "STATVIEWER_EX_START_DRAG");
 	frame:SetEventScript(ui.LBUTTONUP, "STATVIEWER_EX_END_DRAG");
-
+	frame:SetEventScript(ui.RBUTTONDOWN, "STATVIEWER_EX_CALL_MENU");
+	
 	STATVIEWER_EX_UPDATE_POSITION();
 end
 
@@ -45,6 +47,7 @@ function STATVIEWER_EX_END_DRAG()
 end
 
 function STATVIEWER_EX_LOAD_SETTINGS()
+	local acutil = require('acutil');
 	_G["STATVIEWER_EX"] = _G["STATVIEWER_EX"] or {};
 	local settings, error = acutil.loadJSON("../addons/statviewer_ex/settings.json");
 
@@ -52,6 +55,10 @@ function STATVIEWER_EX_LOAD_SETTINGS()
 		STATVIEWER_EX_SAVE_SETTINGS();
 	else
 		_G["STATVIEWER_EX"]["settings"] = settings;
+	end
+	local objFrame = ui.GetFrame("statviewer_ex");
+	if objFrame ~= nil then
+		objFrame:EnableMove(_G["STATVIEWER_EX"]["settings"]["Movable"] and 1 or 0);
 	end
 
 	local mySession = session.GetMySession();
@@ -70,8 +77,8 @@ function STATVIEWER_EX_LOAD_SETTINGS()
 end
 
 function STATVIEWER_EX_LOAD_COMMON_SETTINGS(no)
+	local acutil = require('acutil');
 	local statsettings, error = acutil.loadJSON("../addons/statviewer_ex/common"..no..".json");
-
 	if error then
 		STATVIEWER_EX_SAVE_STATSETTINGS_INIT("common"..no, "common"..no);
 	else
@@ -80,6 +87,7 @@ function STATVIEWER_EX_LOAD_COMMON_SETTINGS(no)
 end
 
 function STATVIEWER_EX_SAVE_SETTINGS()
+	local acutil = require('acutil');
 	_G["STATVIEWER_EX"] = _G["STATVIEWER_EX"] or {};
 
 	if _G["STATVIEWER_EX"]["settings"] == nil then
@@ -94,6 +102,13 @@ function STATVIEWER_EX_SAVE_SETTINGS()
 	end
 
 	acutil.saveJSON("../addons/statviewer_ex/settings.json", _G["STATVIEWER_EX"]["settings"]);
+end
+
+function STATVIEWER_EX_SAVE_STATSETTINGS()
+	local acutil = require('acutil');
+	local mySession = session.GetMySession();
+	local cid = mySession:GetCID();
+	acutil.saveJSON("../addons/statviewer_ex/"..cid..".json", _G["STATVIEWER_EX"]["statsettings"]);
 end
 
 function STATVIEWER_EX_SAVE_STATSETTINGS_INIT(filename, statval)
@@ -143,6 +158,7 @@ function STATVIEWER_EX_SAVE_STATSETTINGS_INIT(filename, statval)
 		MEMO = "";
 	};
 
+	local acutil = require('acutil');
 	acutil.saveJSON("../addons/statviewer_ex/"..filename..".json", _G["STATVIEWER_EX"][statval]);
 end
 
@@ -170,6 +186,7 @@ function STATVIEWER_EX_UPDATE(frame)
 	local pc = GetMyPCObject();
 
 	local dimensions = STATVIEWER_EX_GET_DIMENSIONS();
+	ctrlPos = {};
 
 	--frame, statName, statString, yPosition
 	if _G["STATVIEWER_EX"]["statsettings"].PATK then
@@ -276,21 +293,345 @@ function STATVIEWER_EX_GET_STATSTRING(statName)
 end
 
 function STATVIEWER_EX_UPDATE_STAT(frame, statName, statString, dimensions, fontcolor)
-	local statRichText = frame:CreateOrGetControl("richtext", statName .. "_text", dimensions.x, dimensions.y, 0, 25);
+	local statRichText = frame:CreateOrGetControl("richtext", statName .. "_text", dimensions.x, dimensions.y, 0, 4);
 	tolua.cast(statRichText, "ui::CRichText");
 	statRichText:SetGravity(ui.LEFT, ui.TOP);
-	statRichText:SetTextAlign("left", "center");
+	statRichText:SetTextAlign("left", "top");
 	statRichText:SetText("{#"..fontcolor.."}{ol}{s16}"..STATVIEWER_EX_GET_STATSTRING(statName)..statString.."{/}{/}{/}");
 	statRichText:EnableHitTest(0);
 	statRichText:ShowWindow(1);
 
-	dimensions.y = dimensions.y + statRichText:GetHeight()-7;
+	local currentHeight = statRichText:GetHeight() - 4;
+	ctrlPos[statName] =  {left	 = statRichText:GetX()
+						, top	 = statRichText:GetY()
+						, right	 = statRichText:GetX() + statRichText:GetWidth()
+						, bottom = statRichText:GetY() + currentHeight + 1
+						  }
+
+	-- 余白を使う の設定があれば高さをおまけする
+	if _G["STATVIEWER_EX"]["statsettings"][statName .. "_USEMARGIN"] then
+		currentHeight = currentHeight + 6;
+	end
+	
+	dimensions.y = dimensions.y + currentHeight;
 
 	if statRichText:GetWidth() > dimensions.width then
 		dimensions.width = statRichText:GetWidth();
 	end
-	dimensions.height = dimensions.height + statRichText:GetHeight() -7 ;
+	dimensions.height = dimensions.height + currentHeight;
 	if statRichText:GetHeight() > dimensions.height then
 		dimensions.height = statRichText:GetHeight();
 	end
+end
+
+-- 右クリックメニュー関連
+
+
+local function log(Caption)
+	if Caption == nil then Caption = "Test Printing" end
+	Caption = tostring(Caption) or "Test Printing";
+	CHAT_SYSTEM(tostring(Caption));
+end
+
+local function GetLocalMousePos()
+	local frame = ui.GetFrame("statviewer_ex");
+	if frame == nil then
+		return nil, nil;
+	else
+		return GET_LOCAL_MOUSE_POS(frame);
+	end
+end
+
+-- ***** コンテキストメニュー関連 *****
+-- セパレータを挿入
+local function MakeCMenuSeparator(parent, width)
+	width = width or 300;
+	ui.AddContextMenuItem(parent, string.format("{img fullgray %s 1}", width), "None");
+end
+-- コンテキストメニュー項目を作成
+local function MakeCMenuItem(parent, text, eventscp, checked)
+	local CheckIcon = "";
+	local eventscp = eventscp or "None";
+	if checked == nil then
+		CheckIcon = "";
+	elseif checked == true then
+		CheckIcon = "{img socket_slot_check 24 24} ";
+	elseif checked == false  then
+		CheckIcon = "{img channel_mark_empty 24 24} ";
+	end
+	ui.AddContextMenuItem(parent, string.format("%s%s", CheckIcon, text), eventscp);
+end
+-- 子を持つメニュー項目を作成
+local function MakeCMenuParentItem(parent, text, child)
+	ui.AddContextMenuItem(parent, text .. "  {img white_right_arrow 8 16}", "", nil, 0, 1, child);
+end
+
+-- 移動ロックの設定を切り替える
+function STATVIEWER_EX_CHANGE_MOVABLE()
+	if _G["STATVIEWER_EX"]["settings"] == nil then return end
+	if _G["STATVIEWER_EX"]["settings"]["Movable"] == nil then
+		_G["STATVIEWER_EX"]["settings"]["Movable"] = true;
+	end
+	_G["STATVIEWER_EX"]["settings"]["Movable"] = not _G["STATVIEWER_EX"]["settings"]["Movable"];
+	local objFrame = ui.GetFrame("statviewer_ex");
+	if objFrame ~= nil then
+		objFrame:EnableMove(_G["STATVIEWER_EX"]["settings"]["Movable"] and 1 or 0);
+		STATVIEWER_EX_SAVE_SETTINGS();
+	end
+end
+
+-- 再描画用
+function STATVIEWER_EX_REDRAW()
+	local frame = ui.GetFrame("statviewer_ex");
+	if frame == nil then return end
+	frame:RemoveAllChild();
+	STATVIEWER_EX_UPDATE(frame);
+end
+
+-- 項目のON/OFFの切り替え
+function STATVIEWER_EX_TOGGLE_VISIBLE(statName, newVisible)
+	ui.CloseAllContextMenu();
+	if _G["STATVIEWER_EX"]["statsettings"][statName] == nil then return end
+	_G["STATVIEWER_EX"]["statsettings"][statName] = (newVisible == 1);
+	STATVIEWER_EX_SAVE_STATSETTINGS()
+	STATVIEWER_EX_REDRAW();
+end
+
+-- 項目の色の切り替え
+function STATVIEWER_EX_CHANGE_COLOR(statName, newColor)
+	ui.CloseAllContextMenu();
+	if _G["STATVIEWER_EX"]["statsettings"][statName] == nil then return end
+	_G["STATVIEWER_EX"]["statsettings"][statName .. "_COLOR"] = newColor;
+	STATVIEWER_EX_SAVE_STATSETTINGS()
+	STATVIEWER_EX_REDRAW();
+end
+
+-- 余白の有無の切り替え
+function STATVIEWER_EX_TOGGLE_USEMARGIN(statName)
+	if _G["STATVIEWER_EX"]["statsettings"][statName] == nil then return end
+	if _G["STATVIEWER_EX"]["statsettings"][statName .. "_USEMARGIN"] == nil then
+		_G["STATVIEWER_EX"]["statsettings"][statName .. "_USEMARGIN"] = true;
+	else
+		-- 本当はFalseだけど、余分な設定文字を消させるためにあえてnilを採用しています
+		_G["STATVIEWER_EX"]["statsettings"][statName .. "_USEMARGIN"] = nil;
+	end
+	STATVIEWER_EX_SAVE_STATSETTINGS()
+	STATVIEWER_EX_REDRAW();
+end
+
+function STATVIEWER_EX_COMMONLOAD_CHECK(argNum)
+	ui.CloseAllContextMenu();
+	local yesscp = string.format("STATVIEWER_EX_COMMONSAVE_LOAD(%d)", argNum);
+	local country = string.lower(option.GetCurrentCountry());
+	local msg = ""
+	if country == "japanese" then
+		msg = "共通データ" .. argNum .. "をロードしますか？"
+	else
+		msg = "load to common data " .. argNum .. "?"
+	end
+	ui.MsgBox(msg, yesscp, "None")
+end
+
+function STATVIEWER_EX_COMMONSAVE_LOAD(no)
+	local acutil = require('acutil');
+	local statsettings, error = acutil.loadJSON("../addons/statviewer_ex/common"..no..".json");
+	if error then
+		return;
+	else
+		_G["STATVIEWER_EX"]["statsettings"] = statsettings;
+	end
+	STATVIEWER_EX_SAVE_STATSETTINGS()
+	STATVIEWER_EX_REDRAW()
+end
+
+function STATVIEWER_EX_COMMONSAVE_CHECK(argNum)
+	ui.CloseAllContextMenu();
+	local yesscp = string.format("STATVIEWER_EX_COMMONSAVE_SAVE(%d)", argNum);
+	local country = string.lower(option.GetCurrentCountry());
+	local msg = ""
+	if country == "japanese" then
+		msg = "現在の設定を共通データ" .. argNum .. "にセーブしますか？"
+	else
+		msg = "save the current setting to common data " .. argNum .. "?"
+	end
+	ui.MsgBox(msg, yesscp, "None")
+end
+
+function STATVIEWER_EX_COMMONSAVE_SAVE(no)
+	local acutil = require('acutil');
+	acutil.saveJSON("../addons/statviewer_ex/common"..no..".json", _G["STATVIEWER_EX"]["statsettings"]);
+	_G["STATVIEWER_EX"]["common"..no] = _G["STATVIEWER_EX"]["statsettings"]
+	STATVIEWER_EX_REDRAW()
+end
+
+function STATVIEWER_EX_CALL_MENU(frame)
+	local x, y = GET_LOCAL_MOUSE_POS(frame);
+
+	local targetStatName = nil;
+	for key, rect in pairs(ctrlPos) do
+		if x >= rect.left and x <= rect.right and y >= rect.top and y <= rect.bottom then
+			targetStatName = key;
+			break;
+		end
+	end
+	--if targetStatName == nil then return end
+	-- 対象コントロールの検出に成功
+	local currentCountry = string.lower(option.GetCurrentCountry());
+	local valueKey = "ename";
+	if currentCountry == "japanese" then
+		valueKey = "name";
+	end
+	-- コンテキストメニューを作成する
+	local strTemp = "Settings - Status Viewer Ex -";
+	if currentCountry == "japanese" then
+		strTemp = "Status Viewer Exの設定";
+	end
+	local intTitleWidth = 320;
+	if currentCountry == "japanese" then
+		intTitleWidth = 260;
+	end	
+	local context = ui.CreateContextMenu("STATVIEWER_EX_RBTN", "{#006666}=== " .. strTemp .. " ==={/}", 0, 0, intTitleWidth, 0);
+	MakeCMenuSeparator(context, 240);
+
+	if targetStatName ~= nil then
+		local subContextColor = ui.CreateContextMenu("SUBCONTEXT_COLOR", "", 0, 0, 0, 0);
+		local colorClsCount = GetClassCount("ChatColorStyle");
+		for i = 0, colorClsCount - 1 do
+			local colorCls = GetClass("ChatColorStyle", "Class" .. i);
+			if colorCls ~= nil then
+				local textColor = colorCls.TextColor;
+				MakeCMenuItem(subContextColor
+							, "{#" .. textColor .. "}" .. string.gsub(label[targetStatName][valueKey], ": ", "") .. " (#" .. textColor .. "){/}"
+							, string.format("STATVIEWER_EX_CHANGE_COLOR('%s', '%s')", targetStatName, textColor)
+							, (_G["STATVIEWER_EX"]["statsettings"][targetStatName .. "_COLOR"] == textColor)
+							);
+			end
+		end
+		subContextColor:Resize(240, subContextColor:GetHeight());
+		strTemp = "Text Color of '%s'";
+		if currentCountry == "japanese" then
+			strTemp = "'%s'の表示色";
+		end	
+		MakeCMenuParentItem(context, string.format(strTemp, string.gsub(label[targetStatName][valueKey], ": ", "")), subContextColor);
+		strTemp = "Insert a margin below '%s'";
+		if currentCountry == "japanese" then
+			strTemp = "この下に余白を入れる";
+		end	
+		MakeCMenuItem(context, string.format(strTemp, string.gsub(label[targetStatName][valueKey], ": ", "")), string.format("STATVIEWER_EX_TOGGLE_USEMARGIN('%s')", targetStatName), _G["STATVIEWER_EX"]["statsettings"][targetStatName .. "_USEMARGIN"] or false);
+		MakeCMenuSeparator(context, 240.1);
+	end
+
+	local labelIndex = {};
+	table.insert( labelIndex, "PATK");
+	table.insert( labelIndex, "PATK");
+	table.insert( labelIndex, "PATK_SUB");
+	table.insert( labelIndex, "MATK");
+	table.insert( labelIndex, "MHR");
+	table.insert( labelIndex, "EATK");
+	table.insert( labelIndex, "CRTHR");
+	table.insert( labelIndex, "CRTATK");
+	table.insert( labelIndex, "HR");
+	table.insert( labelIndex, "BLK_BREAK");
+	table.insert( labelIndex, "SR");
+	table.insert( labelIndex, "DEF");
+	table.insert( labelIndex, "MDEF");
+	table.insert( labelIndex, "DR");
+	table.insert( labelIndex, "BLK");
+	table.insert( labelIndex, "CRTDR");
+	table.insert( labelIndex, "SDR");
+	table.insert( labelIndex, "RHP");
+	table.insert( labelIndex, "RSP");
+	table.insert( labelIndex, "MSPD");
+	table.insert( labelIndex, "WHEIGHT");
+	
+	local subContextDisplay = ui.CreateContextMenu("SUBCONTEXT_DISPLAY", "", 0, 0, 0, 0);
+	for i, key in ipairs(labelIndex) do
+		MakeCMenuItem(subContextDisplay
+					, string.gsub(label[key][valueKey], ": ", "")
+					, string.format("STATVIEWER_EX_TOGGLE_VISIBLE('%s', %s)", key, not _G["STATVIEWER_EX"]["statsettings"][key] and 1 or 0)
+					, _G["STATVIEWER_EX"]["statsettings"][key]
+					);
+	end
+	subContextDisplay:Resize(160, subContextDisplay:GetHeight());
+	strTemp = "Display items";
+	if currentCountry == "japanese" then
+		strTemp = "表示項目";
+	end	
+	MakeCMenuParentItem(context, strTemp, subContextDisplay);
+	strTemp = "Setting screen";
+	if currentCountry == "japanese" then
+		strTemp = "設定画面を開く";
+	end	
+	MakeCMenuItem(context, strTemp, "STATVIEWERSETTING_OPEN_UI()");
+	MakeCMenuSeparator(context, 240.2);
+
+	local subContextLoad = ui.CreateContextMenu("SUBCONTEXT_LOAD", "", 0, 0, 0, 0);
+	strTemp = "Common Setting ";
+	if currentCountry == "japanese" then
+		strTemp = "共通データ";
+	end	
+	for i = 1, 10 do
+		local memo = _G["STATVIEWER_EX"]["common" .. i].MEMO
+		if memo == nil or memo == "" then
+			memo = ""
+		else
+			memo = " : " .. memo
+		end
+		MakeCMenuItem(subContextLoad
+					, strTemp .. i .. memo
+					, string.format("STATVIEWER_EX_COMMONLOAD_CHECK(%d)", i)
+					);
+	end
+	subContextLoad:Resize(subContextLoad:GetWidth(), subContextLoad:GetHeight());
+	strTemp = "Load Setting";
+	if currentCountry == "japanese" then
+		strTemp = "設定読み込み";
+	end	
+	MakeCMenuParentItem(context, strTemp, subContextLoad);
+
+	local subContextSave = ui.CreateContextMenu("SUBCONTEXT_SAVE", "", 0, 0, 0, 0);
+	strTemp = "Common Setting ";
+	if currentCountry == "japanese" then
+		strTemp = "共通データ";
+	end	
+	for i = 1, 10 do
+		local memo = _G["STATVIEWER_EX"]["common" .. i].MEMO
+		if memo == nil or memo == "" then
+			memo = ""
+		else
+			memo = " : " .. memo
+		end
+		MakeCMenuItem(subContextSave
+					, strTemp .. i .. memo
+					, string.format("STATVIEWER_EX_COMMONSAVE_CHECK(%d)", i)
+					);
+	end
+	subContextSave:Resize(subContextSave:GetWidth(), subContextSave:GetHeight());
+	strTemp = "Save Setting";
+	if currentCountry == "japanese" then
+		strTemp = "設定保存";
+	end	
+	MakeCMenuParentItem(context, strTemp, subContextSave);
+	MakeCMenuSeparator(context, 240.3);
+	if _G["STATVIEWER_EX"]["settings"]["Movable"] == nil then
+		_G["STATVIEWER_EX"]["settings"]["Movable"] = true;
+	end
+	strTemp = "Lock position";
+	if currentCountry == "japanese" then
+		strTemp = "位置を固定する";
+	end	
+	MakeCMenuItem(context, strTemp, "STATVIEWER_EX_CHANGE_MOVABLE()", not _G["STATVIEWER_EX"]["settings"]["Movable"]);
+	MakeCMenuSeparator(context, 240.4);
+	strTemp = "Close";
+	if currentCountry == "japanese" then
+		strTemp = "閉じる";
+	end	
+	MakeCMenuItem(context, "{#666666}" .. strTemp .. "{/}");
+	local intWidth = 360;
+	if currentCountry == "japanese" then
+		intWidth = 270;
+	end	
+	context:Resize(intWidth, context:GetHeight());
+	ui.OpenContextMenu(context);
+	
 end
