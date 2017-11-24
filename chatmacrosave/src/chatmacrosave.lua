@@ -33,7 +33,7 @@ function CHATMACROSAVE_ON_INIT(addon, frame)
 
 	if readFlg then
 	else
-		local t, err = acutil.loadJSON(g.settingsFileLoc, g.settings);
+		local t, err = acutil.loadJSON(g.settingsFileLoc);
 		-- 読み込めない = ファイルがない
 		if err then
 		else
@@ -88,6 +88,7 @@ function CHATMACROSAVE_SAVE_FOR_FRAME()
 		local text = ctrl:GetText();
 		local slot = macroGbox:GetChild("CHAT_MACRO_SLOT_" .. i);
 		local poseID = tonumber( slot:GetUserValue('POSEID') );
+		text = CHATMACROSAVE_ENCODE(text);
 		g.settings.poseID[i]=poseID;
 		g.settings.text[i]=text;
 	end
@@ -105,6 +106,7 @@ function CHATMACROSAVE_SAVE_FOR_SESSION()
 		local info = list:PtrAt(i);
 		local text = tostring(info.macro);
 		local poseID = tonumber( info.poseID );
+		text = CHATMACROSAVE_ENCODE(text);
 		g.settings.poseID[i+1]=poseID;
 		g.settings.text[i+1]=text;
 	end
@@ -119,6 +121,7 @@ function CHATMACROSAVE_LOAD()
 	for i = 1 , MAX_MACRO_CNT do
 		local poseID = g.settings.poseID[i];
 		local text = g.settings.text[i];
+		text = CHATMACROSAVE_DECODE(text);
 		local ctrl = macroGbox:GetChild("CHAT_MACRO_" .. i);
 		ctrl:SetText(text);
 		ctrl:ShowWindow(1);
@@ -141,3 +144,14 @@ function CHATMACROSAVE_APPS_TRY_LEAVE(type)
 	readFlg = false
 	CHATMACROSAVE_APPS_TRY_LEAVE_OLD(type)
 end
+
+function CHATMACROSAVE_ENCODE(argStr)
+	argStr = string.gsub(argStr, "/", "__SLASH__")
+	return argStr;
+end
+
+function CHATMACROSAVE_DECODE(argStr)
+	argStr = string.gsub(argStr, "__SLASH__", "/")
+	return argStr;
+end
+

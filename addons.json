@@ -180,7 +180,7 @@
 		"name" : "Chat Macro Save",
 		"file" : "chatmacrosave",
 		"extension" : "ipf",
-		"fileVersion" : "v1.0.0",
+		"fileVersion" : "v1.0.1",
 		"releaseTag" : "chatmacrosave",
 		"unicode" : "⛄",
 		"description" : "We will share common macros for each character.  キャラクターごとになっている定型文を共通化します。",
