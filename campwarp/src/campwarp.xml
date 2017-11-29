@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<uiframe name="campwarp" x="500" y="500" width="60" height="60">
+	<frame snapclient="true" snapframe="true" layout_gravity="light top" margin="0 0 0 0"/>
+	<option visible="true" alwaysVisible="false" closebutton="false" useimageitem="true" autoopen="true" hideable="true"/>
+	<input hittest="true" movable="true" moveintitlebar="false" hittestframe="true"/>
+	<layer layerlevel="60"/>
+	<draw drawnotitlebar="false" drawtitlebar="false" drawframe="true"/>
+	<skin frameskin="shadow_box"/>
+	<sound opensound="win_open" closesound="win_close"/>
+	<controls>
+	</controls>
+</uiframe>

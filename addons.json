@@ -189,6 +189,19 @@
 			"macro",
 			"common"
 		]
+	},
+	{
+		"name" : "Camp Warp(bugfix)",
+		"file" : "campwarp",
+		"extension" : "ipf",
+		"fileVersion" : "v1.0.1",
+		"releaseTag" : "campwarp",
+		"unicode" : "⛄",
+		"description" : "Fixed camp warp addon that did not move. Addon that allows you to warp to camp from chat commands or ui.  動かなかったCampWarpアドオンを修正しました。チャットコマンドやUIからのキャンプにワープするアドオンです。",
+		"tags" : [
+			"ui",
+			"camp"
+		]
 	}
 
 ]
