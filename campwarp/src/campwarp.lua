@@ -175,7 +175,7 @@ function CAMPWARP_PROCESS_COMMAND(command)
 
   if #command > 0 then
     cmd = table.remove(command, 1);
-    if "number" == type(cmd) then
+    if "number" == type(tonumber(cmd)) then
       cmd = tonumber(cmd);
       if cmd then
         CAMPWARP_EXEC_WARP(cmd);
