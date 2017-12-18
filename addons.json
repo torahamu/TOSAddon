@@ -101,7 +101,7 @@
 		"name" : "chatextends",
 		"file" : "chatextends",
 		"extension" : "ipf",
-		"fileVersion" : "v2.5.0",
+		"fileVersion" : "v2.4.3",
 		"releaseTag" : "chatextends",
 		"unicode" : "⛄",
 		"description" : "Modify chat.Please look at github for details.[v2.5.0 Correspond to system message of ChatSound]  チャットを色々改造します。詳細はGithubやReadmeを見てください。[v2.5.0 チャットサウンドをシステムメッセージに対応]",
