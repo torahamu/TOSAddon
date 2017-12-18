@@ -27,6 +27,7 @@ if option.GetCurrentCountry()=="Japanese" then
 		[12] = {name='このぉ！'; sound='voice_archer_cloaking_shot'};
 		[13] = {name='そぉい！'; sound='voice_archer_fulldraw_cast'};
 		[14] = {name='フィーバー！'; sound='voice_war_jollyroger_shot'};
+		[15] = {name='あーあー'; sound='PLAYLIST_m_boss_scenario2'};
 	}
 else
 	soundTypes = {
@@ -39,6 +40,12 @@ else
 		[7]  = {name='sys_secret_alarm'; sound='sys_secret_alarm'};
 		[8]  = {name='travel_diary_1'; sound='travel_diary_1'};
 		[9]  = {name='button_click_4'; sound='button_click_4'};
+		[10] = {name='CuteVoice1'; sound='voice_archer_multishot_cast'};
+		[11] = {name='CuteVoice2'; sound='voice_archer_camouflage_shot'};
+		[12] = {name='CuteVoice3'; sound='voice_archer_cloaking_shot'};
+		[13] = {name='CuteVoice4'; sound='voice_archer_fulldraw_cast'};
+		[14] = {name='CuteVoice5'; sound='voice_war_jollyroger_shot'};
+		[15] = {name='boss_music'; sound='PLAYLIST_m_boss_scenario2'};
 	}
 end
 
@@ -49,24 +56,24 @@ if not g.loaded then
 	g.settings = {
 		flg=false; --どこかの設定があれば、保存時にtrueになる
 		all = {
-			normal=false; shout=false; party=false; guild=false; whisper=false; group=false; normalsound=1; shoutsound=1; partysound=1; guildsound=1; whispersound=1; groupsound=1
+			normal=false; shout=false; party=false; guild=false; whisper=false; group=false; system=false; normalsound=1; shoutsound=1; partysound=1; guildsound=1; whispersound=1; groupsound=1; systemsound=1
 		};
 		word = {
-			[1]  = {word="";normal=false; shout=false; party=false; guild=false; whisper=false; group=false; sound=1};
-			[2]  = {word="";normal=false; shout=false; party=false; guild=false; whisper=false; group=false; sound=1};
-			[3]  = {word="";normal=false; shout=false; party=false; guild=false; whisper=false; group=false; sound=1};
-			[4]  = {word="";normal=false; shout=false; party=false; guild=false; whisper=false; group=false; sound=1};
-			[5]  = {word="";normal=false; shout=false; party=false; guild=false; whisper=false; group=false; sound=1};
-			[6]  = {word="";normal=false; shout=false; party=false; guild=false; whisper=false; group=false; sound=1};
-			[7]  = {word="";normal=false; shout=false; party=false; guild=false; whisper=false; group=false; sound=1};
-			[8]  = {word="";normal=false; shout=false; party=false; guild=false; whisper=false; group=false; sound=1};
-			[9]  = {word="";normal=false; shout=false; party=false; guild=false; whisper=false; group=false; sound=1};
-			[10] = {word="";normal=false; shout=false; party=false; guild=false; whisper=false; group=false; sound=1};
-			[11] = {word="";normal=false; shout=false; party=false; guild=false; whisper=false; group=false; sound=1};
-			[12] = {word="";normal=false; shout=false; party=false; guild=false; whisper=false; group=false; sound=1};
-			[13] = {word="";normal=false; shout=false; party=false; guild=false; whisper=false; group=false; sound=1};
-			[14] = {word="";normal=false; shout=false; party=false; guild=false; whisper=false; group=false; sound=1};
-			[15] = {word="";normal=false; shout=false; party=false; guild=false; whisper=false; group=false; sound=1};
+			[1]  = {word="";normal=false; shout=false; party=false; guild=false; whisper=false; group=false; system=false; sound=1};
+			[2]  = {word="";normal=false; shout=false; party=false; guild=false; whisper=false; group=false; system=false; sound=1};
+			[3]  = {word="";normal=false; shout=false; party=false; guild=false; whisper=false; group=false; system=false; sound=1};
+			[4]  = {word="";normal=false; shout=false; party=false; guild=false; whisper=false; group=false; system=false; sound=1};
+			[5]  = {word="";normal=false; shout=false; party=false; guild=false; whisper=false; group=false; system=false; sound=1};
+			[6]  = {word="";normal=false; shout=false; party=false; guild=false; whisper=false; group=false; system=false; sound=1};
+			[7]  = {word="";normal=false; shout=false; party=false; guild=false; whisper=false; group=false; system=false; sound=1};
+			[8]  = {word="";normal=false; shout=false; party=false; guild=false; whisper=false; group=false; system=false; sound=1};
+			[9]  = {word="";normal=false; shout=false; party=false; guild=false; whisper=false; group=false; system=false; sound=1};
+			[10] = {word="";normal=false; shout=false; party=false; guild=false; whisper=false; group=false; system=false; sound=1};
+			[11] = {word="";normal=false; shout=false; party=false; guild=false; whisper=false; group=false; system=false; sound=1};
+			[12] = {word="";normal=false; shout=false; party=false; guild=false; whisper=false; group=false; system=false; sound=1};
+			[13] = {word="";normal=false; shout=false; party=false; guild=false; whisper=false; group=false; system=false; sound=1};
+			[14] = {word="";normal=false; shout=false; party=false; guild=false; whisper=false; group=false; system=false; sound=1};
+			[15] = {word="";normal=false; shout=false; party=false; guild=false; whisper=false; group=false; system=false; sound=1};
 		}
 	};
 end
@@ -77,7 +84,7 @@ end
 function CHATEXTENDS_SOUND_SAVE_SETTINGS()
 	local frame = ui.GetFrame("zchatsounds");
 	g.settings.flg=false;
-	if g.settings.all.normal or g.settings.all.shout or g.settings.all.party or g.settings.all.guild or g.settings.all.whisper or g.settings.all.group then
+	if g.settings.all.normal or g.settings.all.shout or g.settings.all.party or g.settings.all.guild or g.settings.all.whisper or g.settings.all.group or g.settings.all.system then
 		g.settings.flg=true;
 	end
 	local list = tolua.cast(frame:GetChild("ALL_DROPLIST0"), "ui::CDropList");
@@ -92,8 +99,10 @@ function CHATEXTENDS_SOUND_SAVE_SETTINGS()
 	g.settings.all.whispersound = list:GetSelItemIndex() + 1;
 	list = tolua.cast(frame:GetChild("ALL_DROPLIST5"), "ui::CDropList");
 	g.settings.all.groupsound   = list:GetSelItemIndex() + 1;
+	list = tolua.cast(frame:GetChild("ALL_DROPLIST6"), "ui::CDropList");
+	g.settings.all.systemsound   = list:GetSelItemIndex() + 1;
 	for i, ver in ipairs(g.settings.word) do
-		if g.settings.word[i].normal or g.settings.word[i].shout or g.settings.word[i].party or g.settings.word[i].guild or g.settings.word[i].whisper or g.settings.word[i].group then
+		if g.settings.word[i].normal or g.settings.word[i].shout or g.settings.word[i].party or g.settings.word[i].guild or g.settings.word[i].whisper or g.settings.word[i].group or g.settings.word[i].system then
 			g.settings.flg=true;
 		end
 		local word = tolua.cast(frame:GetChild("WORD"..i), "ui::CEditControl");
@@ -228,10 +237,41 @@ function CHATEXTENDS_SOUND_DRAW_CHAT_MSG_EVENT(frame, msg)
 				end
 			end
 		end
+	elseif msgType == "System" then
+		if g.settings.all.system then
+			CHAT_SOUNDS_PLAYSOUND(soundTypes[tonumber(g.settings.all.systemsound)].sound)
+		end
+		for i, ver in ipairs(g.settings.word) do
+			if g.settings.word[i].system and g.settings.word[i].word ~= "" and g.settings.word[i].word ~= nil then
+				if string.find(CHATEXTENDS_SOUND_GET_MSGBODY(clusterinfo:GetMsg()),g.settings.word[i].word) then
+					CHAT_SOUNDS_PLAYSOUND(soundTypes[tonumber(g.settings.word[i].sound)].sound)
+				end
+			end
+		end
 	end
 
 end
 
+
+-- tpChatSys使っている場合はシステムメッセージはtpChatSys側から取得
+function CHATEXTENDS_SOUND_TPCHATSYS_HOOK_CHAT_SYSTEM_EVENT(frame, msg)
+	-- そもそも設定なければ終了
+	if not g.settings.flg then
+		return;
+	end
+	local chatbody = acutil.getEventArgs(msg);
+
+	if g.settings.all.system then
+		CHAT_SOUNDS_PLAYSOUND(soundTypes[tonumber(g.settings.all.systemsound)].sound)
+	end
+	for i, ver in ipairs(g.settings.word) do
+		if g.settings.word[i].system and g.settings.word[i].word ~= "" and g.settings.word[i].word ~= nil then
+			if string.find(CHATEXTENDS_SOUND_GET_MSGBODY(chatbody),g.settings.word[i].word) then
+				CHAT_SOUNDS_PLAYSOUND(soundTypes[tonumber(g.settings.word[i].sound)].sound)
+			end
+		end
+	end
+end
 
 --************************************************
 -- リンクなどを消した内容
@@ -275,7 +315,7 @@ end
 --************************************************
 function CHATEXTENDS_SOUND_FRAME_CREATE()
 	local frame = ui.GetFrame("zchatsounds");
-	frame:Resize(840,840);
+	frame:Resize(960,840);
 
 	local fontType = "{@st43}{s14}"
 	local fontName = "white_16_ol"
@@ -287,16 +327,18 @@ function CHATEXTENDS_SOUND_FRAME_CREATE()
 		[5]  = {name=" ギルド "      ;ename=" guild "            ; left=450 ; top= 60 ;  h=0; w=0;};
 		[6]  = {name="ささやき"      ;ename="whisper"            ; left=580 ; top= 60 ;  h=0; w=0;};
 		[7]  = {name="グループ"      ;ename=" group "            ; left=710 ; top= 60 ;  h=0; w=0;};
-		[8]  = {name="■単語指定"    ;ename="Respond with words" ; left=30  ; top= 200;  h=0; w=0;};
-		[9]  = {name="フラグ"        ;ename="flg"                ; left=200 ; top= 210;  h=0; w=0;};
-		[10] = {name="単語"          ;ename="word"               ; left=500 ; top= 240;  h=0; w=0;};
-		[11] = {name="効果音"        ;ename="sound"              ; left=710 ; top= 240;  h=0; w=0;};
-		[12] = {name=" 一  般 "      ;ename="normal "            ; left=40  ; top= 240;  h=0; w=0;};
-		[13] = {name="シャウト"      ;ename=" shout "            ; left=100 ; top= 240;  h=0; w=0;};
-		[14] = {name="パーティ"      ;ename=" party "            ; left=160 ; top= 240;  h=0; w=0;};
-		[15] = {name=" ギルド "      ;ename=" guild "            ; left=220 ; top= 240;  h=0; w=0;};
-		[16] = {name="ささやき"      ;ename="whisper"            ; left=280 ; top= 240;  h=0; w=0;};
-		[17] = {name="グループ"      ;ename=" group "            ; left=340 ; top= 240;  h=0; w=0;};
+		[8]  = {name="システム"      ;ename="system "            ; left=840 ; top= 60 ;  h=0; w=0;};
+		[9]  = {name="■単語指定"    ;ename="Respond with words" ; left=30  ; top= 200;  h=0; w=0;};
+		[10] = {name="フラグ"        ;ename="flg"                ; left=200 ; top= 210;  h=0; w=0;};
+		[11] = {name="単語"          ;ename="word"               ; left=480 ; top= 240;  h=0; w=0;};
+		[12] = {name="効果音"        ;ename="sound"              ; left=800 ; top= 240;  h=0; w=0;};
+		[13] = {name=" 一  般 "      ;ename="normal "            ; left=40  ; top= 240;  h=0; w=0;};
+		[14] = {name="シャウト"      ;ename=" shout "            ; left=100 ; top= 240;  h=0; w=0;};
+		[15] = {name="パーティ"      ;ename=" party "            ; left=160 ; top= 240;  h=0; w=0;};
+		[16] = {name=" ギルド "      ;ename=" guild "            ; left=220 ; top= 240;  h=0; w=0;};
+		[17] = {name="ささやき"      ;ename="whisper"            ; left=280 ; top= 240;  h=0; w=0;};
+		[18] = {name="グループ"      ;ename=" group "            ; left=340 ; top= 240;  h=0; w=0;};
+		[19] = {name="システム"      ;ename="system "            ; left=400 ; top= 240;  h=0; w=0;};
 	};
 
 	for i, ver in ipairs(rtLabel) do
@@ -314,7 +356,7 @@ function CHATEXTENDS_SOUND_FRAME_CREATE()
 	chatSoundsLine:SetSkinName('labelline_def')
 
 	-- 何でも反応部分
-	for i = 0, 5 do
+	for i = 0, 6 do
 		local marginLeft = 130*i
 		local rtAll = {
 			[1]  = {name="ENABLE"      ;type= "checkbox"; left=80  ; top= 90  ; h=35;  w=35;};
@@ -357,6 +399,10 @@ function CHATEXTENDS_SOUND_FRAME_CREATE()
 					if g.settings.all.group then
 						create_CTRL:SetCheck(1);
 					end
+				elseif i==6 then
+					if g.settings.all.system then
+						create_CTRL:SetCheck(1);
+					end
 				end
 			elseif rtAll[j].type == "droplist" then
 				tolua.cast(create_CTRL, "ui::CDropList");
@@ -378,6 +424,8 @@ function CHATEXTENDS_SOUND_FRAME_CREATE()
 					create_CTRL:SelectItem(g.settings.all.whispersound - 1)
 				elseif i==5 then
 					create_CTRL:SelectItem(g.settings.all.groupsound - 1)
+				elseif i==6 then
+					create_CTRL:SelectItem(g.settings.all.systemsound - 1)
 				end
 			end
 		end
@@ -395,8 +443,9 @@ function CHATEXTENDS_SOUND_FRAME_CREATE()
 			[4]  = {name="GUILD_ENABLE"  ;type= "checkbox"; left=240  ; top= 260 ; h=35;  w=35;};
 			[5]  = {name="WHISPER_ENABLE";type= "checkbox"; left=300  ; top= 260 ; h=35;  w=35;};
 			[6]  = {name="GROUP_ENABLE"  ;type= "checkbox"; left=360  ; top= 260 ; h=35;  w=35;};
-			[7]  = {name="WORD"          ;type= "edit"    ; left=420  ; top= 260 ; h=200; w=33;};
-			[8]  = {name="WORD_DROPLIST" ;type= "droplist"; left=680  ; top= 260 ; h=100; w=20;};
+			[7]  = {name="SYSTEM_ENABLE" ;type= "checkbox"; left=420  ; top= 260 ; h=35;  w=35;};
+			[8]  = {name="WORD"          ;type= "edit"    ; left=480  ; top= 260 ; h=260; w=33;};
+			[9]  = {name="WORD_DROPLIST" ;type= "droplist"; left=780  ; top= 260 ; h=100; w=20;};
 		};
 
 		for j, ver in ipairs(rtWord) do
@@ -433,6 +482,10 @@ function CHATEXTENDS_SOUND_FRAME_CREATE()
 					end
 				elseif rtWord[j].name == "GROUP_ENABLE" then
 					if g.settings.word[i].group then
+						create_CTRL:SetCheck(1);
+					end
+				elseif rtWord[j].name == "SYSTEM_ENABLE" then
+					if g.settings.word[i].system then
 						create_CTRL:SetCheck(1);
 					end
 				end
@@ -521,6 +574,12 @@ function CHAT_SOUNDS_ALL_ENABLE(frame, ctrl, argStr, argNum)
 		else
 			g.settings.all.group = false;
 		end
+	elseif num == "6" then
+		if ctrl:IsChecked() == 1 then
+			g.settings.all.system = true;
+		else
+			g.settings.all.system = false;
+		end
 	end
 end
 
@@ -567,6 +626,12 @@ function CHAT_SOUNDS_WORD_ENABLE(frame, ctrl, argStr, argNum)
 		else
 			g.settings.word[num].group = false;
 		end
+	elseif name == "SYSTEM_ENABLE" then
+		if ctrl:IsChecked() == 1 then
+			g.settings.word[num].system = true;
+		else
+			g.settings.word[num].system = false;
+		end
 	end
 
 end
@@ -579,6 +644,9 @@ function CHAT_SOUNDS_PLAYSOUND(bgmnames)
 
 	if string.sub(bgmnames,1,5) == "voice" then
 		GetMyActor():GetEffect():PlaySound(bgmnames);
+	elseif string.sub(bgmnames,1,8) == "PLAYLIST" then
+		bgmnames = string.gsub(bgmnames, 'PLAYLIST_', '');
+		imcSound.PlayMusic(bgmnames, 1);
 	else
 		imcSound.PlaySoundEvent(bgmnames);
 	end

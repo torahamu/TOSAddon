@@ -165,6 +165,11 @@ function ZCHATEXTENDS_ON_INIT(addon, frame)
 			_G['ui'].ProcessTabKey = CHATEXTENDS_ProcessTabKey;
 		end
 
+		if nil == CHATEXTENDS_CHAT_TYPE_LISTSET_OLD then
+			CHATEXTENDS_CHAT_TYPE_LISTSET_OLD = CHAT_TYPE_LISTSET;
+			CHAT_TYPE_LISTSET = CHATEXTENDS_CHAT_TYPE_LISTSET;
+		end
+
 		--コマンド登録
 		acutil.slashCommand("/savechat", CHATEXTENDS_SAVE_CHAT);
 
@@ -190,10 +195,12 @@ function ZCHATEXTENDS_ON_INIT(addon, frame)
 		end
 	end
 	-- イベント登録
-	addon:RegisterMsg("GAME_START_3SEC", "CHATEXTENDS_SET_CHAT_TYPE_3SEC");
 	acutil.setupEvent(addon, "DRAW_CHAT_MSG", "CHATEXTENDS_SOUND_DRAW_CHAT_MSG_EVENT");
 	acutil.setupEvent(addon, "DRAW_CHAT_MSG", "CHATEXTENDS_NICO_CHAT_DRAW");
 	acutil.setupEvent(addon, "DRAW_CHAT_MSG", "CHATEXTENDS_CHAT_REC");
+	if TPCHATSYS_HOOK_CHAT_SYSTEM ~= nil then
+		acutil.setupEvent(addon, "TPCHATSYS_ON_MSG", "CHATEXTENDS_SOUND_TPCHATSYS_HOOK_CHAT_SYSTEM_EVENT");
+	end
 
 	-- チャット入力を変更
 	CHATEXTENDS_UPDATE_CHAT_FRAME()
@@ -203,10 +210,8 @@ function ZCHATEXTENDS_ON_INIT(addon, frame)
 end
 
 -- 発言種類設定
-function CHATEXTENDS_SET_CHAT_TYPE_3SEC()
-	ui.SetChatType(g.chattype);
-	-- なぜか開くので
-	ui.CloseFrame("chat");
+function CHATEXTENDS_CHAT_TYPE_LISTSET(selected)
+	CHATEXTENDS_CHAT_TYPE_LISTSET_OLD(g.chattype + 1)
 end
 
 -- チャット入力を変更
@@ -510,6 +515,7 @@ function CHATEXTENDS_SetChatType(typeIvalue)
 	-- 一度チャット内容を取得
 	local str = GET_CHAT_TEXT();
 	-- この命令でチャット内容が消える
+	g.chattype = typeIvalue;
 	CHATEXTENDS_SetChatType_OLD(typeIvalue);
 	-- チャット内容復旧
 	SET_CHAT_TEXT(str);
