@@ -18,21 +18,26 @@ local PotentialText="Potential"
 
 -- Hat prop Name and Max Values
 local propList = {};
-propList.MHP           = {name =  "Max HP"  ;max = 2283;};
+propList.MHP           = {name =  "MaxHP"  ;max = 2283;};
 propList.RHP           = {name =  "HP Rec"  ;max = 56;};
 propList.MSP           = {name =  "Max SP"  ;max = 450;};
 propList.RSP           = {name =  "SP Rec"  ;max = 42;};
-propList.PATK          = {name =  "PhysAtk" ;max = 126;};
-propList.ADD_MATK      = {name =  "Mag Atk" ;max = 126;};
-propList.ADD_DEF       = {name =  "PhysDef" ;max = 110;};
-propList.ADD_MDEF      = {name =  "Mag Def" ;max = 110;};
-propList.ADD_MHR       = {name =  "Mag Amp" ;max = 126;};
+propList.PATK          = {name =  "P.Atk" ;max = 126;};
+propList.ADD_MATK      = {name =  "M.Atk" ;max = 126;};
+propList.STR       	   = {name =  "STR" ;};
+propList.DEX 		   = {name =  "DEX" ;};
+propList.CON		   = {name =  "CON" ;};
+propList.INT 		   = {name =  "INT" ;};
+propList.MNA 		   = {name =  "SPR" ;};
+propList.ADD_DEF       = {name =  "P.Def" ;max = 110;};
+propList.ADD_MDEF      = {name =  "M.Def" ;max = 110;};
+propList.ADD_MHR       = {name =  "M.Amp" ;max = 126;};
 propList.CRTATK        = {name =  "CritAtk" ;max = 189;};
 propList.CRTHR         = {name =  "CritRate";max = 14;};
 propList.CRTDR         = {name =  "CritDef" ;max = 14;};
-propList.BLK           = {name =  "Block"   ;max = 14;};
-propList.ADD_HR        = {name =  "Accuracy";max = 14;};
-propList.ADD_DR        = {name =  "Evasion" ;max = 14;};
+propList.BLK           = {name =  "Blk"   ;max = 14;};
+propList.ADD_HR        = {name =  "Acc";max = 14;};
+propList.ADD_DR        = {name =  "Eva" ;max = 14;};
 propList.ADD_FIRE      = {name =  "FireAtk" ;max = 99;};
 propList.ADD_ICE       = {name =  "IceAtk"  ;max = 99;};
 propList.ADD_POISON    = {name =  "PsnAtk"  ;max = 99;};
@@ -52,6 +57,7 @@ propList.RES_DARK      = {name =  "DarkRes" ;max = 84;};
 propList.MSPD          = {name =  "Mspd"    ;max = 1;};
 propList.SR            = {name =  "AoEAtk"  ;max = 1;};
 propList.SDR           = {name =  "AoEDef"  ;max = 4;};
+propList.LootingChance = {name =  "Loot%"  ;};
 
 function MARKETSHOWLEVEL_ON_INIT(addon, frame)
 	if (acutil ~= nil) then
@@ -60,7 +66,6 @@ function MARKETSHOWLEVEL_ON_INIT(addon, frame)
 		_G["ON_MARKET_ITEM_LIST"] = ON_MARKET_ITEM_LIST_HOOKED;
 	end
 end
-
 
 function GET_GEM_INFO(itemObj)
 	local gemInfo = "";
@@ -148,7 +153,44 @@ function GET_HAT_PROP(itemObj)
 	end
 
 	return prop;
+end
 
+function GET_INFO_RANDOM(obj)
+	local randomInfo = "";
+	for i = 1 , MAX_RANDOM_OPTION_COUNT do
+	    local propGroupName = "RandomOptionGroup_"..i;
+		local propName = "RandomOption_"..i;
+		local propValue = "RandomOptionValue_"..i;
+		local clientMessage = 'None'
+		
+		if obj[propGroupName] == 'ATK' then
+		    clientMessage = 'ItemRandomOptionGroupATK'
+		elseif obj[propGroupName] == 'DEF' then
+		    clientMessage = 'ItemRandomOptionGroupDEF'
+		elseif obj[propGroupName] == 'UTIL_WEAPON' then
+		    clientMessage = 'ItemRandomOptionGroupUTIL'
+		elseif obj[propGroupName] == 'UTIL_ARMOR' then
+		    clientMessage = 'ItemRandomOptionGroupUTIL'			
+		elseif obj[propGroupName] == 'UTIL_SHILED' then
+		    clientMessage = 'ItemRandomOptionGroupUTIL'
+		elseif obj[propGroupName] == 'STAT' then
+		    clientMessage = 'ItemRandomOptionGroupSTAT'
+		end
+
+		if obj[propValue] ~= 0 and obj[propName] ~= "None" then
+			--local opName = string.format("%s %s", ClMsg(clientMessage), ScpArgMsg(obj[propName]));
+			local prop = ""
+			if propList[propName] ~= nil then
+				prop = propList[propName]
+			else
+				prop = ScpArgMsg(obj[propName])
+			end
+			local opName = string.format("%s %s", ClMsg(clientMessage), prop);
+			local info = string.format("%s " .. "%d", opName, math.abs(obj[propValue]))
+			randomInfo = randomInfo..info
+		end
+	end
+	return randomInfo
 end
 
 function GET_ITEM_VALUE_COLOR(propname,value, max)
@@ -170,12 +212,14 @@ end
 function GET_EQUIP_PROP(ctrlSet, itemObj, row)
 	local gemInfo = GET_GEM_INFO(itemObj);
 	local prop = GET_HAT_PROP(itemObj);
+	local randomInfo = GET_INFO_RANDOM(itemObj)
 
 	local propDetail = ctrlSet:CreateControl("richtext", "PROP_ITEM_" .. row, 100, 42, 0, 0);
 	tolua.cast(propDetail, 'ui::CRichText');
 	propDetail:SetFontName("brown_16_b");
-	propDetail:SetText("{s14}"..prop..gemInfo.."{/}");
-	propDetail:Resize(400, 0)
+	--propDetail:SetText("{s14}"..prop..randomInfo..gemInfo.."{/}");
+	propDetail:SetText("{s12}"..prop..randomInfo.." "..gemInfo.."{/}");
+	propDetail:Resize(100, propDetail:GetY()-12)
 	propDetail:SetTextAlign(propAlign, "center");
 end
 
