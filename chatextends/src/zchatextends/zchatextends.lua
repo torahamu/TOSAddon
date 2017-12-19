@@ -165,9 +165,9 @@ function ZCHATEXTENDS_ON_INIT(addon, frame)
 			_G['ui'].ProcessTabKey = CHATEXTENDS_ProcessTabKey;
 		end
 
-		if nil == CHATEXTENDS_CHAT_TYPE_LISTSET_OLD then
-			CHATEXTENDS_CHAT_TYPE_LISTSET_OLD = CHAT_TYPE_LISTSET;
-			CHAT_TYPE_LISTSET = CHATEXTENDS_CHAT_TYPE_LISTSET;
+		if nil == CHATEXTENDS_ProcessReturnKey_OLD then
+			CHATEXTENDS_ProcessReturnKey_OLD = _G['ui'].ProcessReturnKey;
+			_G['ui'].ProcessReturnKey = CHATEXTENDS_ProcessReturnKey;
 		end
 
 		--コマンド登録
@@ -207,11 +207,6 @@ function ZCHATEXTENDS_ON_INIT(addon, frame)
 	-- 設定項目をチャットオプションに追加
 	CHATEXTENDS_CREATE_CHATOPTION_FRAME();
 
-end
-
--- 発言種類設定
-function CHATEXTENDS_CHAT_TYPE_LISTSET(selected)
-	CHATEXTENDS_CHAT_TYPE_LISTSET_OLD(g.chattype + 1)
 end
 
 -- チャット入力を変更
@@ -515,7 +510,6 @@ function CHATEXTENDS_SetChatType(typeIvalue)
 	-- 一度チャット内容を取得
 	local str = GET_CHAT_TEXT();
 	-- この命令でチャット内容が消える
-	g.chattype = typeIvalue;
 	CHATEXTENDS_SetChatType_OLD(typeIvalue);
 	-- チャット内容復旧
 	SET_CHAT_TEXT(str);
@@ -536,6 +530,17 @@ function CHATEXTENDS_ProcessTabKey()
 		g.chattype = ui.GetChatType();
 	else
 		CHATEXTENDS_ProcessTabKey_OLD();
+	end
+end
+
+-- エンターキー押下時のフック
+-- 発言種類設定
+function CHATEXTENDS_ProcessReturnKey()
+	CHATEXTENDS_ProcessReturnKey_OLD();
+	local frame = ui.GetFrame('chat');
+	local chatEditCtrl = frame:GetChild('mainchat');
+	if chatEditCtrl:IsHaveFocus() == 1 then
+		ui.SetChatType(g.chattype)
 	end
 end
 
