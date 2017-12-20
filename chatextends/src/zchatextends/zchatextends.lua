@@ -537,6 +537,10 @@ end
 -- 発言種類設定
 function CHATEXTENDS_ProcessReturnKey()
 	CHATEXTENDS_ProcessReturnKey_OLD();
+	if keyboard.IsPressed(KEY_ALT) == 1 or keyboard.IsPressed(KEY_CTRL) == 1 then
+		g.chattype = ui.GetChatType();
+		return;
+	end
 	local frame = ui.GetFrame('chat');
 	local chatEditCtrl = frame:GetChild('mainchat');
 	if chatEditCtrl:IsHaveFocus() == 1 then
