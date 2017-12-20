@@ -132,42 +132,32 @@ function DRAW_EQUIP_PROPERTY_HOOKED(tooltipframe, invitem, yPos, mainframename)
 end
 
 function DRAW_EQUIP_PROPERTY_MAIN(tooltipframe, invitem, yPos, mainframename)
-
 	local gBox = GET_CHILD(tooltipframe,mainframename,'ui::CGroupBox')
 	gBox:RemoveChild('tooltip_equip_property');
-
+	
 	local baseicList = GET_EQUIP_TOOLTIP_PROP_LIST(invitem);
-
-	local list = GET_CHECK_OVERLAP_EQUIPPROP_LIST(baseicList, invitem.BasicTooltipProp)
+    local list = {};
+    local basicTooltipPropList = StringSplit(invitem.BasicTooltipProp, ';');
+    for i = 1, #basicTooltipPropList do
+        local basicTooltipProp = basicTooltipPropList[i];
+        list = GET_CHECK_OVERLAP_EQUIPPROP_LIST(baseicList, basicTooltipProp, list);
+    end
 	local list2 = GET_EUQIPITEM_PROP_LIST();
-
-	local cnt = 0
+	
+	local cnt = 0;
 	for i = 1 , #list do
+
 		local propName = list[i];
 		local propValue = invitem[propName];
 		
-		if propValue ~= 0 then 
-			if  invitem.GroupName == 'Weapon' then
-				if propName ~= "MINATK" and propName ~= 'MAXATK' then
-					cnt = cnt +1
-				end
-			elseif  invitem.GroupName == 'Armor' then
-				if invitem.ClassType == 'Gloves' then
-					if propName ~= "HR" then
-						cnt = cnt +1
-					end
-				elseif invitem.ClassType == 'Boots' then
-					if propName ~= "DR" then
-						cnt = cnt +1
-					end
-				else
-					if propName ~= "DEF" then
-						cnt = cnt +1
-					end
-				end
-			else
-				cnt = cnt +1
-			end
+		if propValue ~= 0 then
+            local checkPropName = propName;
+            if propName == 'MINATK' or propName == 'MAXATK' then
+                checkPropName = 'ATK';
+            end
+            if EXIST_ITEM(basicTooltipPropList, checkPropName) == false then
+                cnt = cnt + 1;
+            end
 		end
 	end
 
@@ -187,8 +177,8 @@ function DRAW_EQUIP_PROPERTY_MAIN(tooltipframe, invitem, yPos, mainframename)
 			cnt = cnt +1
 		end
 	end
-
-	if cnt <= 0 and (invitem.OptDesc == nil or invitem.OptDesc == "None" ) then -- ?? ?? ????? ??? ??. ??? ??? ? ??? ???
+	
+	if cnt <= 0 and (invitem.OptDesc == nil or invitem.OptDesc == "None" ) then -- 일단 그릴 프로퍼티가 있는지 검사. 없으면 컨트롤 셋 자체를 안만듬
 		if invitem.ReinforceRatio == 100 then
     		return yPos
     	end
@@ -204,6 +194,7 @@ function DRAW_EQUIP_PROPERTY_MAIN(tooltipframe, invitem, yPos, mainframename)
 	for i = 1 , #list do
 		local propName = list[i];
 		local propValue = invitem[propName];
+
 		if class[propName] ~= 0 then
 			if  invitem.GroupName == 'Weapon' then
 				if propName ~= "MINATK" and propName ~= 'MAXATK' then
@@ -251,6 +242,33 @@ function DRAW_EQUIP_PROPERTY_MAIN(tooltipframe, invitem, yPos, mainframename)
 -- add code end
 		end
 	end
+	
+	for i = 1 , 6 do
+	    local propGroupName = "RandomOptionGroup_"..i;
+		local propName = "RandomOption_"..i;
+		local propValue = "RandomOptionValue_"..i;
+		local clientMessage = 'None'
+		
+		if invitem[propGroupName] == 'ATK' then
+		    clientMessage = 'ItemRandomOptionGroupATK'
+		elseif invitem[propGroupName] == 'DEF' then
+		    clientMessage = 'ItemRandomOptionGroupDEF'
+		elseif invitem[propGroupName] == 'UTIL_WEAPON' then
+		    clientMessage = 'ItemRandomOptionGroupUTIL'
+		elseif invitem[propGroupName] == 'UTIL_ARMOR' then
+		    clientMessage = 'ItemRandomOptionGroupUTIL'
+		elseif invitem[propGroupName] == 'UTIL_SHILED' then
+		    clientMessage = 'ItemRandomOptionGroupUTIL'
+		elseif invitem[propGroupName] == 'STAT' then
+		    clientMessage = 'ItemRandomOptionGroupSTAT'
+		end
+		
+		if invitem[propValue] ~= 0 and invitem[propName] ~= "None" then
+			local opName = string.format("%s %s", ClMsg(clientMessage), ScpArgMsg(invitem[propName]));
+			local strInfo = ABILITY_DESC_NO_PLUS(opName, invitem[propValue], 0);
+			inner_yPos = ADD_ITEM_PROPERTY_TEXT(property_gbox, strInfo, 0, inner_yPos);
+		end
+	end
 
 	for i = 1 , #list2 do
 		local propName = list2[i];
@@ -277,7 +295,11 @@ function DRAW_EQUIP_PROPERTY_MAIN(tooltipframe, invitem, yPos, mainframename)
 		inner_yPos = ADD_ITEM_PROPERTY_TEXT(property_gbox, strInfo.."0%"..ClMsg("ReinforceOptionAtk"), 0, inner_yPos);
 	end
 
-	local BOTTOM_MARGIN = tooltipframe:GetUserConfig("BOTTOM_MARGIN"); -- ? ??? ??
+	local BOTTOM_MARGIN = tooltipframe:GetUserConfig("BOTTOM_MARGIN"); -- 맨 아랫쪽 여백
+	BOTTOM_MARGIN = tonumber(BOTTOM_MARGIN)
+	if BOTTOM_MARGIN == nil then
+		BOTTOM_MARGIN = 0
+	end
 	tooltip_equip_property_CSet:Resize(tooltip_equip_property_CSet:GetWidth(),tooltip_equip_property_CSet:GetHeight() + property_gbox:GetHeight() + property_gbox:GetY() + BOTTOM_MARGIN);
 
 	gBox:Resize(gBox:GetWidth(),gBox:GetHeight() + tooltip_equip_property_CSet:GetHeight())
