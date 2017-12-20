@@ -1,7 +1,10 @@
-CHAT_SYSTEM("MARKET SHOW LEVEL v1.0.7 loaded!");
+CHAT_SYSTEM("MARKET SHOW LEVEL v1.1.0 loaded!");
 
 -- Equip Jem And Hat prop align
 local propAlign = "center";
+if option.GetCurrentCountry()=="Japanese" then
+	propAlign = "left";
+end
 
 -- Hat prop color
 local itemColor = {
@@ -15,49 +18,54 @@ local itemColor = {
 local AwakenText="Awaken Option"
 local SocketText="Socket"
 local PotentialText="Potential"
+if option.GetCurrentCountry()=="Japanese" then
+	AwakenText="覚醒オプション"
+	SocketText="ソケット"
+	PotentialText="ポテンシャル"
+end
 
 -- Hat prop Name and Max Values
 local propList = {};
-propList.MHP           = {name =  "MaxHP"  ;max = 2283;};
-propList.RHP           = {name =  "HP Rec"  ;max = 56;};
-propList.MSP           = {name =  "Max SP"  ;max = 450;};
-propList.RSP           = {name =  "SP Rec"  ;max = 42;};
-propList.PATK          = {name =  "P.Atk" ;max = 126;};
-propList.ADD_MATK      = {name =  "M.Atk" ;max = 126;};
-propList.STR       	   = {name =  "STR" ;};
-propList.DEX 		   = {name =  "DEX" ;};
-propList.CON		   = {name =  "CON" ;};
-propList.INT 		   = {name =  "INT" ;};
-propList.MNA 		   = {name =  "SPR" ;};
-propList.ADD_DEF       = {name =  "P.Def" ;max = 110;};
-propList.ADD_MDEF      = {name =  "M.Def" ;max = 110;};
-propList.ADD_MHR       = {name =  "M.Amp" ;max = 126;};
-propList.CRTATK        = {name =  "CritAtk" ;max = 189;};
-propList.CRTHR         = {name =  "CritRate";max = 14;};
-propList.CRTDR         = {name =  "CritDef" ;max = 14;};
-propList.BLK           = {name =  "Blk"   ;max = 14;};
-propList.ADD_HR        = {name =  "Acc";max = 14;};
-propList.ADD_DR        = {name =  "Eva" ;max = 14;};
-propList.ADD_FIRE      = {name =  "FireAtk" ;max = 99;};
-propList.ADD_ICE       = {name =  "IceAtk"  ;max = 99;};
-propList.ADD_POISON    = {name =  "PsnAtk"  ;max = 99;};
-propList.ADD_LIGHTNING = {name =  "LgtAtk"  ;max = 99;};
-propList.ADD_EARTH     = {name =  "EarthAtk";max = 99;};
-propList.ADD_SOUL      = {name =  "GhostAtk";max = 99;};
-propList.ADD_HOLY      = {name =  "HolyAtk" ;max = 99;};
-propList.ADD_DARK      = {name =  "DarkAtk" ;max = 99;};
-propList.RES_FIRE      = {name =  "FireRes" ;max = 84;};
-propList.RES_ICE       = {name =  "IceRes"  ;max = 84;};
-propList.RES_POISON    = {name =  "PsnRes"  ;max = 84;};
-propList.RES_LIGHTNING = {name =  "LgtRes"  ;max = 84;};
-propList.RES_EARTH     = {name =  "EarthRes";max = 84;};
-propList.RES_SOUL      = {name =  "GhostRes";max = 84;};
-propList.RES_HOLY      = {name =  "HolyRes" ;max = 84;};
-propList.RES_DARK      = {name =  "DarkRes" ;max = 84;};
-propList.MSPD          = {name =  "Mspd"    ;max = 1;};
-propList.SR            = {name =  "AoEAtk"  ;max = 1;};
-propList.SDR           = {name =  "AoEDef"  ;max = 4;};
-propList.LootingChance = {name =  "Loot%"  ;};
+propList.MHP           = {name = "ＨＰ";ename =  "MaxHP"   ;max = 2283;};
+propList.RHP           = {name = "HP回";ename =  "HP Rec"  ;max = 56;};
+propList.MSP           = {name = "ＳＰ";ename =  "Max SP"  ;max = 450;};
+propList.RSP           = {name = "SP回";ename =  "SP Rec"  ;max = 42;};
+propList.PATK          = {name = "物攻";ename =  "P.Atk"   ;max = 126;};
+propList.ADD_MATK      = {name = "魔攻";ename =  "M.Atk"   ;max = 126;};
+propList.STR           = {name = "STR ";ename =  "STR"     ;};
+propList.DEX           = {name = "DEX ";ename =  "DEX"     ;};
+propList.CON           = {name = "CON ";ename =  "CON"     ;};
+propList.INT           = {name = "INT ";ename =  "INT"     ;};
+propList.MNA           = {name = "SPR ";ename =  "SPR"     ;};
+propList.ADD_DEF       = {name = "物防";ename =  "P.Def"   ;max = 110;};
+propList.ADD_MDEF      = {name = "魔防";ename =  "M.Def"   ;max = 110;};
+propList.ADD_MHR       = {name = "増幅";ename =  "M.Amp"   ;max = 126;};
+propList.CRTATK        = {name = "ｸﾘ攻";ename =  "CritAtk" ;max = 189;};
+propList.CRTHR         = {name = "ｸﾘ発";ename =  "CritRate";max = 14;};
+propList.CRTDR         = {name = "ｸﾘ抵";ename =  "CritDef" ;max = 14;};
+propList.BLK           = {name = "ブロ";ename =  "Blk"     ;max = 14;};
+propList.ADD_HR        = {name = "命中";ename =  "Acc"     ;max = 14;};
+propList.ADD_DR        = {name = "回避";ename =  "Eva"     ;max = 14;};
+propList.ADD_FIRE      = {name = "炎攻";ename =  "FireAtk" ;max = 99;};
+propList.ADD_ICE       = {name = "氷攻";ename =  "IceAtk"  ;max = 99;};
+propList.ADD_POISON    = {name = "毒攻";ename =  "PsnAtk"  ;max = 99;};
+propList.ADD_LIGHTNING = {name = "雷攻";ename =  "LgtAtk"  ;max = 99;};
+propList.ADD_EARTH     = {name = "地攻";ename =  "EarthAtk";max = 99;};
+propList.ADD_SOUL      = {name = "霊攻";ename =  "GhostAtk";max = 99;};
+propList.ADD_HOLY      = {name = "聖攻";ename =  "HolyAtk" ;max = 99;};
+propList.ADD_DARK      = {name = "闇攻";ename =  "DarkAtk" ;max = 99;};
+propList.RES_FIRE      = {name = "炎防";ename =  "FireRes" ;max = 84;};
+propList.RES_ICE       = {name = "氷防";ename =  "IceRes"  ;max = 84;};
+propList.RES_POISON    = {name = "毒防";ename =  "PsnRes"  ;max = 84;};
+propList.RES_LIGHTNING = {name = "雷防";ename =  "LgtRes"  ;max = 84;};
+propList.RES_EARTH     = {name = "地防";ename =  "EarthRes";max = 84;};
+propList.RES_SOUL      = {name = "霊防";ename =  "GhostRes";max = 84;};
+propList.RES_HOLY      = {name = "聖防";ename =  "HolyRes" ;max = 84;};
+propList.RES_DARK      = {name = "闇防";ename =  "DarkRes" ;max = 84;};
+propList.MSPD          = {name = "移動";ename =  "Mspd"    ;max = 1;};
+propList.SR            = {name = "広攻";ename =  "AoEAtk"  ;max = 1;};
+propList.SDR           = {name = "広防";ename =  "AoEDef"  ;max = 4;};
+propList.LootingChance = {name = "ﾙｰﾄ%";ename =  "Loot%"   ;};
 
 function MARKETSHOWLEVEL_ON_INIT(addon, frame)
 	if (acutil ~= nil) then
@@ -85,7 +93,7 @@ function GET_GEM_INFO(itemObj)
 
 		if socketId > 0 then
 			if #gemInfo > 0 then
-				gemInfo = gemInfo..",";
+				gemInfo = gemInfo.." ";
 			end
 
 			local obj = GetClassByType("Item", socketId);
@@ -140,15 +148,19 @@ function GET_HAT_PROP(itemObj)
 		local propValueStr = "HatPropValue_"..i;
 		if itemObj[propValueStr] ~= 0 and itemObj[propNameStr] ~= "None" then
 			if #prop > 0 then
-				prop = prop..",";
+				prop = prop.." ";
 			end
 
 			propName = itemObj[propNameStr];
 			propValue = itemObj[propValueStr];
 
 			propValueColored = GET_ITEM_VALUE_COLOR(propName, propValue, propList[propName].max);
+			local viewName = propList[propName].ename;
+			if option.GetCurrentCountry()=="Japanese" then
+				viewName = propList[propName].name;
+			end
 
-			prop = prop .. string.format("%s:{#%s}{ol}%4d{/}{/}", propList[propName].name, propValueColored, propValue);
+			prop = prop .. string.format("%s:{#%s}{ol}%4d{/}{/}", viewName, propValueColored, propValue);
 		end
 	end
 
@@ -170,7 +182,7 @@ function GET_INFO_RANDOM(obj)
 		elseif obj[propGroupName] == 'UTIL_WEAPON' then
 		    clientMessage = 'ItemRandomOptionGroupUTIL'
 		elseif obj[propGroupName] == 'UTIL_ARMOR' then
-		    clientMessage = 'ItemRandomOptionGroupUTIL'			
+		    clientMessage = 'ItemRandomOptionGroupUTIL'
 		elseif obj[propGroupName] == 'UTIL_SHILED' then
 		    clientMessage = 'ItemRandomOptionGroupUTIL'
 		elseif obj[propGroupName] == 'STAT' then
@@ -179,9 +191,15 @@ function GET_INFO_RANDOM(obj)
 
 		if obj[propValue] ~= 0 and obj[propName] ~= "None" then
 			--local opName = string.format("%s %s", ClMsg(clientMessage), ScpArgMsg(obj[propName]));
+			if #randomInfo > 0 then
+				randomInfo = randomInfo.." ";
+			end
 			local prop = ""
 			if propList[propName] ~= nil then
-				prop = propList[propName]
+				prop = propList[propName].ename;
+				if option.GetCurrentCountry()=="Japanese" then
+					prop = propList[propName].name;
+				end
 			else
 				prop = ScpArgMsg(obj[propName])
 			end
@@ -217,10 +235,16 @@ function GET_EQUIP_PROP(ctrlSet, itemObj, row)
 	local propDetail = ctrlSet:CreateControl("richtext", "PROP_ITEM_" .. row, 100, 42, 0, 0);
 	tolua.cast(propDetail, 'ui::CRichText');
 	propDetail:SetFontName("brown_16_b");
-	--propDetail:SetText("{s14}"..prop..randomInfo..gemInfo.."{/}");
-	propDetail:SetText("{s12}"..prop..randomInfo.." "..gemInfo.."{/}");
+	if #randomInfo > 0 then
+		randomInfo = randomInfo.." ";
+	end
+	if option.GetCurrentCountry()=="Japanese" then
+		propDetail:SetText("{s14}"..prop..randomInfo..gemInfo.."{/}");
+	else
+		propDetail:SetText("{s12}"..prop..randomInfo..gemInfo.."{/}");
+	end
 	propDetail:Resize(100, propDetail:GetY()-12)
-	propDetail:SetTextAlign(propAlign, "center");
+	propDetail:SetTextAlign(propAlign, "top");
 end
 
 function GET_SOCKET_POTENSIAL_AWAKEN_PROP(ctrlSet, itemObj, row)

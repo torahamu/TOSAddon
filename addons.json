@@ -17,10 +17,10 @@
 		"name" : "Market Show Level",
 		"file" : "marketshowlevel",
 		"extension" : "ipf",
-		"fileVersion" : "v1.0.7",
+		"fileVersion" : "v1.1.0",
 		"releaseTag" : "marketshowlevel",
 		"unicode" : "⛄",
-		"description" : "An add-on that adds additional information to certain market items.",
+		"description" : "An add-on that adds additional information to certain market items.[v1.1.0 Correspond Random Option]  マーケットのジェムやカードのレベル表示,ヘアアクセの能力表示,スキル呪文書のスキル表示をする。[v1.1.0 ランダムオプション対応]",
 		"tags" : [
 			"ui",
 			"market"
@@ -33,7 +33,7 @@
 		"fileVersion" : "v1.0.7",
 		"releaseTag" : "marketshowlevel",
 		"unicode" : "⛄",
-		"description" : "MarketShowLevel For Japan Version.  マーケットのジェムやカードのレベル表示,ヘアアクセの能力表示,スキル呪文書のスキル表示をする。",
+		"description" : "[更新停止]日本語対応したので、通常のmarketshowlevelを使ってください。そのうち、このリストからも削除します。",
 		"tags" : [
 			"ui",
 			"market",
