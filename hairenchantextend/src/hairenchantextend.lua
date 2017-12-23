@@ -242,7 +242,7 @@ function DRAW_EQUIP_PROPERTY_MAIN(tooltipframe, invitem, yPos, mainframename)
 -- add code end
 		end
 	end
-	
+
 	for i = 1 , 6 do
 	    local propGroupName = "RandomOptionGroup_"..i;
 		local propName = "RandomOption_"..i;
@@ -300,8 +300,10 @@ function DRAW_EQUIP_PROPERTY_MAIN(tooltipframe, invitem, yPos, mainframename)
 	if BOTTOM_MARGIN == nil then
 		BOTTOM_MARGIN = 0
 	end
+
 	tooltip_equip_property_CSet:Resize(tooltip_equip_property_CSet:GetWidth(),tooltip_equip_property_CSet:GetHeight() + property_gbox:GetHeight() + property_gbox:GetY() + BOTTOM_MARGIN);
 
 	gBox:Resize(gBox:GetWidth(),gBox:GetHeight() + tooltip_equip_property_CSet:GetHeight())
+
 	return tooltip_equip_property_CSet:GetHeight() + tooltip_equip_property_CSet:GetY();
 end

@@ -347,7 +347,7 @@ function ON_MARKET_ITEM_LIST_HOOKED(frame, msg, argStr, argNum)
 
 		if itemGroup == "Weapon" or itemGroup == "SubWeapon" or itemGroup == "Armor" then
 			name:SetTextByKey("value", GET_FULL_NAME(itemObj));
-			if itemObj.NeedAppraisal ~= 0 then
+			if itemObj.NeedAppraisal ~= 0 or itemObj.NeedRandomOption ~= 0 then
 				pic:SetColorTone("CC222222");
 			end
 			if itemObj.ClassType ~= "Hat" then
