@@ -167,10 +167,10 @@
 		"name" : "Stat Viewer Ex",
 		"file" : "statviewer_ex",
 		"extension" : "ipf",
-		"fileVersion" : "v1.1.0",
+		"fileVersion" : "v1.2.0",
 		"releaseTag" : "statviewer_ex",
 		"unicode" : "⛄",
-		"description" : "This is a modified version of Excrulon's statviewer addon.  Excrulonさんのstatviewerアドオンを改造しました。",
+		"description" : "This is a modified version of Excrulon's statviewer addon.[v1.2.0 Add Looting Chance.Add Context Menu.]  Excrulonさんのstatviewerアドオンを改造しました。[v1.2.0 ルーティングチャンスを追加。コンテキストメニューを追加]",
 		"tags" : [
 			"ui",
 			"status"

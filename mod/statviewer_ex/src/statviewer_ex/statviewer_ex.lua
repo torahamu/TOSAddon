@@ -1,26 +1,27 @@
 -- local acutil = require('acutil');
 
 local label = {
-	["PATK"]      = {name="物理攻撃: "   ;ename="PATK: "     ;kname="물리공격: "};
-	["PATK_SUB"]  = {name="補助攻撃: "   ;ename="PATK_SUB: " ;kname="보조물공: "};
-	["MATK"]      = {name="魔法攻撃: "   ;ename="MATK: "     ;kname="마법공격: "};
-	["MHR"]       = {name="魔法増幅: "   ;ename="MHR: "      ;kname="마법증폭: "};
-	["EATK"]      = {name="属性攻撃: "   ;ename="EATK: "     ;kname="속성공격: "};
-	["CRTHR"]     = {name="クリ発　: "   ;ename="CRTHR: "    ;kname="치명확율: "};
-	["CRTATK"]    = {name="クリ攻撃: "   ;ename="CRTATK: "   ;kname="치명공격: "};
-	["HR"]        = {name="命中　　: "   ;ename="HR: "       ;kname="명중        : "};
-	["BLK_BREAK"] = {name="ブロ貫通: "   ;ename="BLK_BREAK: ";kname="블록관통: "};
-	["SR"]        = {name="ＡＯＥ　: "   ;ename="SR: "       ;kname="광공비    : "};
-	["DEF"]       = {name="物理防御: "   ;ename="DEF: "      ;kname="물리방어: "};
-	["MDEF"]      = {name="魔法防御: "   ;ename="MDEF: "     ;kname="마법방어: "};
-	["DR"]        = {name="回避　　: "   ;ename="DR: "       ;kname="회피        : "};
-	["BLK"]       = {name="ブロック: "   ;ename="BLK: "      ;kname="블록        : "};
-	["CRTDR"]     = {name="クリ抵抗: "   ;ename="CRTDR: "    ;kname="치명저항: "};
-	["SDR"]       = {name="広域防御: "   ;ename="SDR: "      ;kname="광역방어: "};
-	["RHP"]       = {name="ＨＰ回復: "   ;ename="RHP: "      ;kname="HP획복   : "};
-	["RSP"]       = {name="ＳＰ回復: "   ;ename="RSP: "      ;kname="SP회복   : "};
-	["MSPD"]      = {name="スピード: "   ;ename="MSPD: "     ;kname="스피드    : "};
-	["WHEIGHT"]   = {name="所持量　: "   ;ename="WHEIGHT: "  ;kname="소지량    : "};
+	["PATK"]      = {name="物理攻撃: "   ;ename="PATK: "     ;kname="　　　물리 공격력 : " ;};
+	["PATK_SUB"]  = {name="補助攻撃: "   ;ename="PATK_SUB: " ;kname="  보조 물리 공격력 : ";};
+	["MATK"]      = {name="魔法攻撃: "   ;ename="MATK: "     ;kname="　　　마법 공격력 : " ;};
+	["MHR"]       = {name="魔法増幅: "   ;ename="MHR: "      ;kname="　　　　마법 증폭 : " ;};
+	["EATK"]      = {name="属性攻撃: "   ;ename="EATK: "     ;kname="　　　속성 공격력 : " ;};
+	["CRTHR"]     = {name="クリ発　: "   ;ename="CRTHR: "    ;kname="　　　치명타 발생 : " ;};
+	["CRTATK"]    = {name="クリ攻撃: "   ;ename="CRTATK: "   ;kname="　   치명타 공격력 : ";};
+	["HR"]        = {name="命中　　: "   ;ename="HR: "       ;kname="　　　　　　  명중 : ";};
+	["BLK_BREAK"] = {name="ブロ貫通: "   ;ename="BLK_BREAK: ";kname="　　　　블럭 관통 : " ;};
+	["SR"]        = {name="ＡＯＥ　: "   ;ename="SR: "       ;kname="  　광역 공격 비율 : ";};
+	["DEF"]       = {name="物理防御: "   ;ename="DEF: "      ;kname="　　　물리 방어력 : " ;};
+	["MDEF"]      = {name="魔法防御: "   ;ename="MDEF: "     ;kname="　　　마법 방어력 : " ;};
+	["DR"]        = {name="回避　　: "   ;ename="DR: "       ;kname="　　　　　 　 회피 : ";};
+	["BLK"]       = {name="ブロック: "   ;ename="BLK: "      ;kname="　　　　　　  블럭 : ";};
+	["CRTDR"]     = {name="クリ抵抗: "   ;ename="CRTDR: "    ;kname="　　   치명타 저항 : ";};
+	["SDR"]       = {name="広域防御: "   ;ename="SDR: "      ;kname="  　광역 방어 비율 : ";};
+	["RHP"]       = {name="ＨＰ回復: "   ;ename="RHP: "      ;kname="　　　   HP 회복력 : ";};
+	["RSP"]       = {name="ＳＰ回復: "   ;ename="RSP: "      ;kname="　　　   SP 회복력 : ";};
+	["MSPD"]      = {name="スピード: "   ;ename="MSPD: "     ;kname="　　　　이동 속도 : " ;};
+	["WHEIGHT"]   = {name="所持量　: "   ;ename="WHEIGHT: "  ;kname="　  휴대 가능 무게 : ";};
+	["CHANCE"]    = {name="チャンス: "   ;ename="CHANCE:  "  ;kname="　　　　루팅 찬스 : " ;};
 };
 local ctrlPos = {}
 
@@ -135,6 +136,7 @@ function STATVIEWER_EX_SAVE_STATSETTINGS_INIT(filename, statval)
 		RSP = true;
 		MSPD = true;
 		WHEIGHT = true;
+		CHANCE = true;
 		PATK_COLOR = "FFFFFF";
 		PATK_SUB_COLOR = "FFFFFF";
 		MATK_COLOR = "FFFFFF";
@@ -155,6 +157,7 @@ function STATVIEWER_EX_SAVE_STATSETTINGS_INIT(filename, statval)
 		RSP_COLOR = "FFFFFF";
 		MSPD_COLOR = "FFFFFF";
 		WHEIGHT_COLOR = "FFFFFF";
+		CHANCE_COLOR = "FFFFFF";
 		MEMO = "";
 	};
 
@@ -250,6 +253,9 @@ function STATVIEWER_EX_UPDATE(frame)
 	if _G["STATVIEWER_EX"]["statsettings"].WHEIGHT then
 		STATVIEWER_EX_UPDATE_STAT(frame, "WHEIGHT"  , pc["NowWeight"] .."/".. pc["MaxWeight"].. "("..tostring(math.floor(pc.NowWeight*100/pc.MaxWeight)).."%)", dimensions, _G["STATVIEWER_EX"]["statsettings"].WHEIGHT_COLOR);
 	end
+	if _G["STATVIEWER_EX"]["statsettings"].CHANCE then
+		STATVIEWER_EX_UPDATE_STAT(frame, "CHANCE"  , pc["LootingChance"], dimensions, _G["STATVIEWER_EX"]["statsettings"].CHANCE_COLOR);
+	end
 	
 	frame:Resize(dimensions.width, dimensions.height+1);
 	STATVIEWER_EX_UPDATE_POSITION();
@@ -293,6 +299,9 @@ function STATVIEWER_EX_GET_STATSTRING(statName)
 end
 
 function STATVIEWER_EX_UPDATE_STAT(frame, statName, statString, dimensions, fontcolor)
+	if fontcolor == nil then
+		fontcolor = "FFFFFF";
+	end
 	local statRichText = frame:CreateOrGetControl("richtext", statName .. "_text", dimensions.x, dimensions.y, 0, 4);
 	tolua.cast(statRichText, "ui::CRichText");
 	statRichText:SetGravity(ui.LEFT, ui.TOP);
@@ -543,6 +552,7 @@ function STATVIEWER_EX_CALL_MENU(frame)
 	table.insert( labelIndex, "RSP");
 	table.insert( labelIndex, "MSPD");
 	table.insert( labelIndex, "WHEIGHT");
+	table.insert( labelIndex, "CHANCE");
 	
 	local subContextDisplay = ui.CreateContextMenu("SUBCONTEXT_DISPLAY", "", 0, 0, 0, 0);
 	for i, key in ipairs(labelIndex) do
