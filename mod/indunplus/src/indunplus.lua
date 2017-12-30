@@ -161,7 +161,7 @@ function INDUNPLUS_CREATE_CHALLENGETIME(parent, cid, record, fontSize, x, y, wid
 
   local color = "00FF00";
   local playCount = 1;
-  if nil == record.challengeDebuffTime or record.challengeDebuffTime == 0 then
+  if nil == record.challengeDebuffTime or record.challengeDebuffTime == 0 or record.challengeDebuffTime <= os.time() then
     color = "FFFFFF";
     playCount = 0;
   end
