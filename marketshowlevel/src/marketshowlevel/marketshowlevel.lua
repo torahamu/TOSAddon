@@ -1,5 +1,81 @@
 CHAT_SYSTEM("MARKET SHOW LEVEL v1.1.0 loaded!");
 
+local addonName = "MARKETSHOWLEVEL";
+local addonNameLower = string.lower(addonName);
+
+local author = "torahamu";
+
+_G['ADDONS'] = _G['ADDONS'] or {};
+_G['ADDONS'][author] = _G['ADDONS'][author] or {}
+_G['ADDONS'][author][addonName] = _G['ADDONS'][author][addonName] or {};
+local g = _G['ADDONS'][author][addonName];
+
+--ライブラリ読み込み
+local acutil = require('acutil');
+
+if not g.loaded then
+	g.settings = {
+		flg=false; --どこかの設定があれば、trueになる
+		andFlg=false;
+		filter = {
+			PATK=false;
+			MATK=false;
+			ADD_MHR=false;
+			ADD_FIRE=false;
+			ADD_ICE=false;
+			ADD_SOUL=false;
+			ADD_POISON=false;
+			ADD_LIGHTNING=false;
+			ADD_EARTH=false;
+			ADD_HOLY=false;
+			ADD_DARK=false;
+			CRTATK=false;
+			ADD_CLOTH=false;
+			ADD_LEATHER=false;
+			ADD_IRON=false;
+			ADD_GHOST=false;
+			ADD_FORESTER=false;
+			ADD_WIDLING=false;
+			ADD_VELIAS=false;
+			ADD_PARAMUNE=false;
+			ADD_KLAIDA=false;
+			ADD_SMALLSIZE=false;
+			ADD_MIDDLESIZE=false;
+			ADD_LARGESIZE=false;
+			ADD_DEF=false;
+			ADD_MDEF=false;
+			AriesDEF=false;
+			SlashDEF=false;
+			SlashDEF=false;
+			StrikeDEF=false;
+			RES_FIRE=false;
+			RES_ICE=false;
+			RES_SOUL=false;
+			RES_POISON=false;
+			RES_LIGHTNING=false;
+			RES_EARTH=false;
+			RES_HOLY=false;
+			RES_DARK=false;
+			CRTDR=false;
+			ADD_HR=false;
+			ADD_DR=false;
+			MSTA=false;
+			MHP=false;
+			MSP=false;
+			RHP=false;
+			RSP=false;
+			CRTHR=false;
+			BLK_BREAK=false;
+			LootingChance=false;
+			STR=false;
+			CON=false;
+			INT=false;
+			MNA=false;
+			DEX=false;
+		}
+	};
+end
+
 -- Equip Jem And Hat prop align
 local propAlign = "center";
 if option.GetCurrentCountry()=="Japanese" then
@@ -18,10 +94,12 @@ local itemColor = {
 local AwakenText="Awaken Option"
 local SocketText="Socket"
 local PotentialText="Potential"
+local OptionFilterButtonText = "OPTION FILTER"
 if option.GetCurrentCountry()=="Japanese" then
 	AwakenText="覚醒オプション"
 	SocketText="ソケット"
 	PotentialText="ポテンシャル"
+	
 end
 
 -- Hat prop Name and Max Values
@@ -68,11 +146,305 @@ propList.SDR           = {name = "広防";ename =  "AoEDef"  ;max = 4;};
 propList.LootingChance = {name = "ﾙｰﾄ%";ename =  "Loot%"   ;};
 
 function MARKETSHOWLEVEL_ON_INIT(addon, frame)
-	if (acutil ~= nil) then
-		acutil.setupEvent(addon, "ON_MARKET_ITEM_LIST", "ON_MARKET_ITEM_LIST_HOOKED")
-	else
-		_G["ON_MARKET_ITEM_LIST"] = ON_MARKET_ITEM_LIST_HOOKED;
+	frame:ShowWindow(0);
+	if not g.loaded then
+		-- 元関数封印
+		if nil == MARKETSHOWLEVEL_ON_MARKET_ITEM_LIST_OLD then
+			MARKETSHOWLEVEL_ON_MARKET_ITEM_LIST_OLD = ON_MARKET_ITEM_LIST;
+			ON_MARKET_ITEM_LIST = ON_MARKET_ITEM_LIST_HOOKED;
+		end
+		if nil == MARKETSHOWLEVEL_ON_OPEN_MARKET_OLD then
+			MARKETSHOWLEVEL_ON_OPEN_MARKET_OLD = ON_OPEN_MARKET;
+			ON_OPEN_MARKET = ON_OPEN_MARKET_HOOKED;
+		end
+		g.loaded = true;
 	end
+end
+
+function ON_OPEN_MARKET_HOOKED(frame)
+	MARKETSHOWLEVEL_ON_OPEN_MARKET_OLD(frame)
+	MARKETSHOWLEVEL_FLG_INIT();
+	CUSTOM_DETAIL_BOX();
+	CREATE_FILTER_FRAME();
+end
+
+function CUSTOM_DETAIL_BOX()
+	local marketframe = ui.GetFrame("market")
+	local gBox = GET_CHILD(marketframe, "detailOption");
+	local filter_button = gBox:CreateOrGetControl("button", "MARKET_FILTER_BUTTON", 160, 10, 180, 30);
+	filter_button = tolua.cast(filter_button, "ui::CButton");
+	filter_button:SetFontName("white_16_ol");
+	filter_button:SetText(OptionFilterButtonText);
+	filter_button:SetClickSound("button_click_big");
+	filter_button:SetOverSound("button_over");
+	filter_button:SetAnimation("MouseOnAnim", "btn_mouseover");
+	filter_button:SetAnimation("MouseOffAnim", "btn_mouseoff");
+	filter_button:SetEventScript(ui.LBUTTONDOWN, "OPEN_FILTER_FRAME");
+end
+
+function CREATE_FILTER_FRAME()
+	local frame = ui.GetFrame("marketshowlevel")
+	frame:Resize(1300,850)
+	local labelfontName = "white_24_ol"
+	local bodyfontName = "white_16_ol"
+
+	local andRadio = GET_CHILD(frame, "andRadio");
+	tolua.cast(andRadio, "ui::CRadioButton");
+	andRadio:SetFontName(labelfontName)
+	andRadio:SetText("AND")
+
+	local orRadio = GET_CHILD(frame, "orRadio");
+	tolua.cast(orRadio, "ui::CRadioButton");
+	orRadio:SetFontName(labelfontName)
+	orRadio:SetText("OR")
+	orRadio:Select()
+
+	local rtLabel = {
+		[1]  = {name="赤グループ"  ;ename="RED GROUP"    ;clmsg="ItemRandomOptionGroupATK" ; left=200  ; top= 100 ;  h=0; w=0;};
+		[2]  = {name="青グループ"  ;ename="BLUE GROUP"   ;clmsg="ItemRandomOptionGroupDEF" ; left=550  ; top= 100 ;  h=0; w=0;};
+		[3]  = {name="紫グループ"  ;ename="PURPLE GROUP" ;clmsg="ItemRandomOptionGroupUTIL"; left=800  ; top= 100 ;  h=0; w=0;};
+		[4]  = {name="緑グループ"  ;ename="GREEN GROUP"  ;clmsg="ItemRandomOptionGroupSTAT"; left=1050 ; top= 100 ;  h=0; w=0;};
+	};
+
+	for i, ver in ipairs(rtLabel) do
+		local header = frame:CreateOrGetControl("richtext", "marketshowlevel_filter_label"..i, rtLabel[i].left, rtLabel[i].top, rtLabel[i].h, rtLabel[i].w);
+		tolua.cast(header, "ui::CRichText");
+		header:SetFontName(labelfontName);
+		if option.GetCurrentCountry()=="Japanese" then
+			header:SetText(ClMsg(rtLabel[i].clmsg) .. rtLabel[i].name);
+		else
+			header:SetText(ClMsg(rtLabel[i].clmsg) .. rtLabel[i].ename);
+		end
+	end
+
+	local rtATK = {
+		[1]   = {clmsg="PATK"           ; left=70 ; top= 150  ;  h=0; w=0;};
+		[2]   = {clmsg="MATK"           ; left=70 ; top= 200  ;  h=0; w=0;};
+		[3]   = {clmsg="ADD_MHR"        ; left=70 ; top= 250  ;  h=0; w=0;};
+		[4]   = {clmsg="ADD_FIRE"       ; left=70 ; top= 300  ;  h=0; w=0;};
+		[5]   = {clmsg="ADD_ICE"        ; left=70 ; top= 350  ;  h=0; w=0;};
+		[6]   = {clmsg="ADD_SOUL"       ; left=70 ; top= 400  ;  h=0; w=0;};
+		[7]   = {clmsg="ADD_POISON"     ; left=70 ; top= 450  ;  h=0; w=0;};
+		[8]   = {clmsg="ADD_LIGHTNING"  ; left=70 ; top= 500  ;  h=0; w=0;};
+		[9]   = {clmsg="ADD_EARTH"      ; left=70 ; top= 550  ;  h=0; w=0;};
+		[10]  = {clmsg="ADD_HOLY"       ; left=70 ; top= 600  ;  h=0; w=0;};
+		[11]  = {clmsg="ADD_DARK"       ; left=70 ; top= 650  ;  h=0; w=0;};
+		[12]  = {clmsg="CRTATK"         ; left=70 ; top= 700  ;  h=0; w=0;};
+		[13]  = {clmsg="ADD_CLOTH"      ; left=320; top= 150  ;  h=0; w=0;};
+		[14]  = {clmsg="ADD_LEATHER"    ; left=320; top= 200  ;  h=0; w=0;};
+		[15]  = {clmsg="ADD_IRON"       ; left=320; top= 250  ;  h=0; w=0;};
+		[16]  = {clmsg="ADD_GHOST"      ; left=320; top= 300  ;  h=0; w=0;};
+		[17]  = {clmsg="ADD_FORESTER"   ; left=320; top= 350  ;  h=0; w=0;};
+		[18]  = {clmsg="ADD_WIDLING"    ; left=320; top= 400  ;  h=0; w=0;};
+		[19]  = {clmsg="ADD_VELIAS"     ; left=320; top= 450  ;  h=0; w=0;};
+		[20]  = {clmsg="ADD_PARAMUNE"   ; left=320; top= 500  ;  h=0; w=0;};
+		[21]  = {clmsg="ADD_KLAIDA"     ; left=320; top= 550  ;  h=0; w=0;};
+		[22]  = {clmsg="ADD_SMALLSIZE"  ; left=320; top= 600  ;  h=0; w=0;};
+		[23]  = {clmsg="ADD_MIDDLESIZE" ; left=320; top= 650  ;  h=0; w=0;};
+		[24]  = {clmsg="ADD_LARGESIZE"  ; left=320; top= 700  ;  h=0; w=0;};
+	};
+
+	for i, ver in ipairs(rtATK) do
+		local atkbody = frame:CreateOrGetControl("richtext", "marketshowlevel_filter_atk"..i, rtATK[i].left, rtATK[i].top, rtATK[i].h, rtATK[i].w);
+		tolua.cast(atkbody, "ui::CRichText");
+		atkbody:SetFontName(bodyfontName);
+		atkbody:SetText(ClMsg(rtATK[i].clmsg));
+		atkbody:EnableResizeByText(1);
+		atkbody:SetTextFixWidth(1);
+		atkbody:SetMaxWidth(220);
+		atkbody:Resize(220, 50);
+
+		local atkCheck = frame:CreateOrGetControl("checkbox", "marketshowlevel_check_atk"..i, rtATK[i].left-25, rtATK[i].top-5, 35, 35);
+		tolua.cast(atkCheck, "ui::CCheckBox");
+		atkCheck:SetClickSound("button_click_big");
+		atkCheck:SetAnimation("MouseOnAnim",  "btn_mouseover");
+		atkCheck:SetAnimation("MouseOffAnim", "btn_mouseoff");
+		atkCheck:SetOverSound("button_over");
+		atkCheck:SetEventScript(ui.LBUTTONUP, "MARKETSHOWLEVEL_FILTER");
+		atkCheck:SetUserValue("TYPE", rtATK[i].clmsg);
+		if g.settings.filter[rtATK[i].clmsg] then
+			atkCheck:SetCheck(1);
+		else
+			atkCheck:SetCheck(0);
+		end
+	end
+
+	local rtDEF = {
+		[1]   = {clmsg="ADD_DEF"       ; left=570 ; top= 150 ;  h=0; w=0;};
+		[2]   = {clmsg="ADD_MDEF"      ; left=570 ; top= 200 ;  h=0; w=0;};
+		[3]   = {clmsg="AriesDEF"      ; left=570 ; top= 250 ;  h=0; w=0;};
+		[4]   = {clmsg="SlashDEF"      ; left=570 ; top= 300 ;  h=0; w=0;};
+		[5]   = {clmsg="StrikeDEF"     ; left=570 ; top= 350 ;  h=0; w=0;};
+		[6]   = {clmsg="RES_FIRE"      ; left=570 ; top= 400 ;  h=0; w=0;};
+		[7]   = {clmsg="RES_ICE"       ; left=570 ; top= 450 ;  h=0; w=0;};
+		[8]   = {clmsg="RES_SOUL"      ; left=570 ; top= 500 ;  h=0; w=0;};
+		[9]   = {clmsg="RES_POISON"    ; left=570 ; top= 550 ;  h=0; w=0;};
+		[10]  = {clmsg="RES_LIGHTNING" ; left=570 ; top= 600 ;  h=0; w=0;};
+		[11]  = {clmsg="RES_EARTH"     ; left=570 ; top= 650 ;  h=0; w=0;};
+		[12]  = {clmsg="RES_HOLY"      ; left=570 ; top= 700 ;  h=0; w=0;};
+		[13]  = {clmsg="RES_DARK"      ; left=570 ; top= 750 ;  h=0; w=0;};
+		[14]  = {clmsg="CRTDR"         ; left=570 ; top= 800 ;  h=0; w=0;};
+	};
+
+	for i, ver in ipairs(rtDEF) do
+		local defbody = frame:CreateOrGetControl("richtext", "marketshowlevel_filter_def"..i, rtDEF[i].left, rtDEF[i].top, rtDEF[i].h, rtDEF[i].w);
+		tolua.cast(defbody, "ui::CRichText");
+		defbody:SetFontName(bodyfontName);
+		defbody:SetText(ClMsg(rtDEF[i].clmsg));
+		defbody:EnableResizeByText(1);
+		defbody:SetTextFixWidth(1);
+		defbody:SetMaxWidth(220);
+		defbody:Resize(220, 50);
+
+		local defCheck = frame:CreateOrGetControl("checkbox", "marketshowlevel_check_def"..i, rtDEF[i].left-25, rtDEF[i].top-5, 35, 35);
+		tolua.cast(defCheck, "ui::CCheckBox");
+		defCheck:SetClickSound("button_click_big");
+		defCheck:SetAnimation("MouseOnAnim",  "btn_mouseover");
+		defCheck:SetAnimation("MouseOffAnim", "btn_mouseoff");
+		defCheck:SetOverSound("button_over");
+		defCheck:SetEventScript(ui.LBUTTONUP, "MARKETSHOWLEVEL_FILTER");
+		defCheck:SetUserValue("TYPE", rtDEF[i].clmsg);
+		if g.settings.filter[rtDEF[i].clmsg] then
+			defCheck:SetCheck(1);
+		else
+			defCheck:SetCheck(0);
+		end
+	end
+
+	local rtUTIL = {
+		[1]   = {clmsg="ADD_HR"           ; left=820 ; top= 150 ;  h=0; w=0;};
+		[2]   = {clmsg="ADD_DR"           ; left=820 ; top= 200 ;  h=0; w=0;};
+		[3]   = {clmsg="MSTA"             ; left=820 ; top= 250 ;  h=0; w=0;};
+		[4]   = {clmsg="MHP"              ; left=820 ; top= 300 ;  h=0; w=0;};
+		[5]   = {clmsg="MSP"              ; left=820 ; top= 350 ;  h=0; w=0;};
+		[6]   = {clmsg="RHP"              ; left=820 ; top= 400 ;  h=0; w=0;};
+		[7]   = {clmsg="RSP"              ; left=820 ; top= 450 ;  h=0; w=0;};
+		[8]   = {clmsg="CRTHR"            ; left=820 ; top= 500 ;  h=0; w=0;};
+		[9]   = {clmsg="BLK_BREAK"        ; left=820 ; top= 550 ;  h=0; w=0;};
+		[10]  = {clmsg="LootingChance"    ; left=820 ; top= 600 ;  h=0; w=0;};
+	};
+
+	for i, ver in ipairs(rtUTIL) do
+		local utilbody = frame:CreateOrGetControl("richtext", "marketshowlevel_filter_util"..i, rtUTIL[i].left, rtUTIL[i].top, rtUTIL[i].h, rtUTIL[i].w);
+		tolua.cast(utilbody, "ui::CRichText");
+		utilbody:SetFontName(bodyfontName);
+		utilbody:SetText(ClMsg(rtUTIL[i].clmsg));
+		utilbody:EnableResizeByText(1);
+		utilbody:SetTextFixWidth(1);
+		utilbody:SetMaxWidth(220);
+		utilbody:Resize(220, 50);
+
+		local utilCheck = frame:CreateOrGetControl("checkbox", "marketshowlevel_check_util"..i, rtUTIL[i].left-25, rtUTIL[i].top-5, 35, 35);
+		tolua.cast(utilCheck, "ui::CCheckBox");
+		utilCheck:SetClickSound("button_click_big");
+		utilCheck:SetAnimation("MouseOnAnim",  "btn_mouseover");
+		utilCheck:SetAnimation("MouseOffAnim", "btn_mouseoff");
+		utilCheck:SetOverSound("button_over");
+		utilCheck:SetEventScript(ui.LBUTTONUP, "MARKETSHOWLEVEL_FILTER");
+		utilCheck:SetUserValue("TYPE", rtUTIL[i].clmsg);
+		if g.settings.filter[rtUTIL[i].clmsg] then
+			utilCheck:SetCheck(1);
+		else
+			utilCheck:SetCheck(0);
+		end
+	end
+
+	local rtSTAT = {
+		[1]  = {clmsg="STR"  ; left=1070 ; top= 150 ;  h=0; w=0;};
+		[2]  = {clmsg="CON"  ; left=1070 ; top= 200 ;  h=0; w=0;};
+		[3]  = {clmsg="INT"  ; left=1070 ; top= 250 ;  h=0; w=0;};
+		[4]  = {clmsg="MNA"  ; left=1070 ; top= 300 ;  h=0; w=0;};
+		[5]  = {clmsg="DEX"  ; left=1070 ; top= 350 ;  h=0; w=0;};
+	};
+
+	for i, ver in ipairs(rtSTAT) do
+		local statbody = frame:CreateOrGetControl("richtext", "marketshowlevel_filter_stat"..i, rtSTAT[i].left, rtSTAT[i].top, rtSTAT[i].h, rtSTAT[i].w);
+		tolua.cast(statbody, "ui::CRichText");
+		statbody:SetFontName(bodyfontName);
+		statbody:SetText(ClMsg(rtSTAT[i].clmsg));
+		statbody:EnableResizeByText(1);
+		statbody:SetTextFixWidth(1);
+		statbody:SetMaxWidth(220);
+		statbody:Resize(220, 50);
+
+		local statCheck = frame:CreateOrGetControl("checkbox", "marketshowlevel_check_stat"..i, rtSTAT[i].left-25, rtSTAT[i].top-5, 35, 35);
+		tolua.cast(statCheck, "ui::CCheckBox");
+		statCheck:SetClickSound("button_click_big");
+		statCheck:SetAnimation("MouseOnAnim",  "btn_mouseover");
+		statCheck:SetAnimation("MouseOffAnim", "btn_mouseoff");
+		statCheck:SetOverSound("button_over");
+		statCheck:SetEventScript(ui.LBUTTONUP, "MARKETSHOWLEVEL_FILTER");
+		statCheck:SetUserValue("TYPE", rtSTAT[i].clmsg);
+		if g.settings.filter[rtSTAT[i].clmsg] then
+			statCheck:SetCheck(1);
+		else
+			statCheck:SetCheck(0);
+		end
+	end
+
+	local closebtn = frame:CreateOrGetControl("button", "MARKETSHOWLEVEL_CLOSE_BUTTON", 0, 0, 44, 44);
+	closebtn = tolua.cast(closebtn, "ui::CButton");
+	closebtn:SetImage("testclose_button");
+	closebtn:SetGravity(ui.RIGHT, ui.TOP);
+	closebtn:SetClickSound("button_click_big");
+	closebtn:SetOverSound("button_over");
+	closebtn:SetAnimation("MouseOnAnim", "btn_mouseover");
+	closebtn:SetAnimation("MouseOffAnim", "btn_mouseoff");
+	closebtn:SetEventScript(ui.LBUTTONDOWN, "CLOSE_FILTER_FRAME");
+end
+
+function MARKETSHOWLEVEL_FILTER_SEARCH(frame, ctrl)
+	local marketframe = ui.GetFrame("market");
+	local radioBtn = GET_CHILD_RECURSIVELY(frame, "andRadio");
+	tolua.cast(radioBtn, "ui::CRadioButton");
+	local type = radioBtn:IsChecked();
+	if type == 1 then
+		g.settings.andFlg=true;
+	else
+		g.settings.andFlg=false
+	end
+	MARGET_FIND_PAGE(marketframe, session.market.GetCurPage());
+end
+
+function MARKETSHOWLEVEL_FILTER(frame, ctrl, argStr, argNum)
+	local marketframe = ui.GetFrame("market");
+	local type = ctrl:GetUserValue("TYPE");
+	g.settings.flg = false;
+	if ctrl:IsChecked() == 1 then
+		g.settings.filter[type] = true;
+	else
+		g.settings.filter[type] = false;
+	end
+	for k,v in pairs(g.settings.filter) do
+		if v then
+			g.settings.flg = true;
+		end
+	end
+	MARGET_FIND_PAGE(marketframe, session.market.GetCurPage());
+end
+
+function MARKETSHOWLEVEL_TEST()
+	for k,v in pairs(g.settings.filter) do
+		print("k:"..tostring(k))
+		print("v:"..tostring(v))
+		print("g.settings.filter[k]:"..tostring(g.settings.filter[k]))
+	end
+end
+
+function MARKETSHOWLEVEL_FLG_INIT()
+	g.settings.flg=false;
+	g.settings.andFlg=false;
+	for k,v in pairs(g.settings.filter) do
+		g.settings.filter[k] = false;
+	end
+end
+
+function OPEN_FILTER_FRAME()
+	ui.OpenFrame("marketshowlevel");
+end
+
+function CLOSE_FILTER_FRAME()
+	ui.CloseFrame("marketshowlevel");
 end
 
 function GET_GEM_INFO(itemObj)
@@ -167,8 +539,14 @@ function GET_HAT_PROP(itemObj)
 	return prop;
 end
 
-function GET_INFO_RANDOM(obj)
+function GET_INFO_RANDOM(obj,ctrlSet)
 	local randomInfo = "";
+	if g.settings.flg then
+		ctrlSet:SetSkinName("tooltip1")
+	end
+
+	local propNameList = {};
+
 	for i = 1 , MAX_RANDOM_OPTION_COUNT do
 	    local propGroupName = "RandomOptionGroup_"..i;
 		local propName = "RandomOption_"..i;
@@ -203,11 +581,38 @@ function GET_INFO_RANDOM(obj)
 			else
 				prop = ScpArgMsg(obj[propName])
 			end
+
 			local opName = string.format("%s %s", ClMsg(clientMessage), prop);
 			local info = string.format("%s " .. "%d", opName, math.abs(obj[propValue]))
 			randomInfo = randomInfo..info
+			if g.settings.flg then
+				if g.settings.andFlg then
+					propNameList[obj[propName]] = true;
+				else
+					if g.settings.filter[obj[propName]] then
+						ctrlSet:SetSkinName("market_listbase")
+					end
+				end
+			end
 		end
 	end
+
+	if g.settings.flg then
+		if g.settings.andFlg then
+			local matchFlg = true;
+			for k, v in pairs(g.settings.filter) do
+				if v then
+					if nil == propNameList[k] then
+						matchFlg = false;
+					end
+				end
+			end
+			if matchFlg then
+				ctrlSet:SetSkinName("market_listbase")
+			end
+		end
+	end
+
 	return randomInfo
 end
 
@@ -230,7 +635,7 @@ end
 function GET_EQUIP_PROP(ctrlSet, itemObj, row)
 	local gemInfo = GET_GEM_INFO(itemObj);
 	local prop = GET_HAT_PROP(itemObj);
-	local randomInfo = GET_INFO_RANDOM(itemObj)
+	local randomInfo = GET_INFO_RANDOM(itemObj,ctrlSet)
 
 	local propDetail = ctrlSet:CreateControl("richtext", "PROP_ITEM_" .. row, 100, 42, 0, 0);
 	tolua.cast(propDetail, 'ui::CRichText');
@@ -336,7 +741,8 @@ function ON_MARKET_ITEM_LIST_HOOKED(frame, msg, argStr, argNum)
 		SET_ITEM_TOOLTIP_ALL_TYPE(ctrlSet, marketItem, itemObj.ClassName, "market", marketItem.itemType, marketItem:GetMarketGuid());
 
 		local pic = GET_CHILD(ctrlSet, "pic", "ui::CPicture");
-		pic:SetImage(itemObj.Icon);
+		local imgName = GET_ITEM_ICON_IMAGE(itemObj);
+		pic:SetImage(imgName);
 
 		local name = ctrlSet:GetChild("name");
 
@@ -435,6 +841,10 @@ function ON_MARKET_ITEM_LIST_HOOKED(frame, msg, argStr, argNum)
 	local maxPage = math.ceil(session.market.GetTotalCount() / MARKET_ITEM_PER_PAGE);
 	local curPage = session.market.GetCurPage();
 	local pagecontrol = GET_CHILD(frame, 'pagecontrol', 'ui::CPageController')
+	if maxPage < 1 then
+		maxPage = 1;
+	end
+
 	pagecontrol:SetMaxPage(maxPage);
 	pagecontrol:SetCurPage(curPage);
 

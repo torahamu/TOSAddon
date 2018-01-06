@@ -1,9 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <uiframe name="marketshowlevel" x="0" y="0" width="10" height="10">
-	<frame fasthide="true" layout_gravity="left top"/>
-	<input moveable="false" hittestframe="false"/>
-	<layer layerlevel="10"/>
-	<draw drawframe="false" drawtitlebarframe="false" drawtitlebar="false"/>
-	<option closebutton="false" hideable="false"/>
-<controls/>
+	<frame title="" stretch="true" snapclient="true" snapframe="true" layout_gravity="center center" margin="0 0 0 0"/>
+	<option closebuttonpos="0 0" autoopen="true" hideable="true"/>
+	<script CloseScp="CLOSE_FILTER_FRAME"/>
+	<input hittest="true" movable="true" moveintitlebar="false" hittestframe="true"/>
+	<layer layerlevel="100"/>
+	<draw drawnotitlebar="false" drawtitlebar="false" drawframe="true"/>
+	<skin frameskin="tooltip1"/>
+	<controls>
+		<radiobutton name="andRadio" rect="500 50 200 30" margin="0 0 0 0" layout_gravity="left top" group="searchOption" LBtnDownScp="MARKETSHOWLEVEL_FILTER_SEARCH" clicksound="button_click_big" oversound="button_over"/>
+		<radiobutton name="orRadio"  rect="700 50 200 30" margin="0 0 0 0" layout_gravity="left top" group="searchOption" LBtnDownScp="MARKETSHOWLEVEL_FILTER_SEARCH" clicksound="button_click_big" oversound="button_over"/>
+	</controls>
 </uiframe>
