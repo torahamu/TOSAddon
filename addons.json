@@ -20,7 +20,7 @@
 		"fileVersion" : "v1.2.0",
 		"releaseTag" : "marketshowlevel",
 		"unicode" : "⛄",
-		"description" : "An add-on that adds additional information to certain market items.[v1.1.0 Correspond Random Option]  マーケットのジェムやカードのレベル表示,ヘアアクセの能力表示,スキル呪文書のスキル表示をする。[v1.1.0 ランダムオプション対応]",
+		"description" : "An add-on that adds additional information to certain market items.[v1.2.0 Add Random Option Filter Search]  マーケットのジェムやカードのレベル表示,ヘアアクセの能力表示,スキル呪文書のスキル表示をする。[v1.2.0 ランダムオプションフィルタ検索を追加]",
 		"tags" : [
 			"ui",
 			"market"
