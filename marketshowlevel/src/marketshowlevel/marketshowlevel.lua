@@ -1,4 +1,4 @@
-CHAT_SYSTEM("MARKET SHOW LEVEL v1.2.1 loaded!");
+CHAT_SYSTEM("MARKET SHOW LEVEL v1.2.2 loaded!");
 
 local addonName = "MARKETSHOWLEVEL";
 local addonNameLower = string.lower(addonName);
@@ -64,6 +64,7 @@ if not g.loaded then
 			MSP=false;
 			RHP=false;
 			RSP=false;
+			BLK=false;
 			CRTHR=false;
 			BLK_BREAK=false;
 			LootingChance=false;
@@ -317,8 +318,9 @@ function CREATE_FILTER_FRAME()
 		[6]   = {clmsg="RHP"              ; left=820 ; top= 400 ;  h=0; w=0;};
 		[7]   = {clmsg="RSP"              ; left=820 ; top= 450 ;  h=0; w=0;};
 		[8]   = {clmsg="CRTHR"            ; left=820 ; top= 500 ;  h=0; w=0;};
-		[9]   = {clmsg="BLK_BREAK"        ; left=820 ; top= 550 ;  h=0; w=0;};
-		[10]  = {clmsg="LootingChance"    ; left=820 ; top= 600 ;  h=0; w=0;};
+		[9]   = {clmsg="BLK"              ; left=820 ; top= 550 ;  h=0; w=0;};
+		[10]  = {clmsg="BLK_BREAK"        ; left=820 ; top= 600 ;  h=0; w=0;};
+		[11]  = {clmsg="LootingChance"    ; left=820 ; top= 650 ;  h=0; w=0;};
 	};
 
 	for i, ver in ipairs(rtUTIL) do
