@@ -17,7 +17,7 @@
 		"name" : "Market Show Level",
 		"file" : "marketshowlevel",
 		"extension" : "ipf",
-		"fileVersion" : "v1.2.2",
+		"fileVersion" : "v1.2.3",
 		"releaseTag" : "marketshowlevel",
 		"unicode" : "⛄",
 		"description" : "An add-on that adds additional information to certain market items.[v1.2.0 Add Random Option Filter Search]  マーケットのジェムやカードのレベル表示,ヘアアクセの能力表示,スキル呪文書のスキル表示をする。[v1.2.0 ランダムオプションフィルタ検索を追加]",

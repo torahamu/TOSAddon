@@ -13,6 +13,9 @@ local g = _G['ADDONS'][author][addonName];
 --ライブラリ読み込み
 local acutil = require('acutil');
 
+-- 読み込みフラグ
+g.loaded=false
+
 if not g.loaded then
 	g.settings = {
 		flg=false; --どこかの設定があれば、trueになる
@@ -148,16 +151,12 @@ propList.LootingChance = {name = "ﾙｰﾄ%";ename =  "Loot%"   ;};
 
 function MARKETSHOWLEVEL_ON_INIT(addon, frame)
 	frame:ShowWindow(0);
-	if not g.loaded then
-		-- 元関数封印
-		if nil == MARKETSHOWLEVEL_ON_MARKET_ITEM_LIST_OLD then
-			MARKETSHOWLEVEL_ON_MARKET_ITEM_LIST_OLD = ON_MARKET_ITEM_LIST;
-			ON_MARKET_ITEM_LIST = ON_MARKET_ITEM_LIST_HOOKED;
-		end
-		g.loaded = true;
-	end
+	-- 元関数封印
+	-- marketnamesでも同じ箇所にHOOKしているので、毎ロード時実行
+	acutil.setupHook(ON_MARKET_ITEM_LIST_HOOKED, "ON_MARKET_ITEM_LIST");
 	-- イベント登録
 	acutil.setupEvent(addon, "ON_OPEN_MARKET", "MARKETSHOWLEVEL_ON_OPEN_MARKET");
+	g.loaded = true;
 end
 
 function MARKETSHOWLEVEL_ON_OPEN_MARKET(frame, msg)
