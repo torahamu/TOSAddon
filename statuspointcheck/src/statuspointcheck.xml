@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<uiframe name="statuspointcheck" x="0" y="0" width="600" height="600" create="open" >
+	<frame fullheight="false" fasthide="true" layout_gravity="left top" margin="0 0 0 0"/>
+	<draw drawframe="false" drawnotitlebar="false" drawtitlebar="false"/>
+	<input moveable="true" />
+	<layer layerlevel="80"/>
+	<option closebutton="true"/>
+	<userconfig TITLE_MARGIN_Y="10" BODY_MARGIN_Y="10"/>
+	<controls>
+		<groupbox name="bg" rect="0 0 600 600" margin="0 0 0 0" layout_gravity="left top"  draw="true" hittestbox="false" resizebyparent="false" resizebyresolution="false" scrollbar="false" skin="collection_complete"/>
+		<richtext name="richtext_title" rect="0 0 600 40" margin="20 10 0 0" layout_gravity="left top" textalign="left top" fixwidth="true" resizebytext="true" updateparent="false" fontname="white_16_ol" format="{@st68b}{s18}bonus point{/}{/}" param1="value" param1_def=""/>
+		<richtext name="richtext_magic_list" rect="0 0 600 30" margin="20 40 0 0" layout_gravity="left top" textalign="left top" fixwidth="true" resizebytext="true" updateparent="false" fontname="black_18" format="%s" param1="value" param1_def=""/>
+	</controls>
+</uiframe>
