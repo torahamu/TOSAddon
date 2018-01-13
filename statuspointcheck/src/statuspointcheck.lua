@@ -44,26 +44,17 @@ function STATUSPOINTCHECK_TOGGLE_FRAME()
 		return;
 	end
 
-	STATUSPOINTCHECK_QUESTLIST(frame);
-	local magictext = GET_CHILD(frame, "richtext_magic_list", "ui::CRichText");
-	local magictitle = GET_CHILD(frame, "richtext_title", "ui::CRichText");
-	magictext = tolua.cast(magictext, "ui::CRichText");
-	magictitle = tolua.cast(magictitle, "ui::CRichText");
-
-	local height = frame:GetUserConfig("TITLE_MARGIN_Y") * 2  + magictitle:GetHeight();
-	height = height +frame:GetUserConfig("BODY_MARGIN_Y") * 2 + magictext:GetHeight();
+	local bg_gbox = GET_CHILD(frame, "bg", "ui::CGroupBox");
+	local text_gbox = GET_CHILD(bg_gbox, "text_gbox", "ui::CGroupBox");
+	text_gbox = tolua.cast(text_gbox, "ui::CGroupBox");
+	text_gbox:SetScrollBar(text_gbox:GetHeight());
+	STATUSPOINTCHECK_QUESTLIST(text_gbox);
 
 	local statusframe = ui.GetFrame("status");
 	local statuspoint_button = GET_CHILD_RECURSIVELY(statusframe, "STATUSPOINT_BUTTON", "ui::CButton");
 	local x = statuspoint_button:GetGlobalX() + 150;
 	local y = statuspoint_button:GetGlobalY() - 100;
 	frame:SetOffset(x,y);
-	local gbox_bg = GET_CHILD(frame, "bg", "ui::CGroupBox");
-	if gbox_bg ~= nil then
-		gbox_bg:Resize(magictext:GetWidth(), height);
-	end
-
-	frame:Resize(gbox_bg:GetWidth(), height);
 
 	local closebtn = frame:CreateOrGetControl("button", "STATUSPOINTCHECK_CLOSE_BUTTON", 0, 0, 44, 44);
 	closebtn = tolua.cast(closebtn, "ui::CButton");
@@ -82,68 +73,203 @@ function STATUSPOINTCHECK_CLOSE_FRAME()
 	ui.CloseFrame("statuspointcheck");
 end
 
-function STATUSPOINTCHECK_QUESTLIST(frame)
+function STATUSPOINTCHECK_QUESTLIST(text_gbox)
 	local textlist = "";
-	local magictext = GET_CHILD(frame, "richtext_magic_list", "ui::CRichText");
-	local magictitle = GET_CHILD(frame, "richtext_title", "ui::CRichText");
+	local statuspoint = GET_CHILD(text_gbox, "statuspoint_list", "ui::CRichText");
+	local status = GET_CHILD(text_gbox, "status_list", "ui::CRichText");
+	local stamina = GET_CHILD(text_gbox, "stamina_list", "ui::CRichText");
+	local weight = GET_CHILD(text_gbox, "weight_list", "ui::CRichText");
+	local zemina = GET_CHILD(text_gbox, "zemina_list", "ui::CRichText");
 	--quest for status point
-	textlist = textlist.."Quest List For Status Point{nl}";
-	textlist = textlist.."  "..STATUSPOINTCHECK_QUESTCHECK("20050");
-	textlist = textlist.."  "..STATUSPOINTCHECK_QUESTCHECK("8537");
-	textlist = textlist.."  "..STATUSPOINTCHECK_QUESTCHECK("20275");
-	textlist = textlist.."  "..STATUSPOINTCHECK_QUESTCHECK("8392");
-	textlist = textlist.."  "..STATUSPOINTCHECK_QUESTCHECK("20201");
-	textlist = textlist.."  "..STATUSPOINTCHECK_QUESTCHECK("8728");
-	textlist = textlist.."  "..STATUSPOINTCHECK_QUESTCHECK("8752");
-	textlist = textlist.."  "..STATUSPOINTCHECK_QUESTCHECK("80047");
-	textlist = textlist.."  "..STATUSPOINTCHECK_QUESTCHECK("8498");
-	textlist = textlist.."  "..STATUSPOINTCHECK_QUESTCHECK("20341");
-	textlist = textlist.."  "..STATUSPOINTCHECK_QUESTCHECK("30194");
-	textlist = textlist.."  "..STATUSPOINTCHECK_QUESTCHECK("90217");
-	textlist = textlist.."  "..STATUSPOINTCHECK_QUESTCHECK("60278");
-	textlist = textlist.."  "..STATUSPOINTCHECK_QUESTCHECK("50369");
+	statuspoint:SetTextByKey("value", STATUSPOINTCHECK_QUESTCHECK());
 	--quest for status
-	textlist = textlist.."Quest List For Status{nl}";
-	textlist = textlist.."  "..STATUSPOINTCHECK_QUESTCHECK("19051");
-	textlist = textlist.."  "..STATUSPOINTCHECK_QUESTCHECK("9105");
-	textlist = textlist.."  "..STATUSPOINTCHECK_QUESTCHECK("9110");
-	textlist = textlist.."  "..STATUSPOINTCHECK_QUESTCHECK("9106");
-	textlist = textlist.."  "..STATUSPOINTCHECK_QUESTCHECK("19112");
+	status:SetOffset(20,statuspoint:GetY()+statuspoint:GetHeight());
+	status:SetTextByKey("value", STATUSPOINTCHECK_STATUSQUESTCHECK());
 	--quest for stamina
-	textlist = textlist.."Quest List For Stamina{nl}";
-	textlist = textlist.."  "..STATUSPOINTCHECK_QUESTCHECK("9108");
-	textlist = textlist.."  "..STATUSPOINTCHECK_QUESTCHECK("9100");
-	textlist = textlist.."  "..STATUSPOINTCHECK_QUESTCHECK("19062");
-	textlist = textlist.."  "..STATUSPOINTCHECK_QUESTCHECK("9104");
+	stamina:SetOffset(20,statuspoint:GetY()+statuspoint:GetHeight()+status:GetHeight());
+	stamina:SetTextByKey("value", STATUSPOINTCHECK_STAMINAQUESTCHECK());
+	--quest for weight
+	weight:SetOffset(20,statuspoint:GetY()+statuspoint:GetHeight()+status:GetHeight()+stamina:GetHeight());
+	weight:SetTextByKey("value", STATUSPOINTCHECK_WHIGHTSQUESTCHECK());
 	--zemina
-	textlist = textlist.."Zemina List{nl}";
-	textlist = textlist.."  "..STATUSPOINTCHECK_ZEMINACHECK("f_siauliai_west");
-	textlist = textlist.."  "..STATUSPOINTCHECK_ZEMINACHECK("f_siauliai_out");
-	textlist = textlist.."  "..STATUSPOINTCHECK_ZEMINACHECK("f_siauliai_16");
-	textlist = textlist.."  "..STATUSPOINTCHECK_ZEMINACHECK("d_underfortress_59_2");
-	textlist = textlist.."  "..STATUSPOINTCHECK_ZEMINACHECK("f_rokas_31");
-	textlist = textlist.."  "..STATUSPOINTCHECK_ZEMINACHECK("f_flash_64");
-	textlist = textlist.."  "..STATUSPOINTCHECK_ZEMINACHECK("f_katyn_14");
-	textlist = textlist.."  "..STATUSPOINTCHECK_ZEMINACHECK("f_whitetrees_22_2");
-	textlist = textlist.."  "..STATUSPOINTCHECK_ZEMINACHECK("f_3cmlake_26_2");
-	textlist = textlist.."  "..STATUSPOINTCHECK_ZEMINACHECK("d_startower_76_2");
-	magictext:SetTextByKey("value", textlist);
+	zemina:SetOffset(20,statuspoint:GetY()+statuspoint:GetHeight()+status:GetHeight()+stamina:GetHeight()+weight:GetHeight());
+	zemina:SetTextByKey("value", STATUSPOINTCHECK_ZEMINACHECK());
 
 end
 
-function STATUSPOINTCHECK_QUESTCHECK(questNo)
+function STATUSPOINTCHECK_QUESTCHECK()
+	local questList = {
+		"20050", "8537", "20275", "8392", "20201", "8728", "8752", "80047", "20219", "8458", "8498", "20341", "30194", "90217", "60278", "50369"
+	}
+	local title = "Quest List For Status Point";
+	local body = "";
+	local getPoint = 0;
+	local sumPoint = 0;
+	for k, questNo in pairs(questList) do
+		local tempPoint = 0;
+		if questNo == "8458" or questNo == "8498" or questNo == "20341" then
+			tempPoint = 1;
+		end
+		local questCls = GetClassByType('QuestProgressCheck', questNo);
+		local cls = GetClassByType('QuestProgressCheck_Auto', questNo);
+		sumPoint = sumPoint + tonumber(cls.Success_StatByBonus) + tempPoint;
+		if STATUSPOINTCHECK_QUESTCLEARCHECK(questNo) then
+			getPoint = getPoint + tonumber(cls.Success_StatByBonus) + tempPoint;
+			body = body .. "  {#FF3333}{ol}{b}{s16}"..questCls.Name..":OK - ("..tonumber(cls.Success_StatByBonus).."Point){/}{/}{/}{/}{nl}"
+		else
+			local mapprop = geMapTable.GetMapProp(questCls.StartMap);
+			local mapName = tostring(dictionary.ReplaceDicIDInCompStr(mapprop:GetName()));
+			body = body .. "  {#666666}{ol}{b}{s16}"..questCls.Name..":NO - ("..tonumber(cls.Success_StatByBonus).."Point) - "..mapName.."[Level:"..tostring(questCls.Level).."]{/}{/}{/}{/}{nl}"
+		end
+	end
+	title = title.."("..getPoint.."/"..sumPoint.."){nl}"
+	return title..body
+end
+
+function STATUSPOINTCHECK_STATUSQUESTCHECK()
+	local questList = {
+		-- 19101 and 9109 is not active
+		--"19051", "9105", "9110", "9106", "19112", "19021", "19101", "9102", "9103", "9109", "19071"
+		"19051", "9105", "9110", "9106", "19112", "19021", "9102", "9103", "19071"
+	}
+	local title = "Quest List For Status";
+	local body = "";
+	for k, questNo in pairs(questList) do
+		local questCls = GetClassByType('QuestProgressCheck', questNo);
+		local pcProperty = GetClass('reward_property', questCls.ClassName)
+		if STATUSPOINTCHECK_QUESTCLEARCHECK(questNo) then
+			body = body .. "  {#FF3333}{ol}{b}{s16}"..questCls.Name..":OK - ("..ScpArgMsg(pcProperty.Property).."+"..pcProperty.Value.."){/}{/}{/}{/}{nl}"
+		else
+			local mapprop;
+			if "None" == questCls.StartMap then
+				-- "19021" is StartMap None
+				mapprop = geMapTable.GetMapProp(questCls.ProgMap);
+			else
+				mapprop = geMapTable.GetMapProp(questCls.StartMap);
+			end
+			local mapName = tostring(dictionary.ReplaceDicIDInCompStr(mapprop:GetName()));
+			body = body .. "  {#666666}{ol}{b}{s16}"..questCls.Name..":NO - ("..ScpArgMsg(pcProperty.Property).."+"..pcProperty.Value..") - "..mapName.."[Level:"..tostring(questCls.Level).."]{/}{/}{/}{/}{nl}"
+		end
+	end
+	title = title.."{nl}"
+	return title..body
+end
+
+function STATUSPOINTCHECK_STAMINAQUESTCHECK()
+	local questList = {
+		"9108", "9100", "19062", "9104"
+	}
+	local title = "Quest List For Stamina";
+	local body = "";
+	local getPoint = 0;
+	local sumPoint = 0;
+	for k, questNo in pairs(questList) do
+		local questCls = GetClassByType('QuestProgressCheck', questNo);
+		local pcProperty = GetClass('reward_property', questCls.ClassName)
+		sumPoint = sumPoint + tonumber(pcProperty.Value);
+		if STATUSPOINTCHECK_QUESTCLEARCHECK(questNo) then
+			getPoint = getPoint + tonumber(pcProperty.Value);
+			body = body .. "  {#FF3333}{ol}{b}{s16}"..questCls.Name..":OK - ("..ScpArgMsg(pcProperty.Property).."+"..pcProperty.Value.."){/}{/}{/}{/}{nl}"
+		else
+			if "None" == questCls.StartMap then
+				body = body .. "  {#666666}{ol}{b}{s16}"..questCls.Name..":NO - ("..ScpArgMsg(pcProperty.Property).."+"..pcProperty.Value.."){/}{/}{/}{/}{nl}"
+			else
+				local mapprop = geMapTable.GetMapProp(questCls.StartMap);
+				local mapName = tostring(dictionary.ReplaceDicIDInCompStr(mapprop:GetName()));
+				body = body .. "  {#666666}{ol}{b}{s16}"..questCls.Name..":NO - ("..ScpArgMsg(pcProperty.Property).."+"..pcProperty.Value..") - "..mapName.."[Level:"..tostring(questCls.Level).."]{/}{/}{/}{/}{nl}"
+			end
+		end
+	end
+	title = title.."("..getPoint.."/"..sumPoint.."){nl}"
+	return title..body
+end
+
+function STATUSPOINTCHECK_WHIGHTSQUESTCHECK()
+	local questList = {
+		"9107", "9111", "19041", "19081", "19091", "8487", "20212"
+	}
+	local title = "Quest List For Weight";
+	local body = "";
+	local getPoint = 0;
+	local sumPoint = 0;
+	for k, questNo in pairs(questList) do
+		local questCls = GetClassByType('QuestProgressCheck', questNo);
+		local pcProperty = GetClass('reward_property', questCls.ClassName)
+		sumPoint = sumPoint + tonumber(pcProperty.Value);
+		if STATUSPOINTCHECK_QUESTCLEARCHECK(questNo) then
+			getPoint = getPoint + tonumber(pcProperty.Value);
+			body = body .. "  {#FF3333}{ol}{b}{s16}"..questCls.Name..":OK - ("..ScpArgMsg(pcProperty.Property).."+"..pcProperty.Value.."){/}{/}{/}{/}{nl}"
+		else
+			if "None" == questCls.StartMap then
+				body = body .. "  {#666666}{ol}{b}{s16}"..questCls.Name..":NO - ("..ScpArgMsg(pcProperty.Property).."+"..pcProperty.Value.."){/}{/}{/}{/}{nl}"
+			else
+				local mapprop = geMapTable.GetMapProp(questCls.StartMap);
+				local mapName = tostring(dictionary.ReplaceDicIDInCompStr(mapprop:GetName()));
+				body = body .. "  {#666666}{ol}{b}{s16}"..questCls.Name..":NO - ("..ScpArgMsg(pcProperty.Property).."+"..pcProperty.Value..") - "..mapName.."[Level:"..tostring(questCls.Level).."]{/}{/}{/}{/}{nl}"
+			end
+		end
+	end
+	title = title.."("..getPoint.."/"..sumPoint.."){nl}"
+	return title..body
+end
+
+function STATUSPOINTCHECK_QUESTCLEARCHECK(questNo)
 	local questCls = GetClassByType('QuestProgressCheck', questNo);
 	local pc = GetMyPCObject();
 	local result = SCR_QUEST_CHECK(pc, questCls.ClassName)
 	if result == 'PROGRESS' or result == 'SUCCESS' or result == 'COMPLETE' then
-		return "{#FF3333}{ol}{b}{s16}"..questCls.Name..":OK{nl}{/}{/}{/}{/}"
+		return true
 	end
-	local mapprop = geMapTable.GetMapProp(questCls.StartMap);
-	local mapName = tostring(dictionary.ReplaceDicIDInCompStr(mapprop:GetName()));
-	return "{#666666}{ol}{b}{s16}"..questCls.Name..":NO - "..mapName.."[Level:"..tostring(questCls.Level).."]{nl}{/}{/}{/}{/}"
+	return false
 end
 
-function STATUSPOINTCHECK_ZEMINACHECK(mapname)
+
+function STATUSPOINTCHECK_ZEMINACHECK()
+	local questList = {
+		"f_siauliai_west", "f_siauliai_out", "f_siauliai_16", "d_underfortress_59_2", "f_rokas_31", "f_flash_64", "f_katyn_14", "f_whitetrees_22_2", "f_3cmlake_26_2", "d_startower_76_2"
+	}
+	local title = "Zemina List";
+	local body = "";
+	local getPoint = 0;
+	local sumPoint = 0;
+	for k, mapClassName in pairs(questList) do
+		local mapprop = geMapTable.GetMapProp(mapClassName);
+		local mapName = tostring(dictionary.ReplaceDicIDInCompStr(mapprop:GetName()));
+		sumPoint = sumPoint + 1;
+		if STATUSPOINTCHECK_ZEMINACLEARCHECK(mapClassName) then
+			getPoint = getPoint + tonumber(cls.Success_StatByBonus);
+			body = body .. "  {#FF3333}{ol}{b}{s16}"..mapName..":OK{/}{/}{/}{/}{nl}"
+		else
+			body = body .. "  {#666666}{ol}{b}{s16}"..mapName..":NO{/}{/}{/}{/}{nl}"
+		end
+	end
+	title = title.."("..getPoint.."/"..sumPoint.."){nl}"
+	return title..body
+end
+
+function STATUSPOINTCHECK_ZEMINACLEARCHECK(mapClassName)
+	local mapprop = geMapTable.GetMapProp(mapClassName);
+	local idspace = 'GenType_'..mapClassName;
+	local npcState = session.GetMapNPCState(mapClassName);
+	if nil == npcState then
+		return false;
+	end
+	local idcount = GetClassCount(idspace)
+	local flg = true;
+	for i = 0, idcount -1 do
+		local classIES = GetClassByIndex(idspace, i);
+		if classIES.ClassType == "statue_zemina" then
+			if npcState:FindAndGet(classIES.GenType) == 20 then
+				return true;
+			else
+				return false;
+			end
+		end
+	end
+end
+
+
+function STATUSPOINTCHECK_ZEMINACHECK_bak(mapname)
 	local mapClassName = mapname;
 	local mapprop = geMapTable.GetMapProp(mapClassName);
 	local mapName = tostring(dictionary.ReplaceDicIDInCompStr(mapprop:GetName()));

@@ -222,7 +222,7 @@
 		"name" : "Status Point Check",
 		"file" : "statuspointcheck",
 		"extension" : "ipf",
-		"fileVersion" : "v1.0.0",
+		"fileVersion" : "v1.0.1",
 		"releaseTag" : "statuspointcheck",
 		"unicode" : "⛄",
 		"description" : "From the status screen (F1 button), you can check whether you have cleared the quest to acquire the status point.  ステータス画面(F1ボタン)より、ステータスポイントを取得するクエストをクリアしているかどうかを確認することができます。",
