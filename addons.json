@@ -27,20 +27,6 @@
 		]
 	},
 	{
-		"name" : "Market Show Level For Japan[更新停止]",
-		"file" : "marketshowlevel_jp",
-		"extension" : "ipf",
-		"fileVersion" : "v1.0.7",
-		"releaseTag" : "marketshowlevel",
-		"unicode" : "⛄",
-		"description" : "[更新停止]日本語対応したので、通常のmarketshowlevelを使ってください。そのうち、このリストからも削除します。",
-		"tags" : [
-			"ui",
-			"market",
-			"jp"
-		]
-	},
-	{
 		"name" : "Show Hide Buff",
 		"file" : "showhidebuff",
 		"extension" : "ipf",
