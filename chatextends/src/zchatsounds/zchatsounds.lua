@@ -177,7 +177,7 @@ function CHATEXTENDS_SOUND_DRAW_CHAT_MSG_EVENT(frame, msg)
 		end
 		for i, ver in ipairs(g.settings.word) do
 			if g.settings.word[i].normal and g.settings.word[i].word ~= "" and g.settings.word[i].word ~= nil then
-				if string.find(CHATEXTENDS_SOUND_GET_MSGBODY(clusterinfo:GetMsg()),g.settings.word[i].word) then
+				if CHATEXTENDS_SOUND_IS_FINDMSG(clusterinfo:GetMsg(), g.settings.word[i].word) then
 					CHAT_SOUNDS_PLAYSOUND(soundTypes[tonumber(g.settings.word[i].sound)].sound)
 				end
 			end
@@ -188,7 +188,7 @@ function CHATEXTENDS_SOUND_DRAW_CHAT_MSG_EVENT(frame, msg)
 		end
 		for i, ver in ipairs(g.settings.word) do
 			if g.settings.word[i].shout and g.settings.word[i].word ~= "" and g.settings.word[i].word ~= nil then
-				if string.find(CHATEXTENDS_SOUND_GET_MSGBODY(clusterinfo:GetMsg()),g.settings.word[i].word) then
+				if CHATEXTENDS_SOUND_IS_FINDMSG(clusterinfo:GetMsg(), g.settings.word[i].word) then
 					CHAT_SOUNDS_PLAYSOUND(soundTypes[tonumber(g.settings.word[i].sound)].sound)
 				end
 			end
@@ -199,7 +199,7 @@ function CHATEXTENDS_SOUND_DRAW_CHAT_MSG_EVENT(frame, msg)
 		end
 		for i, ver in ipairs(g.settings.word) do
 			if g.settings.word[i].party and g.settings.word[i].word ~= "" and g.settings.word[i].word ~= nil then
-				if string.find(CHATEXTENDS_SOUND_GET_MSGBODY(clusterinfo:GetMsg()),g.settings.word[i].word) then
+				if CHATEXTENDS_SOUND_IS_FINDMSG(clusterinfo:GetMsg(), g.settings.word[i].word) then
 					CHAT_SOUNDS_PLAYSOUND(soundTypes[tonumber(g.settings.word[i].sound)].sound)
 				end
 			end
@@ -210,7 +210,7 @@ function CHATEXTENDS_SOUND_DRAW_CHAT_MSG_EVENT(frame, msg)
 		end
 		for i, ver in ipairs(g.settings.word) do
 			if g.settings.word[i].guild and g.settings.word[i].word ~= "" and g.settings.word[i].word ~= nil then
-				if string.find(CHATEXTENDS_SOUND_GET_MSGBODY(clusterinfo:GetMsg()),g.settings.word[i].word) then
+				if CHATEXTENDS_SOUND_IS_FINDMSG(clusterinfo:GetMsg(), g.settings.word[i].word) then
 					CHAT_SOUNDS_PLAYSOUND(soundTypes[tonumber(g.settings.word[i].sound)].sound)
 				end
 			end
@@ -221,7 +221,7 @@ function CHATEXTENDS_SOUND_DRAW_CHAT_MSG_EVENT(frame, msg)
 		end
 		for i, ver in ipairs(g.settings.word) do
 			if g.settings.word[i].whisper and g.settings.word[i].word ~= "" and g.settings.word[i].word ~= nil then
-				if string.find(CHATEXTENDS_SOUND_GET_MSGBODY(clusterinfo:GetMsg()),g.settings.word[i].word) then
+				if CHATEXTENDS_SOUND_IS_FINDMSG(clusterinfo:GetMsg(), g.settings.word[i].word) then
 					CHAT_SOUNDS_PLAYSOUND(soundTypes[tonumber(g.settings.word[i].sound)].sound)
 				end
 			end
@@ -232,18 +232,18 @@ function CHATEXTENDS_SOUND_DRAW_CHAT_MSG_EVENT(frame, msg)
 		end
 		for i, ver in ipairs(g.settings.word) do
 			if g.settings.word[i].group and g.settings.word[i].word ~= "" and g.settings.word[i].word ~= nil then
-				if string.find(CHATEXTENDS_SOUND_GET_MSGBODY(clusterinfo:GetMsg()),g.settings.word[i].word) then
+				if CHATEXTENDS_SOUND_IS_FINDMSG(clusterinfo:GetMsg(), g.settings.word[i].word) then
 					CHAT_SOUNDS_PLAYSOUND(soundTypes[tonumber(g.settings.word[i].sound)].sound)
 				end
 			end
 		end
-	elseif msgType == "System" then
+	elseif msgType == "System" or msgType == "Notice" then
 		if g.settings.all.system then
 			CHAT_SOUNDS_PLAYSOUND(soundTypes[tonumber(g.settings.all.systemsound)].sound)
 		end
 		for i, ver in ipairs(g.settings.word) do
 			if g.settings.word[i].system and g.settings.word[i].word ~= "" and g.settings.word[i].word ~= nil then
-				if string.find(CHATEXTENDS_SOUND_GET_MSGBODY(clusterinfo:GetMsg()),g.settings.word[i].word) then
+				if CHATEXTENDS_SOUND_IS_FINDMSG(clusterinfo:GetMsg(), g.settings.word[i].word) then
 					CHAT_SOUNDS_PLAYSOUND(soundTypes[tonumber(g.settings.word[i].sound)].sound)
 				end
 			end
@@ -266,11 +266,23 @@ function CHATEXTENDS_SOUND_TPCHATSYS_HOOK_CHAT_SYSTEM_EVENT(frame, msg)
 	end
 	for i, ver in ipairs(g.settings.word) do
 		if g.settings.word[i].system and g.settings.word[i].word ~= "" and g.settings.word[i].word ~= nil then
-			if string.find(CHATEXTENDS_SOUND_GET_MSGBODY(chatbody),g.settings.word[i].word) then
+			if CHATEXTENDS_SOUND_IS_FINDMSG(chatbody, g.settings.word[i].word) then
 				CHAT_SOUNDS_PLAYSOUND(soundTypes[tonumber(g.settings.word[i].sound)].sound)
 			end
 		end
 	end
+end
+
+--************************************************
+-- 判定
+--************************************************
+function CHATEXTENDS_SOUND_IS_FINDMSG(msg, findmsg)
+	if string.find(CHATEXTENDS_SOUND_GET_MSGBODY(msg),findmsg) then
+		return true;
+	elseif string.find(CHATEXTENDS_SOUND_GET_MSGBODY_BOSS(msg),findmsg) then
+		return true;
+	end
+	return false;
 end
 
 --************************************************
@@ -287,6 +299,18 @@ function CHATEXTENDS_SOUND_GET_MSGBODY(msgbody)
 	if tempstr ~= nil then
 		tempstr = dictionary.ReplaceDicIDInCompStr(tempstr);
 		logbody=string.gsub(logbody,"(@dicID.+\*\^)", tempstr);
+	end
+	return logbody;
+end
+
+function CHATEXTENDS_SOUND_GET_MSGBODY_BOSS(msgbody)
+	local logbody=msgbody
+	local tempstr="";
+
+	tempstr=string.match(logbody, "FieldBossWillAppear");
+	if tempstr ~= nil then
+		logbody = ClMsg("FieldBossWillAppear");
+		logbody = dictionary.ReplaceDicIDInCompStr(logbody);
 	end
 	return logbody;
 end

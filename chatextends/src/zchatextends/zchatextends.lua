@@ -170,6 +170,11 @@ function ZCHATEXTENDS_ON_INIT(addon, frame)
 			_G['ui'].ProcessReturnKey = CHATEXTENDS_ProcessReturnKey;
 		end
 
+		if nil == CHATEXTENDS_WhisperTo_OLD then
+			CHATEXTENDS_WhisperTo_OLD = _G['ui'].WhisperTo;
+			_G['ui'].WhisperTo = CHATEXTENDS_WhisperTo;
+		end
+
 		--コマンド登録
 		acutil.slashCommand("/savechat", CHATEXTENDS_SAVE_CHAT);
 
@@ -526,7 +531,9 @@ function CHATEXTENDS_ProcessTabKey()
 		-- この命令でチャット内容が消える
 		CHATEXTENDS_ProcessTabKey_OLD();
 		-- チャット内容復旧
-		SET_CHAT_TEXT(str);
+		if str ~= "" then
+			SET_CHAT_TEXT(str);
+		end
 		g.chattype = ui.GetChatType();
 	else
 		CHATEXTENDS_ProcessTabKey_OLD();
@@ -548,6 +555,10 @@ function CHATEXTENDS_ProcessReturnKey()
 	end
 end
 
+function CHATEXTENDS_WhisperTo(familyName)
+	CHATEXTENDS_WhisperTo_OLD(familyName)
+	g.chattype = ui.GetChatType();
+end
 --************************************************
 -- DRAW_CHAT_MSGのフック
 -- 　引数：String groupboxname

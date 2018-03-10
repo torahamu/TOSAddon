@@ -39,8 +39,6 @@ end
 g.settingsFileLoc = "../addons/"..addonNameLower.."/settings.json";
 
 function ALTARGET_ON_INIT(addon, frame)
-	local g = _G['ADDONS']['MONOGUSA']['ALTARGET'];
-	local acutil = require('acutil');
 
 	g.addon = addon;
 	g.frame = frame;
@@ -302,7 +300,6 @@ function AL_ON_TARGET_UPDATE()
 			local pc = GetMyPCObject();
 			local gema,nota = GEMANOTA_CALC(monCls);
 			monCls.Lv = monCls.Level
-
 			local hitrate = SCR_Get_MON_DR(monCls) - pc.HR;
 			if hitrate < 0 then
 				hitrate = 0;
@@ -353,7 +350,10 @@ function AL_ON_TARGET_UPDATE()
 	itemimg:SetColorTone(color);
 	itembgimg:SetColorTone(color);
 	AL_CHANGE_SCALE(frame, scale);
-	
+	-- 補正
+	local _fieldFrame = ui.GetFrame("fieldui");
+	local _h = (_fieldFrame:GetHeight()-1080)/2;
+	y = y - _h;
 	if frame:IsVisible() == 0 then frame:ShowWindow(1); end
 	return scale, y;
 end
