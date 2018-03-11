@@ -240,7 +240,7 @@ randomList.BLK_BREAK      = {name = "ブロ貫通"      ;ename = "Blk BR"       
 randomList.LootingChance  = {name = "ルーティング"  ;ename = "Looting"      ;default = ClMsg(LootingChance) ;};
 randomList.STR            = {name = "力"            ;ename = "STR"          ;default = ClMsg(STR)           ;};
 randomList.CON            = {name = "体力"          ;ename = "CON"          ;default = ClMsg(CON)           ;};
-randomList.INT            = {name = "知性"          ;ename = "INT"          ;default = ClMsg(INT)           ;};
+randomList.INT            = {name = "知能"          ;ename = "INT"          ;default = ClMsg(INT)           ;};
 randomList.MNA            = {name = "精神"          ;ename = "SPR"          ;default = ClMsg(MNA)           ;};
 randomList.DEX            = {name = "敏捷"          ;ename = "DEX"          ;default = ClMsg(DEX)           ;};
 
