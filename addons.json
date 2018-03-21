@@ -17,7 +17,7 @@
 		"name" : "Market Show Level",
 		"file" : "marketshowlevel",
 		"extension" : "ipf",
-		"fileVersion" : "v1.3.1",
+		"fileVersion" : "v1.3.2",
 		"releaseTag" : "marketshowlevel",
 		"unicode" : "⛄",
 		"description" : "An add-on that adds additional information to certain market items.[v1.3.0 Add Hair Costume Option Filter Search. Random Option Name Shortening. Show card details in market list.]  マーケットのジェムやカードのレベル表示,ヘアアクセの能力表示,スキル呪文書のスキル表示をする。[v1.3.0 ヘアコスフィルタ検索を追加。ランダムオプション名を短縮。一覧にカード詳細を表示。]",
