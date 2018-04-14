@@ -523,22 +523,17 @@ end
 
 -- タブキー押下時のフック
 function CHATEXTENDS_ProcessTabKey()
-	local frame = ui.GetFrame('chat');
-	local chatEditCtrl = frame:GetChild('mainchat');
-	if chatEditCtrl:IsHaveFocus() == 1 then
-		-- 一度チャット内容を取得
-		local str = GET_CHAT_TEXT();
-		-- この命令でチャット内容が消える
-		CHATEXTENDS_ProcessTabKey_OLD();
-		-- チャット内容復旧
-		if str ~= "" then
-			SET_CHAT_TEXT(str);
-		end
-		g.chattype = ui.GetChatType();
-	else
-		CHATEXTENDS_ProcessTabKey_OLD();
+	-- 一度チャット内容を取得
+	local str = GET_CHAT_TEXT();
+	-- この命令でチャット内容が消える
+	CHATEXTENDS_ProcessTabKey_OLD();
+	-- チャット内容復旧
+	if str ~= "" then
+		SET_CHAT_TEXT(str);
 	end
+	g.chattype = ui.GetChatType();
 end
+
 
 -- エンターキー押下時のフック
 -- 発言種類設定

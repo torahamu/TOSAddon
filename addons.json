@@ -87,10 +87,10 @@
 		"name" : "chatextends",
 		"file" : "chatextends",
 		"extension" : "ipf",
-		"fileVersion" : "v2.5.3",
+		"fileVersion" : "v2.5.4",
 		"releaseTag" : "chatextends",
 		"unicode" : "⛄",
-		"description" : "Modify chat.Please look at github for details.[v2.5.0 Correspond to system message of ChatSound]  チャットを色々改造します。詳細はGithubやReadmeを見てください。[v2.5.0 チャットサウンドをシステムメッセージに対応]",
+		"description" : "Modify chat.Please look at github for details.[v2.5.4 Fixed that chat type did not change even if tab was pushed]  チャットを色々改造します。詳細はGithubやReadmeを見てください。[v2.5.4 タブを押してもチャットタイプが変わらない時があったのを修正]",
 		"tags" : [
 			"ui",
 			"chat"
