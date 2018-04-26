@@ -251,7 +251,8 @@ function STATVIEWER_EX_UPDATE(frame)
 		STATVIEWER_EX_UPDATE_STAT(frame, "MSPD"     , pc["MSPD"], dimensions, _G["STATVIEWER_EX"]["statsettings"].MSPD_COLOR);
 	end
 	if _G["STATVIEWER_EX"]["statsettings"].WHEIGHT then
-		STATVIEWER_EX_UPDATE_STAT(frame, "WHEIGHT"  , pc["NowWeight"] .."/".. pc["MaxWeight"].. "("..tostring(math.floor(pc.NowWeight*100/pc.MaxWeight)).."%)", dimensions, _G["STATVIEWER_EX"]["statsettings"].WHEIGHT_COLOR);
+		local wheight_str = string.format("%.1f/%.1f", pc["NowWeight"], pc["MaxWeight"]);
+		STATVIEWER_EX_UPDATE_STAT(frame, "WHEIGHT"  , wheight_str .. "("..tostring(math.floor(pc.NowWeight*100/pc.MaxWeight)).."%)", dimensions, _G["STATVIEWER_EX"]["statsettings"].WHEIGHT_COLOR);
 	end
 	if _G["STATVIEWER_EX"]["statsettings"].CHANCE then
 		STATVIEWER_EX_UPDATE_STAT(frame, "CHANCE"  , pc["LootingChance"], dimensions, _G["STATVIEWER_EX"]["statsettings"].CHANCE_COLOR);
