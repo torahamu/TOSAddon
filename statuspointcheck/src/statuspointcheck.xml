@@ -3,7 +3,7 @@
 	<frame fullheight="false" fasthide="true" layout_gravity="left top" margin="0 0 0 0"/>
 	<draw drawframe="false" drawnotitlebar="false" drawtitlebar="false"/>
 	<input moveable="true" />
-	<layer layerlevel="80"/>
+	<layer layerlevel="100"/>
 	<option closebutton="true"/>
 	<userconfig TITLE_MARGIN_Y="10" BODY_MARGIN_Y="10"/>
 	<controls>
