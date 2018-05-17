@@ -93,6 +93,10 @@ function STATUSPOINTCHECK_QUESTCHECK(statuspoint)
 		result:SetText(color..resultBody.."{/}{/}{/}{/}")
 		point:SetText(color..pointBody.."{/}{/}{/}{/}")
 		map:SetText(color..mapBody.."{/}{/}{/}{/}")
+
+		name:SetEventScript(ui.LBUTTONUP, "STATUSPOINTCHECK_QUEST_REQUEST");
+		name:SetEventScriptArgString(ui.LBUTTONUP, questNo);
+
 		ypos = ypos + name:GetHeight();
 		statuspoint:Resize(statuspoint:GetWidth(),ypos)
 	end
@@ -151,6 +155,10 @@ function STATUSPOINTCHECK_STATUSQUESTCHECK(status)
 		result:SetText(color..resultBody.."{/}{/}{/}{/}")
 		point:SetText(color..pointBody.."{/}{/}{/}{/}")
 		map:SetText(color..mapBody.."{/}{/}{/}{/}")
+
+		name:SetEventScript(ui.LBUTTONUP, "STATUSPOINTCHECK_QUEST_REQUEST");
+		name:SetEventScriptArgString(ui.LBUTTONUP, questNo);
+
 		ypos = ypos + name:GetHeight();
 		status:Resize(status:GetWidth(),ypos)
 	end
@@ -205,6 +213,10 @@ function STATUSPOINTCHECK_STAMINAQUESTCHECK(stamina)
 		result:SetText(color..resultBody.."{/}{/}{/}{/}")
 		point:SetText(color..pointBody.."{/}{/}{/}{/}")
 		map:SetText(color..mapBody.."{/}{/}{/}{/}")
+
+		name:SetEventScript(ui.LBUTTONUP, "STATUSPOINTCHECK_QUEST_REQUEST");
+		name:SetEventScriptArgString(ui.LBUTTONUP, questNo);
+
 		ypos = ypos + name:GetHeight();
 		stamina:Resize(stamina:GetWidth(),ypos)
 	end
@@ -257,6 +269,10 @@ function STATUSPOINTCHECK_WHIGHTSQUESTCHECK(weight)
 		result:SetText(color..resultBody.."{/}{/}{/}{/}")
 		point:SetText(color..pointBody.."{/}{/}{/}{/}")
 		map:SetText(color..mapBody.."{/}{/}{/}{/}")
+
+		name:SetEventScript(ui.LBUTTONUP, "STATUSPOINTCHECK_QUEST_REQUEST");
+		name:SetEventScriptArgString(ui.LBUTTONUP, questNo);
+
 		ypos = ypos + name:GetHeight();
 		weight:Resize(weight:GetWidth(),ypos)
 	end

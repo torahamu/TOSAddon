@@ -58,6 +58,10 @@ function STATUSPOINTCHECK_MASTER_QUEST_CHECK(masterquest)
 		name:SetText(color..nameBody.."{/}{/}{/}{/}")
 		result:SetText(color..resultBody.."{/}{/}{/}{/}")
 		map:SetText(color..mapBody.."{/}{/}{/}{/}")
+
+		name:SetEventScript(ui.LBUTTONUP, "STATUSPOINTCHECK_QUEST_REQUEST");
+		name:SetEventScriptArgString(ui.LBUTTONUP, questNo);
+
 		ypos = ypos + name:GetHeight();
 		masterquest:Resize(masterquest:GetWidth(),ypos)
 	end

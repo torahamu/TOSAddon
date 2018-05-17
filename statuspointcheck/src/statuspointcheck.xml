@@ -13,10 +13,10 @@
 		<!-- Status Quest -->
 		<groupbox name="status_gbox" rect="0 0 950 750" margin="0 40 0 0" parent="bg" layout_gravity="left top" draw="true" hittestbox="false" resizebyparent="false" resizebyresolution="false" scrollbar="true" skin="None"/>
 		<groupbox name="statuspoint_list" rect="0 0 920 30" margin="20 10 0 0" layout_gravity="left top" parent="status_gbox" draw="true" hittestbox="false" scrollbar="false" skin="None"/>
-		<groupbox name="status_list" rect="0 0 920 30" margin="20 10 0 0" layout_gravity="left top" parent="status_gbox" draw="true" hittestbox="true" scrollbar="false" skin="None"/>
-		<groupbox name="stamina_list" rect="0 0 920 30" margin="20 10 0 0" layout_gravity="left top" parent="status_gbox" draw="true" hittestbox="true" scrollbar="false" skin="None"/>
-		<groupbox name="weight_list" rect="0 0 920 30" margin="20 10 0 0" layout_gravity="left top" parent="status_gbox" draw="true" hittestbox="true" scrollbar="false" skin="None"/>
-		<groupbox name="zemina_list" rect="0 0 920 30" margin="20 10 0 0" layout_gravity="left top" parent="status_gbox" draw="true" hittestbox="true" scrollbar="false" skin="None"/>
+		<groupbox name="status_list" rect="0 0 920 30" margin="20 10 0 0" layout_gravity="left top" parent="status_gbox" draw="true" hittestbox="false" scrollbar="false" skin="None"/>
+		<groupbox name="stamina_list" rect="0 0 920 30" margin="20 10 0 0" layout_gravity="left top" parent="status_gbox" draw="true" hittestbox="false" scrollbar="false" skin="None"/>
+		<groupbox name="weight_list" rect="0 0 920 30" margin="20 10 0 0" layout_gravity="left top" parent="status_gbox" draw="true" hittestbox="false" scrollbar="false" skin="None"/>
+		<groupbox name="zemina_list" rect="0 0 920 30" margin="20 10 0 0" layout_gravity="left top" parent="status_gbox" draw="true" hittestbox="false" scrollbar="false" skin="None"/>
 		<!-- Practonium Quest -->
 		<groupbox name="practonium_gbox" rect="0 0 950 750" margin="0 40 0 0" parent="bg" layout_gravity="left top" draw="true" hittestbox="false" resizebyparent="false" resizebyresolution="false" scrollbar="true" skin="None"/>
 		<groupbox name="practonium_list" rect="0 0 920 30" margin="20 10 0 0" layout_gravity="left top" parent="practonium_gbox" draw="true" hittestbox="false" scrollbar="false" skin="None"/>

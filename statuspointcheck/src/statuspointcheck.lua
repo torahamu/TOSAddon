@@ -213,3 +213,8 @@ function STATUSPOINTCHECK_QUESTCLEARCHECK(questNo)
 	return false
 end
 
+function STATUSPOINTCHECK_QUEST_REQUEST(frame, ctrl, argStr, argNum)
+	local questClassID = argStr;
+	ADVENTURE_BOOK_QUEST_INIT_DETAIL(questClassID);
+	ReqQuestCompleteCharacterList(questClassID);
+end

@@ -68,6 +68,10 @@ function STATUSPOINTCHECK_PRACTONIUM_CHECK(practonium)
 		name:SetText(color..nameBody.."{/}{/}{/}{/}")
 		result:SetText(color..resultBody.."{/}{/}{/}{/}")
 		map:SetText(color..mapBody.."{/}{/}{/}{/}")
+
+		name:SetEventScript(ui.LBUTTONUP, "STATUSPOINTCHECK_QUEST_REQUEST");
+		name:SetEventScriptArgString(ui.LBUTTONUP, questNo);
+
 		ypos = ypos + name:GetHeight();
 		practonium:Resize(practonium:GetWidth(),ypos)
 	end
@@ -115,6 +119,10 @@ function STATUSPOINTCHECK_MYSTICAL_CHECK(mystical)
 		name:SetText(color..nameBody.."{/}{/}{/}{/}")
 		result:SetText(color..resultBody.."{/}{/}{/}{/}")
 		map:SetText(color..mapBody.."{/}{/}{/}{/}")
+
+		name:SetEventScript(ui.LBUTTONUP, "STATUSPOINTCHECK_QUEST_REQUEST");
+		name:SetEventScriptArgString(ui.LBUTTONUP, questNo);
+
 		ypos = ypos + name:GetHeight();
 		mystical:Resize(mystical:GetWidth(),ypos)
 	end
@@ -173,6 +181,10 @@ function STATUSPOINTCHECK_ABSIDIUM_CHECK(absidium)
 		result:SetText(color..resultBody.."{/}{/}{/}{/}")
 		point:SetText(color..pointBody.."{/}{/}{/}{/}")
 		map:SetText(color..mapBody.."{/}{/}{/}{/}")
+
+		name:SetEventScript(ui.LBUTTONUP, "STATUSPOINTCHECK_QUEST_REQUEST");
+		name:SetEventScriptArgString(ui.LBUTTONUP, questNo);
+
 		ypos = ypos + name:GetHeight();
 		absidium:Resize(absidium:GetWidth(),ypos)
 	end
