@@ -78,7 +78,8 @@ function INDUNPLUS_GET_INDUNS()
           ["type"] = tostring(cls.PlayPerResetType),
           ["label"] = cls.Category,
           ["id"] = cls.ClassID,
-          ["level"] = cls.Level
+          ["level"] = cls.Level,
+          ["WeeklyEnterableCount"] = cls.WeeklyEnterableCount or 0
         });
       temp[tostring(cls.PlayPerResetType)] = categoryCount;
       categoryCount = categoryCount + 1;
@@ -92,7 +93,12 @@ end
 
 function INDUNPLUS_GET_PLAY_COUNT(indun)
   local etcObj = GetMyEtcObject();
-  local etcType = "InDunCountType_"..indun.type;
+  local etcType = "";
+  if indun.WeeklyEnterableCount == 0 then
+    etcType = "InDunCountType_"..indun.type;
+  else
+    etcType = "IndunWeeklyEnteredCount_"..indun.type;
+  end
   local count = etcObj[etcType];
 
   return count;
@@ -103,26 +109,51 @@ function INDUNPLUS_GET_MAX_PLAY_COUNT(indun)
     return 99;
   end
   local cls = GetClassByType("Indun", indun.id);
-  local maxPlayCnt = cls.PlayPerReset;
+
+  local bonusCount = 0;
   if true == session.loginInfo.IsPremiumState(ITEM_TOKEN) then 
-    maxPlayCnt = maxPlayCnt + cls.PlayPerReset_Token;
+    bonusCount = cls.PlayPerReset_Token
+  end
+  local maxPlayCnt = 0;
+  if indun.WeeklyEnterableCount == 0 then
+    maxPlayCnt = cls.PlayPerReset + bonusCount;
+  else
+    maxPlayCnt = cls.WeeklyEnterableCount + bonusCount;
   end
 
   return maxPlayCnt;
 end
 
-function INDUNPLUS_GET_RESETTIME()
+function INDUNPLUS_GET_RESETTIME(targetwday)
   local currentDate = os.date("*t");
+  -- lua言語仕様の日曜日が1始まりを利用して、デフォルトを0(指定なし)
+  targetwday = targetwday or 0;
 
   local resetDate = os.date("*t");
+  local resetTime = 0;
   resetDate.hour = g.settings.resetHour;
   resetDate.min = 0;
   resetDate.sec = 0;
+  if targetwday == 0 then
+    -- 指定がない場合は、毎日6時リセット
+    resetTime = os.time(resetDate);
 
-  local resetTime = os.time(resetDate);
+    if currentDate.hour < g.settings.resetHour then
+      resetTime = resetTime - 24*3600;
+    end
+  else
+    -- 指定がある場合は、指定曜日の6時リセット
+    -- リセットされる日は、指定日-現在の曜日、マイナスなら来週として7を足す
+    local addwday = targetwday - resetDate.wday;
+    if addwday < 0 then
+      addwday = addwday + 7
+    end
+    resetDate.day = resetDate.day + addwday;
+    resetTime = os.time(resetDate);
 
-  if currentDate.hour < g.settings.resetHour then
-    resetTime = resetTime - 24*3600;
+    if currentDate.hour < g.settings.resetHour then
+      resetTime = resetTime - 24*3600*7;
+    end
   end
 
   return resetTime;
@@ -616,6 +647,7 @@ end
 
 function INDUNPLUS_REFLESH_COUNTS()
   local resetTime = INDUNPLUS_GET_RESETTIME();
+  local resetWeekTime = INDUNPLUS_GET_RESETTIME(2);
 
   for cid, record in pairs(g.records) do
     if record.time < resetTime then
@@ -627,8 +659,15 @@ function INDUNPLUS_REFLESH_COUNTS()
         if counts[indun.type] == nil then
           counts[indun.type] = {};
         end
-        counts[indun.type]["playCount"] = 0;
-        counts[indun.type]["maxPlayCount"] = INDUNPLUS_GET_MAX_PLAY_COUNT(indun);
+        if indun.WeeklyEnterableCount == 0 then
+          counts[indun.type]["playCount"] = 0;
+          counts[indun.type]["maxPlayCount"] = INDUNPLUS_GET_MAX_PLAY_COUNT(indun);
+        else
+          if record.time < resetWeekTime then
+            counts[indun.type]["playCount"] = 0;
+            counts[indun.type]["maxPlayCount"] = INDUNPLUS_GET_MAX_PLAY_COUNT(indun);
+          end
+        end
       end
     end
   end
