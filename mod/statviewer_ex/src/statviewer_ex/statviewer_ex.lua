@@ -22,6 +22,12 @@ local label = {
 	["MSPD"]      = {name="スピード: "   ;ename="MSPD: "     ;kname="　　　　이동 속도 : " ;};
 	["WHEIGHT"]   = {name="所持量　: "   ;ename="WHEIGHT: "  ;kname="　  휴대 가능 무게 : ";};
 	["CHANCE"]    = {name="チャンス: "   ;ename="CHANCE:  "  ;kname="　　　　루팅 찬스 : " ;};
+	["STR"]       = {name="力　　　: "   ;ename="STR: "     ;kname="　　　　힘 : " ;};
+	["CON"]       = {name="体力　　: "   ;ename="CON: "     ;kname="　　　　체력 : " ;};
+	["INT"]       = {name="知能　　: "   ;ename="INT: "     ;kname="　　　　지능 : " ;};
+	["MNA"]       = {name="精神　　: "   ;ename="SPR: "     ;kname="　　　　정신 : " ;};
+	["DEX"]       = {name="敏捷　　: "   ;ename="DEX: "     ;kname="　　　　민첩 : " ;};
+	["STATUS"]    = {name="能力値　: "   ;ename="STATUS:  "  ;kname="　　　　지위 : " ;};
 };
 local ctrlPos = {}
 
@@ -137,6 +143,12 @@ function STATVIEWER_EX_SAVE_STATSETTINGS_INIT(filename, statval)
 		MSPD = true;
 		WHEIGHT = true;
 		CHANCE = true;
+		STR = true;
+		CON = true;
+		INT = true;
+		MNA = true;
+		DEX = true;
+		STATUS = true;
 		PATK_COLOR = "FFFFFF";
 		PATK_SUB_COLOR = "FFFFFF";
 		MATK_COLOR = "FFFFFF";
@@ -158,6 +170,12 @@ function STATVIEWER_EX_SAVE_STATSETTINGS_INIT(filename, statval)
 		MSPD_COLOR = "FFFFFF";
 		WHEIGHT_COLOR = "FFFFFF";
 		CHANCE_COLOR = "FFFFFF";
+		STR_COLOR = "FFFFFF";
+		CON_COLOR = "FFFFFF";
+		INT_COLOR = "FFFFFF";
+		MNA_COLOR = "FFFFFF";
+		DEX_COLOR = "FFFFFF";
+		STATUS_COLOR = "FFFFFF";
 		MEMO = "";
 	};
 
@@ -257,7 +275,24 @@ function STATVIEWER_EX_UPDATE(frame)
 	if _G["STATVIEWER_EX"]["statsettings"].CHANCE then
 		STATVIEWER_EX_UPDATE_STAT(frame, "CHANCE"  , pc["LootingChance"], dimensions, _G["STATVIEWER_EX"]["statsettings"].CHANCE_COLOR);
 	end
-	
+	if _G["STATVIEWER_EX"]["statsettings"].STR then
+		STATVIEWER_EX_UPDATE_STAT(frame, "STR"  , pc["STR"], dimensions, _G["STATVIEWER_EX"]["statsettings"].STR_COLOR);
+	end
+	if _G["STATVIEWER_EX"]["statsettings"].CON then
+		STATVIEWER_EX_UPDATE_STAT(frame, "CON"  , pc["CON"], dimensions, _G["STATVIEWER_EX"]["statsettings"].CON_COLOR);
+	end
+	if _G["STATVIEWER_EX"]["statsettings"].INT then
+		STATVIEWER_EX_UPDATE_STAT(frame, "INT"  , pc["INT"], dimensions, _G["STATVIEWER_EX"]["statsettings"].INT_COLOR);
+	end
+	if _G["STATVIEWER_EX"]["statsettings"].MNA then
+		STATVIEWER_EX_UPDATE_STAT(frame, "MNA"  , pc["MNA"], dimensions, _G["STATVIEWER_EX"]["statsettings"].MNA_COLOR);
+	end
+	if _G["STATVIEWER_EX"]["statsettings"].DEX then
+		STATVIEWER_EX_UPDATE_STAT(frame, "DEX"  , pc["DEX"], dimensions, _G["STATVIEWER_EX"]["statsettings"].DEX_COLOR);
+	end
+	if _G["STATVIEWER_EX"]["statsettings"].STATUS then
+		STATVIEWER_EX_UPDATE_STAT(frame, "STATUS"  , "{#".._G["STATVIEWER_EX"]["statsettings"].STR_COLOR.."}"..pc["STR"] .."{/}/{#".._G["STATVIEWER_EX"]["statsettings"].CON_COLOR.."}".. pc["CON"] .."{/}/{#".._G["STATVIEWER_EX"]["statsettings"].INT_COLOR.."}".. pc["INT"] .."{/}/{#".._G["STATVIEWER_EX"]["statsettings"].MNA_COLOR.."}".. pc["MNA"] .."{/}/{#".._G["STATVIEWER_EX"]["statsettings"].DEX_COLOR.."}".. pc["DEX"].."{/}", dimensions, _G["STATVIEWER_EX"]["statsettings"].STATUS_COLOR);
+	end
 	frame:Resize(dimensions.width, dimensions.height+1);
 	STATVIEWER_EX_UPDATE_POSITION();
 end

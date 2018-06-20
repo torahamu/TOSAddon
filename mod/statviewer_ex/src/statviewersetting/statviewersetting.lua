@@ -116,6 +116,12 @@ function STATVIEWERSETTING_CREATE_UI()
 		[19] = {name="スピード"   ;ename="MSPD"     };
 		[20] = {name="所持量　"   ;ename="WHEIGHT"  };
 		[21] = {name="チャンス"   ;ename="CHANCE"   };
+		[22] = {name="力　　　"   ;ename="STR"      };
+		[23] = {name="体力　　"   ;ename="CON"      };
+		[24] = {name="知能　　"   ;ename="INT"      };
+		[25] = {name="精神　　"   ;ename="MNA"      };
+		[26] = {name="敏捷　　"   ;ename="DEX"      };
+		[27] = {name="能力値　"   ;ename="STATUS"   };
 	};
 	local country=string.lower(option.GetCurrentCountry());
 
@@ -219,7 +225,108 @@ function STATVIEWERSETTING_CREATE_UI()
 		end
 	end
 
-	local line2 = frame:CreateOrGetControl('labelline', 'statviewersetting_line2', 15, 480, frame:GetWidth()-30, 2);
+	for i = 22 , 24 do
+		local text = frame:CreateOrGetControl("richtext", "statviewersetting_label"..i, 30, 40*(i-10), 0, 0);
+		tolua.cast(text, "ui::CRichText");
+		if country=="japanese" then
+			text:SetText(fontType .. rtLabel[i].name .. "{/}{/}");
+		else
+			text:SetText(fontType .. rtLabel[i].ename .. "{/}{/}");
+		end
+
+		local check = frame:CreateOrGetControl('checkbox', "statviewersetting_check"..i, 140, 40*(i-10), 24, 24);
+		tolua.cast(check, "ui::CCheckBox");
+		check:SetClickSound('button_click_big');
+		check:SetAnimation("MouseOnAnim", "btn_mouseover");
+		check:SetAnimation("MouseOffAnim", "btn_mouseoff");
+		check:SetOverSound('button_over');
+		check:SetEventScript(ui.LBUTTONUP, "STATVIEWERSETTING_TOGGLE_CHECK_FLG");
+		check:SetEventScriptArgString(ui.LBUTTONUP, rtLabel[i].ename);
+		if _G["STATVIEWER_EX"]["statsettings"][rtLabel[i].ename] then
+			check:SetCheck(1);
+		else
+			check:SetCheck(0);
+		end
+
+		local colorBox = frame:CreateOrGetControl('groupbox', "statviewersetting_color"..i, 180, 40*(i-10), 250, 25);
+		tolua.cast(colorBox, "ui::CGroupBox");
+
+		for j = 0, 9 do
+
+			local colorCls = GetClass("ChatColorStyle", "Class"..j)
+		
+			if colorCls ~= nil then
+
+				local color = colorBox:CreateOrGetControl("picture", "statviewersetting_color_" .. i .. "_" ..j, 25*j, 0, 25, 25);
+				tolua.cast(color, "ui::CPicture");
+				color:SetImage("chat_color");
+				color:SetEventScript(ui.LBUTTONDOWN, 'STATVIEWERSETTING_SELECT_COLOR');
+				color:SetEventScriptArgString(ui.LBUTTONDOWN, colorCls.TextColor..","..rtLabel[i].ename);
+				color:SetEventScriptArgNumber(ui.LBUTTONDOWN, i + 100);
+				color:SetColorTone("FF"..colorCls.TextColor)
+				color:SetTextTooltip(colorCls.Name)
+			end
+		end
+	end
+	for i = 25 , 27 do
+		local text = frame:CreateOrGetControl("richtext", "statviewersetting_label"..i, 450, 40*(i-13), 0, 0);
+		tolua.cast(text, "ui::CRichText");
+		if option.GetCurrentCountry()=="Japanese" then
+			text:SetText(fontType .. rtLabel[i].name .. "{/}{/}");
+		else
+			if rtLabel[i].ename=="MNA" then
+				text:SetText(fontType .. "SPR" .. "{/}{/}");
+			else
+				text:SetText(fontType .. rtLabel[i].ename .. "{/}{/}");
+			end
+		end
+
+		local check = frame:CreateOrGetControl('checkbox', "statviewersetting_check"..i, 560, 40*(i-13), 24, 24);
+		tolua.cast(check, "ui::CCheckBox");
+		check:SetClickSound('button_click_big');
+		check:SetAnimation("MouseOnAnim", "btn_mouseover");
+		check:SetAnimation("MouseOffAnim", "btn_mouseoff");
+		check:SetOverSound('button_over');
+		check:SetEventScript(ui.LBUTTONUP, "STATVIEWERSETTING_TOGGLE_CHECK_FLG");
+		check:SetEventScriptArgString(ui.LBUTTONUP, rtLabel[i].ename);
+		if _G["STATVIEWER_EX"]["statsettings"][rtLabel[i].ename] then
+			check:SetCheck(1);
+		else
+			check:SetCheck(0);
+		end
+
+		if i ~= 27 then
+			local colorBox = frame:CreateOrGetControl('groupbox', "statviewersetting_color"..i, 600, 40*(i-13), 250, 25);
+			tolua.cast(colorBox, "ui::CGroupBox");
+
+			for j = 0, 9 do
+
+				local colorCls = GetClass("ChatColorStyle", "Class"..j)
+			
+				if colorCls ~= nil then
+
+					local color = colorBox:CreateOrGetControl("picture", "statviewersetting_color_" .. i .. "_" ..j, 25*j, 0, 25, 25);
+					tolua.cast(color, "ui::CPicture");
+					color:SetImage("chat_color");
+					color:SetEventScript(ui.LBUTTONDOWN, 'STATVIEWERSETTING_SELECT_COLOR');
+					color:SetEventScriptArgString(ui.LBUTTONDOWN, colorCls.TextColor..","..rtLabel[i].ename);
+					color:SetEventScriptArgNumber(ui.LBUTTONDOWN, i + 100);
+					color:SetColorTone("FF"..colorCls.TextColor)
+					color:SetTextTooltip(colorCls.Name)
+				end
+			end
+		else
+			local statustext = frame:CreateOrGetControl("richtext", "statviewersetting_statuslabel"..i, 600, 40*(i-13), 0, 0);
+			tolua.cast(statustext, "ui::CRichText");
+			if country=="japanese" then
+				statustext:SetText(fontType .. "他のステータスの色を選択してください" .. "{/}{/}");
+			else
+				statustext:SetText(fontType .. "Please select color of other status" .. "{/}{/}");
+			end
+		end
+	end
+
+	local line2 = frame:CreateOrGetControl('labelline', 'statviewersetting_line2', 15, 600, frame:GetWidth()-30, 2);
 	line2:SetSkinName('labelline_def')
 
 end
@@ -241,7 +348,7 @@ function STATVIEWERSETTING_CREATE_UI_COMMONDATA()
 	};
 	local country=string.lower(option.GetCurrentCountry());
 
-	local droplist = frame:CreateOrGetControl('droplist', "statviewersetting_droplist", 50, 510, 200, 20)
+	local droplist = frame:CreateOrGetControl('droplist', "statviewersetting_droplist", 50, 630, 200, 20)
 	tolua.cast(droplist, "ui::CDropList");
 	droplist:SetSkinName("droplist_normal");
 	droplist:SetTextAlign("left", "center");
@@ -254,17 +361,17 @@ function STATVIEWERSETTING_CREATE_UI_COMMONDATA()
 	end
 	droplist:SelectItem(0)
 
-	local text = frame:CreateOrGetControl("richtext", "statviewersetting_memotext", 350, 510, 0, 0);
+	local text = frame:CreateOrGetControl("richtext", "statviewersetting_memotext", 350, 630, 0, 0);
 	tolua.cast(text, "ui::CRichText");
 	text:SetText(fontType .. "MEMO{/}{/}");
 
-	local memo = frame:CreateControl("edit", "statviewersetting_memo", 400, 510, 400, 24);
+	local memo = frame:CreateControl("edit", "statviewersetting_memo", 400, 630, 400, 24);
 	tolua.cast(memo, "ui::CEditControl");
 	memo:SetGravity(ui.LEFT, ui.TOP);
 	memo:SetFontName("white_16_ol");
 	memo:SetText(_G["STATVIEWER_EX"]["common1"].MEMO);
 
-	local savebtn = frame:CreateOrGetControl("button", "statviewersetting_savebutton", 450, 570, 150, 24);
+	local savebtn = frame:CreateOrGetControl("button", "statviewersetting_savebutton", 450, 690, 150, 24);
 	tolua.cast(savebtn, "ui::CButton");
 	savebtn:SetFontName("white_16_ol");
 	savebtn:SetText("COMMONDATA SAVE");
@@ -276,7 +383,7 @@ function STATVIEWERSETTING_CREATE_UI_COMMONDATA()
 	savebtn:SetEventScript(ui.LBUTTONDOWN, "STATVIEWERSETTING_COMMONSAVE_CHECK");
 	savebtn:SetEventScriptArgNumber(ui.LBUTTONDOWN, 1);
 
-	local loadbtn = frame:CreateOrGetControl("button", "statviewersetting_loadbutton", 650, 570, 150, 24);
+	local loadbtn = frame:CreateOrGetControl("button", "statviewersetting_loadbutton", 650, 690, 150, 24);
 	tolua.cast(loadbtn, "ui::CButton");
 	loadbtn:SetFontName("white_16_ol");
 	loadbtn:SetText("COMMONDATA LOAD");

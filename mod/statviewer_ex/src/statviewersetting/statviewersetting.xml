@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<uiframe name="statviewersetting" x="100" y="100" width="900" height="640">
+<uiframe name="statviewersetting" x="100" y="100" width="900" height="760">
 	<frame fullheight="false" title="{@st43}Stat Viewer Setting{/}" titlepos="0 -3" snapclient="true" snapframe="true" layout_gravity="light center" margin="0 0 0 0"/>
 	<input hittest="true" movable="true" moveintitlebar="false" hittestframe="true"/>
 	<option closebuttonpos="0 0" autoopen="true" hideable="true"/>
