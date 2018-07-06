@@ -54,10 +54,14 @@ function STATUSPOINTCHECK_QUESTCHECK(statuspoint)
 	local ypos = 20;
 	local title = statuspoint:CreateOrGetControl("richtext", "statuspointcheck_questcheck_title"  , 0, 0, 0, 0);
 	for k, questNo in pairs(questList) do
-		local name   = statuspoint:CreateOrGetControl("richtext", "statuspointcheck_questcheck_name"..k  , nameX  , ypos, 0, 0);
-		local result = statuspoint:CreateOrGetControl("richtext", "statuspointcheck_questcheck_result"..k, resultX, ypos, 0, 0);
-		local point  = statuspoint:CreateOrGetControl("richtext", "statuspointcheck_questcheck_point"..k , pointX , ypos, 0, 0);
-		local map    = statuspoint:CreateOrGetControl("richtext", "statuspointcheck_questcheck_map"..k   , mapX   , ypos, 0, 0);
+	
+		local gbox   = statuspoint:CreateOrGetControl("groupbox", "statuspointcheck_questcheck_group"..k , 0  , ypos, 885, ypos);
+		tolua.cast(gbox, "ui::CGroupBox");
+		gbox:SetSkinName("none");
+		local name   = gbox:CreateOrGetControl("richtext", "statuspointcheck_questcheck_name"..k  , nameX  , 0, 0, 0);
+		local result = gbox:CreateOrGetControl("richtext", "statuspointcheck_questcheck_result"..k, resultX, 0, 0, 0);
+		local point  = gbox:CreateOrGetControl("richtext", "statuspointcheck_questcheck_point"..k , pointX , 0, 0, 0);
+		local map    = gbox:CreateOrGetControl("richtext", "statuspointcheck_questcheck_map"..k   , mapX   , 0, 0, 0);
 		local nameBody = "";
 		local resultBody = "";
 		local pointBody = "";
@@ -94,8 +98,16 @@ function STATUSPOINTCHECK_QUESTCHECK(statuspoint)
 		point:SetText(color..pointBody.."{/}{/}{/}{/}")
 		map:SetText(color..mapBody.."{/}{/}{/}{/}")
 
+		gbox:SetEventScript(ui.LBUTTONUP, "STATUSPOINTCHECK_QUEST_REQUEST");
+		gbox:SetEventScriptArgString(ui.LBUTTONUP, questNo);
 		name:SetEventScript(ui.LBUTTONUP, "STATUSPOINTCHECK_QUEST_REQUEST");
 		name:SetEventScriptArgString(ui.LBUTTONUP, questNo);
+		result:SetEventScript(ui.LBUTTONUP, "STATUSPOINTCHECK_QUEST_REQUEST");
+		result:SetEventScriptArgString(ui.LBUTTONUP, questNo);
+		point:SetEventScript(ui.LBUTTONUP, "STATUSPOINTCHECK_QUEST_REQUEST");
+		point:SetEventScriptArgString(ui.LBUTTONUP, questNo);
+		map:SetEventScript(ui.LBUTTONUP, "STATUSPOINTCHECK_QUEST_REQUEST");
+		map:SetEventScriptArgString(ui.LBUTTONUP, questNo);
 
 		ypos = ypos + name:GetHeight();
 		statuspoint:Resize(statuspoint:GetWidth(),ypos)
@@ -106,18 +118,21 @@ end
 function STATUSPOINTCHECK_STATUSQUESTCHECK(status)
 	local questList = {
 		-- 19101 and 9109 is not active
-		--"19051", "9105", "9110", "9106", "19112", "19021", "19101", "9102", "9103", "9109", "19071"
-		"19051", "9105", "9110", "9106", "19112", "19021", "9102", "9103", "19071"
+		--"19051", "9105", "9110", "9106", "19112", "19021", "19101", "9102", "9103", "9109", "19071", "70709", "90077", "80171", "50221", "40760", "16640", "30294", "60042", "60206"
+		"19051", "9105", "9110", "9106", "19112", "19021", "9102", "9103", "19071", "70709", "90077", "80171", "50221", "40760", "16640", "30294", "60042", "60206"
 	}
 	local titleBody = "Quest List For Status";
 	local body = "";
 	local ypos = 20;
 	local title = status:CreateOrGetControl("richtext", "statuscheck_questcheck_title"  , 0, 0, 0, 0);
 	for k, questNo in pairs(questList) do
-		local name   = status:CreateOrGetControl("richtext", "statuscheck_questcheck_name"..k  , nameX  , ypos, 0, 0);
-		local result = status:CreateOrGetControl("richtext", "statuscheck_questcheck_result"..k, resultX, ypos, 0, 0);
-		local point  = status:CreateOrGetControl("richtext", "statuscheck_questcheck_point"..k , pointX , ypos, 0, 0);
-		local map    = status:CreateOrGetControl("richtext", "statuscheck_questcheck_map"..k   , mapX   , ypos, 0, 0);
+		local gbox   = status:CreateOrGetControl("groupbox", "statuscheck_questcheck_group"..k , 0  , ypos, 885, ypos);
+		tolua.cast(gbox, "ui::CGroupBox");
+		gbox:SetSkinName("none");
+		local name   = gbox:CreateOrGetControl("richtext", "statuscheck_questcheck_name"..k  , nameX  , 0, 0, 0);
+		local result = gbox:CreateOrGetControl("richtext", "statuscheck_questcheck_result"..k, resultX, 0, 0, 0);
+		local point  = gbox:CreateOrGetControl("richtext", "statuscheck_questcheck_point"..k , pointX , 0, 0, 0);
+		local map    = gbox:CreateOrGetControl("richtext", "statuscheck_questcheck_map"..k   , mapX   , 0, 0, 0);
 		local nameBody = "";
 		local resultBody = "";
 		local pointBody = "";
@@ -156,8 +171,16 @@ function STATUSPOINTCHECK_STATUSQUESTCHECK(status)
 		point:SetText(color..pointBody.."{/}{/}{/}{/}")
 		map:SetText(color..mapBody.."{/}{/}{/}{/}")
 
+		gbox:SetEventScript(ui.LBUTTONUP, "STATUSPOINTCHECK_QUEST_REQUEST");
+		gbox:SetEventScriptArgString(ui.LBUTTONUP, questNo);
 		name:SetEventScript(ui.LBUTTONUP, "STATUSPOINTCHECK_QUEST_REQUEST");
 		name:SetEventScriptArgString(ui.LBUTTONUP, questNo);
+		result:SetEventScript(ui.LBUTTONUP, "STATUSPOINTCHECK_QUEST_REQUEST");
+		result:SetEventScriptArgString(ui.LBUTTONUP, questNo);
+		point:SetEventScript(ui.LBUTTONUP, "STATUSPOINTCHECK_QUEST_REQUEST");
+		point:SetEventScriptArgString(ui.LBUTTONUP, questNo);
+		map:SetEventScript(ui.LBUTTONUP, "STATUSPOINTCHECK_QUEST_REQUEST");
+		map:SetEventScriptArgString(ui.LBUTTONUP, questNo);
 
 		ypos = ypos + name:GetHeight();
 		status:Resize(status:GetWidth(),ypos)
@@ -178,10 +201,13 @@ function STATUSPOINTCHECK_STAMINAQUESTCHECK(stamina)
 	local ypos = 20;
 	local title = stamina:CreateOrGetControl("richtext", "staminacheck_questcheck_title"  , 0, 0, 0, 0);
 	for k, questNo in pairs(questList) do
-		local name   = stamina:CreateOrGetControl("richtext", "staminacheck_questcheck_name"..k  , nameX  , ypos, 0, 0);
-		local result = stamina:CreateOrGetControl("richtext", "staminacheck_questcheck_result"..k, resultX, ypos, 0, 0);
-		local point  = stamina:CreateOrGetControl("richtext", "staminacheck_questcheck_point"..k , pointX , ypos, 0, 0);
-		local map    = stamina:CreateOrGetControl("richtext", "staminacheck_questcheck_map"..k   , mapX   , ypos, 0, 0);
+		local gbox   = stamina:CreateOrGetControl("groupbox", "staminacheck_questcheck_group"..k , 0  , ypos, 885, ypos);
+		tolua.cast(gbox, "ui::CGroupBox");
+		gbox:SetSkinName("none");
+		local name   = gbox:CreateOrGetControl("richtext", "staminacheck_questcheck_name"..k  , nameX  , 0, 0, 0);
+		local result = gbox:CreateOrGetControl("richtext", "staminacheck_questcheck_result"..k, resultX, 0, 0, 0);
+		local point  = gbox:CreateOrGetControl("richtext", "staminacheck_questcheck_point"..k , pointX , 0, 0, 0);
+		local map    = gbox:CreateOrGetControl("richtext", "staminacheck_questcheck_map"..k   , mapX   , 0, 0, 0);
 		local nameBody = "";
 		local resultBody = "";
 		local pointBody = "";
@@ -214,8 +240,16 @@ function STATUSPOINTCHECK_STAMINAQUESTCHECK(stamina)
 		point:SetText(color..pointBody.."{/}{/}{/}{/}")
 		map:SetText(color..mapBody.."{/}{/}{/}{/}")
 
+		gbox:SetEventScript(ui.LBUTTONUP, "STATUSPOINTCHECK_QUEST_REQUEST");
+		gbox:SetEventScriptArgString(ui.LBUTTONUP, questNo);
 		name:SetEventScript(ui.LBUTTONUP, "STATUSPOINTCHECK_QUEST_REQUEST");
 		name:SetEventScriptArgString(ui.LBUTTONUP, questNo);
+		result:SetEventScript(ui.LBUTTONUP, "STATUSPOINTCHECK_QUEST_REQUEST");
+		result:SetEventScriptArgString(ui.LBUTTONUP, questNo);
+		point:SetEventScript(ui.LBUTTONUP, "STATUSPOINTCHECK_QUEST_REQUEST");
+		point:SetEventScriptArgString(ui.LBUTTONUP, questNo);
+		map:SetEventScript(ui.LBUTTONUP, "STATUSPOINTCHECK_QUEST_REQUEST");
+		map:SetEventScriptArgString(ui.LBUTTONUP, questNo);
 
 		ypos = ypos + name:GetHeight();
 		stamina:Resize(stamina:GetWidth(),ypos)
@@ -225,7 +259,7 @@ end
 
 function STATUSPOINTCHECK_WHIGHTSQUESTCHECK(weight)
 	local questList = {
-		"9107", "9111", "19041", "19081", "19091", "8487", "20212"
+		"9107", "9111", "19041", "19081", "19091", "8487", "20212", "30016"
 	}
 	local titleBody = "Quest List For Weight";
 	local body = "";
@@ -234,10 +268,13 @@ function STATUSPOINTCHECK_WHIGHTSQUESTCHECK(weight)
 	local ypos = 20;
 	local title = weight:CreateOrGetControl("richtext", "weightcheck_questcheck_title"  , 0, 0, 0, 0);
 	for k, questNo in pairs(questList) do
-		local name   = weight:CreateOrGetControl("richtext", "weightcheck_questcheck_name"..k  , nameX  , ypos, 0, 0);
-		local result = weight:CreateOrGetControl("richtext", "weightcheck_questcheck_result"..k, resultX, ypos, 0, 0);
-		local point  = weight:CreateOrGetControl("richtext", "weightcheck_questcheck_point"..k , pointX , ypos, 0, 0);
-		local map    = weight:CreateOrGetControl("richtext", "weightcheck_questcheck_map"..k   , mapX   , ypos, 0, 0);
+		local gbox   = weight:CreateOrGetControl("groupbox", "weightcheck_questcheck_group"..k , 0  , ypos, 885, ypos);
+		tolua.cast(gbox, "ui::CGroupBox");
+		gbox:SetSkinName("none");
+		local name   = gbox:CreateOrGetControl("richtext", "weightcheck_questcheck_name"..k  , nameX  , 0, 0, 0);
+		local result = gbox:CreateOrGetControl("richtext", "weightcheck_questcheck_result"..k, resultX, 0, 0, 0);
+		local point  = gbox:CreateOrGetControl("richtext", "weightcheck_questcheck_point"..k , pointX , 0, 0, 0);
+		local map    = gbox:CreateOrGetControl("richtext", "weightcheck_questcheck_map"..k   , mapX   , 0, 0, 0);
 		local nameBody = "";
 		local resultBody = "";
 		local pointBody = "";
@@ -270,8 +307,16 @@ function STATUSPOINTCHECK_WHIGHTSQUESTCHECK(weight)
 		point:SetText(color..pointBody.."{/}{/}{/}{/}")
 		map:SetText(color..mapBody.."{/}{/}{/}{/}")
 
+		gbox:SetEventScript(ui.LBUTTONUP, "STATUSPOINTCHECK_QUEST_REQUEST");
+		gbox:SetEventScriptArgString(ui.LBUTTONUP, questNo);
 		name:SetEventScript(ui.LBUTTONUP, "STATUSPOINTCHECK_QUEST_REQUEST");
 		name:SetEventScriptArgString(ui.LBUTTONUP, questNo);
+		result:SetEventScript(ui.LBUTTONUP, "STATUSPOINTCHECK_QUEST_REQUEST");
+		result:SetEventScriptArgString(ui.LBUTTONUP, questNo);
+		point:SetEventScript(ui.LBUTTONUP, "STATUSPOINTCHECK_QUEST_REQUEST");
+		point:SetEventScriptArgString(ui.LBUTTONUP, questNo);
+		map:SetEventScript(ui.LBUTTONUP, "STATUSPOINTCHECK_QUEST_REQUEST");
+		map:SetEventScriptArgString(ui.LBUTTONUP, questNo);
 
 		ypos = ypos + name:GetHeight();
 		weight:Resize(weight:GetWidth(),ypos)

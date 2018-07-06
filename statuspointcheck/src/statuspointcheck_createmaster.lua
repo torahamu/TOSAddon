@@ -28,9 +28,12 @@ function STATUSPOINTCHECK_MASTER_QUEST_CHECK(masterquest)
 	local ypos = 20;
 	local title = masterquest:CreateOrGetControl("richtext", "masterquestcheck_questcheck_title"  , 0, 0, 0, 0);
 	for k, questNo in pairs(questList) do
-		local name   = masterquest:CreateOrGetControl("richtext", "masterquestcheck_questcheck_name"..k  , nameX  , ypos, 0, 0);
-		local result = masterquest:CreateOrGetControl("richtext", "masterquestcheck_questcheck_result"..k, resultX, ypos, 0, 0);
-		local map    = masterquest:CreateOrGetControl("richtext", "masterquestcheck_questcheck_map"..k   , mapX   , ypos, 0, 0);
+		local gbox   = masterquest:CreateOrGetControl("groupbox", "masterquestcheck_questcheck_group"..k , 0  , ypos, 885, ypos);
+		tolua.cast(gbox, "ui::CGroupBox");
+		gbox:SetSkinName("none");
+		local name   = gbox:CreateOrGetControl("richtext", "masterquestcheck_questcheck_name"..k  , nameX  , 0, 0, 0);
+		local result = gbox:CreateOrGetControl("richtext", "masterquestcheck_questcheck_result"..k, resultX, 0, 0, 0);
+		local map    = gbox:CreateOrGetControl("richtext", "masterquestcheck_questcheck_map"..k   , mapX   , 0, 0, 0);
 		local nameBody = "";
 		local resultBody = "";
 		local mapBody = "";
@@ -59,8 +62,14 @@ function STATUSPOINTCHECK_MASTER_QUEST_CHECK(masterquest)
 		result:SetText(color..resultBody.."{/}{/}{/}{/}")
 		map:SetText(color..mapBody.."{/}{/}{/}{/}")
 
+		gbox:SetEventScript(ui.LBUTTONUP, "STATUSPOINTCHECK_QUEST_REQUEST");
+		gbox:SetEventScriptArgString(ui.LBUTTONUP, questNo);
 		name:SetEventScript(ui.LBUTTONUP, "STATUSPOINTCHECK_QUEST_REQUEST");
 		name:SetEventScriptArgString(ui.LBUTTONUP, questNo);
+		result:SetEventScript(ui.LBUTTONUP, "STATUSPOINTCHECK_QUEST_REQUEST");
+		result:SetEventScriptArgString(ui.LBUTTONUP, questNo);
+		map:SetEventScript(ui.LBUTTONUP, "STATUSPOINTCHECK_QUEST_REQUEST");
+		map:SetEventScriptArgString(ui.LBUTTONUP, questNo);
 
 		ypos = ypos + name:GetHeight();
 		masterquest:Resize(masterquest:GetWidth(),ypos)

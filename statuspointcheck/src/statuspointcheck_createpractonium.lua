@@ -38,9 +38,12 @@ function STATUSPOINTCHECK_PRACTONIUM_CHECK(practonium)
 	local ypos = 20;
 	local title = practonium:CreateOrGetControl("richtext", "practoniumcheck_questcheck_title"  , 0, 0, 0, 0);
 	for k, questNo in pairs(questList) do
-		local name   = practonium:CreateOrGetControl("richtext", "practoniumcheck_questcheck_name"..k  , nameX  , ypos, 0, 0);
-		local result = practonium:CreateOrGetControl("richtext", "practoniumcheck_questcheck_result"..k, resultX, ypos, 0, 0);
-		local map    = practonium:CreateOrGetControl("richtext", "practoniumcheck_questcheck_map"..k   , mapX   , ypos, 0, 0);
+		local gbox   = practonium:CreateOrGetControl("groupbox", "practoniumcheck_questcheck_group"..k , 0  , ypos, 885, ypos);
+		tolua.cast(gbox, "ui::CGroupBox");
+		gbox:SetSkinName("none");
+		local name   = gbox:CreateOrGetControl("richtext", "practoniumcheck_questcheck_name"..k  , nameX  , 0, 0, 0);
+		local result = gbox:CreateOrGetControl("richtext", "practoniumcheck_questcheck_result"..k, resultX, 0, 0, 0);
+		local map    = gbox:CreateOrGetControl("richtext", "practoniumcheck_questcheck_map"..k   , mapX   , 0, 0, 0);
 		local nameBody = "";
 		local resultBody = "";
 		local mapBody = "";
@@ -69,8 +72,14 @@ function STATUSPOINTCHECK_PRACTONIUM_CHECK(practonium)
 		result:SetText(color..resultBody.."{/}{/}{/}{/}")
 		map:SetText(color..mapBody.."{/}{/}{/}{/}")
 
+		gbox:SetEventScript(ui.LBUTTONUP, "STATUSPOINTCHECK_QUEST_REQUEST");
+		gbox:SetEventScriptArgString(ui.LBUTTONUP, questNo);
 		name:SetEventScript(ui.LBUTTONUP, "STATUSPOINTCHECK_QUEST_REQUEST");
 		name:SetEventScriptArgString(ui.LBUTTONUP, questNo);
+		result:SetEventScript(ui.LBUTTONUP, "STATUSPOINTCHECK_QUEST_REQUEST");
+		result:SetEventScriptArgString(ui.LBUTTONUP, questNo);
+		map:SetEventScript(ui.LBUTTONUP, "STATUSPOINTCHECK_QUEST_REQUEST");
+		map:SetEventScriptArgString(ui.LBUTTONUP, questNo);
 
 		ypos = ypos + name:GetHeight();
 		practonium:Resize(practonium:GetWidth(),ypos)
@@ -89,9 +98,12 @@ function STATUSPOINTCHECK_MYSTICAL_CHECK(mystical)
 	local ypos = 20;
 	local title = mystical:CreateOrGetControl("richtext", "mysticalcheck_questcheck_title"  , 0, 0, 0, 0);
 	for k, questNo in pairs(questList) do
-		local name   = mystical:CreateOrGetControl("richtext", "mysticalcheck_questcheck_name"..k  , nameX  , ypos, 0, 0);
-		local result = mystical:CreateOrGetControl("richtext", "mysticalcheck_questcheck_result"..k, resultX, ypos, 0, 0);
-		local map    = mystical:CreateOrGetControl("richtext", "mysticalcheck_questcheck_map"..k   , mapX   , ypos, 0, 0);
+		local gbox   = mystical:CreateOrGetControl("groupbox", "mysticalcheck_questcheck_group"..k , 0  , ypos, 885, ypos);
+		tolua.cast(gbox, "ui::CGroupBox");
+		gbox:SetSkinName("none");
+		local name   = gbox:CreateOrGetControl("richtext", "mysticalcheck_questcheck_name"..k  , nameX  , 0, 0, 0);
+		local result = gbox:CreateOrGetControl("richtext", "mysticalcheck_questcheck_result"..k, resultX, 0, 0, 0);
+		local map    = gbox:CreateOrGetControl("richtext", "mysticalcheck_questcheck_map"..k   , mapX   , 0, 0, 0);
 		local nameBody = "";
 		local resultBody = "";
 		local mapBody = "";
@@ -120,8 +132,14 @@ function STATUSPOINTCHECK_MYSTICAL_CHECK(mystical)
 		result:SetText(color..resultBody.."{/}{/}{/}{/}")
 		map:SetText(color..mapBody.."{/}{/}{/}{/}")
 
+		gbox:SetEventScript(ui.LBUTTONUP, "STATUSPOINTCHECK_QUEST_REQUEST");
+		gbox:SetEventScriptArgString(ui.LBUTTONUP, questNo);
 		name:SetEventScript(ui.LBUTTONUP, "STATUSPOINTCHECK_QUEST_REQUEST");
 		name:SetEventScriptArgString(ui.LBUTTONUP, questNo);
+		result:SetEventScript(ui.LBUTTONUP, "STATUSPOINTCHECK_QUEST_REQUEST");
+		result:SetEventScriptArgString(ui.LBUTTONUP, questNo);
+		map:SetEventScript(ui.LBUTTONUP, "STATUSPOINTCHECK_QUEST_REQUEST");
+		map:SetEventScriptArgString(ui.LBUTTONUP, questNo);
 
 		ypos = ypos + name:GetHeight();
 		mystical:Resize(mystical:GetWidth(),ypos)
@@ -140,10 +158,13 @@ function STATUSPOINTCHECK_ABSIDIUM_CHECK(absidium)
 	local ypos = 20;
 	local title = absidium:CreateOrGetControl("richtext", "absidiumcheck_questcheck_title"  , 0, 0, 0, 0);
 	for k, questNo in pairs(questList) do
-		local name   = absidium:CreateOrGetControl("richtext", "absidiumcheck_questcheck_name"..k  , nameX  , ypos, 0, 0);
-		local result = absidium:CreateOrGetControl("richtext", "absidiumcheck_questcheck_result"..k, resultX, ypos, 0, 0);
-		local point  = absidium:CreateOrGetControl("richtext", "absidiumcheck_questcheck_point"..k , pointX , ypos, 0, 0);
-		local map    = absidium:CreateOrGetControl("richtext", "absidiumcheck_questcheck_map"..k   , mapX   , ypos, 0, 0);
+		local gbox   = absidium:CreateOrGetControl("groupbox", "absidiumcheck_questcheck_group"..k , 0  , ypos, 885, ypos);
+		tolua.cast(gbox, "ui::CGroupBox");
+		gbox:SetSkinName("none");
+		local name   = gbox:CreateOrGetControl("richtext", "absidiumcheck_questcheck_name"..k  , nameX  , 0, 0, 0);
+		local result = gbox:CreateOrGetControl("richtext", "absidiumcheck_questcheck_result"..k, resultX, 0, 0, 0);
+		local point  = gbox:CreateOrGetControl("richtext", "absidiumcheck_questcheck_point"..k , pointX , 0, 0, 0);
+		local map    = gbox:CreateOrGetControl("richtext", "absidiumcheck_questcheck_map"..k   , mapX   , 0, 0, 0);
 		local nameBody = "";
 		local resultBody = "";
 		local pointBody = "";
@@ -182,8 +203,16 @@ function STATUSPOINTCHECK_ABSIDIUM_CHECK(absidium)
 		point:SetText(color..pointBody.."{/}{/}{/}{/}")
 		map:SetText(color..mapBody.."{/}{/}{/}{/}")
 
+		gbox:SetEventScript(ui.LBUTTONUP, "STATUSPOINTCHECK_QUEST_REQUEST");
+		gbox:SetEventScriptArgString(ui.LBUTTONUP, questNo);
 		name:SetEventScript(ui.LBUTTONUP, "STATUSPOINTCHECK_QUEST_REQUEST");
 		name:SetEventScriptArgString(ui.LBUTTONUP, questNo);
+		result:SetEventScript(ui.LBUTTONUP, "STATUSPOINTCHECK_QUEST_REQUEST");
+		result:SetEventScriptArgString(ui.LBUTTONUP, questNo);
+		point:SetEventScript(ui.LBUTTONUP, "STATUSPOINTCHECK_QUEST_REQUEST");
+		point:SetEventScriptArgString(ui.LBUTTONUP, questNo);
+		map:SetEventScript(ui.LBUTTONUP, "STATUSPOINTCHECK_QUEST_REQUEST");
+		map:SetEventScriptArgString(ui.LBUTTONUP, questNo);
 
 		ypos = ypos + name:GetHeight();
 		absidium:Resize(absidium:GetWidth(),ypos)
