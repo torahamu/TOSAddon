@@ -539,7 +539,7 @@ end
 -- 発言種類設定
 function CHATEXTENDS_ProcessReturnKey()
 	CHATEXTENDS_ProcessReturnKey_OLD();
-	if keyboard.IsPressed(KEY_ALT) == 1 or keyboard.IsPressed(KEY_CTRL) == 1 then
+	if keyboard.IsKeyPressed("LALT") == 1 or keyboard.IsKeyPressed("LCTRL") == 1 then
 		g.chattype = ui.GetChatType();
 		return;
 	end

@@ -190,9 +190,7 @@ end
 
 function STATUSPOINTCHECK_STAMINAQUESTCHECK(stamina)
 	local questList = {
-		-- 9104 is not active
-		--"9108", "9100", "19062", "9104"
-		"9108", "9100", "19062"
+		"9108", "9100", "19062", "9104"
 	}
 	local titleBody = "Quest List For Stamina";
 	local body = "";

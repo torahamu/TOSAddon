@@ -87,10 +87,10 @@
 		"name" : "chatextends",
 		"file" : "chatextends",
 		"extension" : "ipf",
-		"fileVersion" : "v2.5.4",
+		"fileVersion" : "v2.5.5",
 		"releaseTag" : "chatextends",
 		"unicode" : "⛄",
-		"description" : "Modify chat.Please look at github for details.[v2.5.4 Fixed that chat type did not change even if tab was pushed]  チャットを色々改造します。詳細はGithubやReadmeを見てください。[v2.5.4 タブを押してもチャットタイプが変わらない時があったのを修正]",
+		"description" : "Modify chat.Please look at github for details.[v2.5.5 Fixed Velcoffer patch.]  チャットを色々改造します。詳細はGithubやReadmeを見てください。[v2.5.5 ベルカッパーパッチ用に修正]",
 		"tags" : [
 			"ui",
 			"chat"
@@ -208,10 +208,10 @@
 		"name" : "Status Point Check",
 		"file" : "statuspointcheck",
 		"extension" : "ipf",
-		"fileVersion" : "v1.3.0",
+		"fileVersion" : "v1.3.1",
 		"releaseTag" : "statuspointcheck",
 		"unicode" : "⛄",
-		"description" : "From the status screen (F1 button), you can check whether you have cleared the quest to acquire the status point.[v1.3.0 add status quest.]  ステータス画面(F1ボタン)より、ステータスポイントを取得するクエストをクリアしているかどうかを確認することができます。[v1.3.0 ステータスもらえるクエスト追加。]",
+		"description" : "From the status screen (F1 button), you can check whether you have cleared the quest to acquire the status point.[v1.3.1 add stamina quest.]  ステータス画面(F1ボタン)より、ステータスポイントを取得するクエストをクリアしているかどうかを確認することができます。[v1.3.1 スタミナもらえるクエスト追加。]",
 		"tags" : [
 			"status",
 			"point"
