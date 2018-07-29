@@ -135,15 +135,15 @@ function DRAW_EQUIP_PROPERTY_MAIN(tooltipframe, invitem, yPos, mainframename)
 	local gBox = GET_CHILD(tooltipframe,mainframename,'ui::CGroupBox')
 	gBox:RemoveChild('tooltip_equip_property');
 	
-	local baseicList = GET_EQUIP_TOOLTIP_PROP_LIST(invitem);
+	local basicList = GET_EQUIP_TOOLTIP_PROP_LIST(invitem);
     local list = {};
     local basicTooltipPropList = StringSplit(invitem.BasicTooltipProp, ';');
     for i = 1, #basicTooltipPropList do
         local basicTooltipProp = basicTooltipPropList[i];
-        list = GET_CHECK_OVERLAP_EQUIPPROP_LIST(baseicList, basicTooltipProp, list);
+        list = GET_CHECK_OVERLAP_EQUIPPROP_LIST(basicList, basicTooltipProp, list);
     end
+
 	local list2 = GET_EUQIPITEM_PROP_LIST();
-	
 	local cnt = 0;
 	for i = 1 , #list do
 
@@ -177,49 +177,77 @@ function DRAW_EQUIP_PROPERTY_MAIN(tooltipframe, invitem, yPos, mainframename)
 			cnt = cnt +1
 		end
 	end
-	
+
 	if cnt <= 0 and (invitem.OptDesc == nil or invitem.OptDesc == "None" ) then -- 일단 그릴 프로퍼티가 있는지 검사. 없으면 컨트롤 셋 자체를 안만듬
+		if setItem == nil then
 		if invitem.ReinforceRatio == 100 then
     		return yPos
     	end
 	end
 
-	local tooltip_equip_property_CSet = gBox:CreateOrGetControlSet('tooltip_equip_property', 'tooltip_equip_property', 0, yPos);
-	local property_gbox = GET_CHILD(tooltip_equip_property_CSet,'property_gbox','ui::CGroupBox')
+	end
 
+	local tooltip_equip_property_CSet = gBox:CreateOrGetControlSet('tooltip_equip_property', 'tooltip_equip_property', 0, yPos);
+    local labelline = GET_CHILD(tooltip_equip_property_CSet, 'labelline');
+    if drawLableline == false then
+        tooltip_equip_property_CSet:SetOffset(tooltip_equip_property_CSet:GetX(), tooltip_equip_property_CSet:GetY() - 20);
+        labelline:ShowWindow(0);
+    else
+        labelline:ShowWindow(1);
+    end
+
+	local property_gbox = GET_CHILD(tooltip_equip_property_CSet,'property_gbox','ui::CGroupBox');
 	local class = GetClassByType("Item", invitem.ClassID);
 
 	local inner_yPos = 0;
+	
+	local maxRandomOptionCnt = 6;
+	local randomOptionProp = {};
+	for i = 1, maxRandomOptionCnt do
+		if invitem['RandomOption_'..i] ~= 'None' then
+			randomOptionProp[invitem['RandomOption_'..i]] = invitem['RandomOptionValue_'..i];
+		end
+	end
 
 	for i = 1 , #list do
 		local propName = list[i];
-		local propValue = invitem[propName];
+		local propValue = class[propName];
+	--	if socketitem ~= nil then
+	--		propValue = socketitem[propName]
+	--	end
+		
+		local needToShow = true;
+		for j = 1, #basicTooltipPropList do
+			if basicTooltipPropList[j] == propName then
+				needToShow = false;
+			end
+		end
 
-		if class[propName] ~= 0 then
+		if needToShow == true and propValue ~= 0 and randomOptionProp[propName] == nil then -- 랜덤 옵션이랑 겹치는 프로퍼티는 여기서 출력하지 않음
 			if  invitem.GroupName == 'Weapon' then
 				if propName ~= "MINATK" and propName ~= 'MAXATK' then
-					local strInfo = ABILITY_DESC_PLUS(ScpArgMsg(propName), class[propName], invitem[propName]);
+					local strInfo = ABILITY_DESC_PLUS(ScpArgMsg(propName), propValue);					
 					inner_yPos = ADD_ITEM_PROPERTY_TEXT(property_gbox, strInfo, 0, inner_yPos);
 				end
 			elseif  invitem.GroupName == 'Armor' then
 				if invitem.ClassType == 'Gloves' then
 					if propName ~= "HR" then
-						local strInfo = ABILITY_DESC_PLUS(ScpArgMsg(propName), class[propName], invitem[propName]);
+						local strInfo = ABILITY_DESC_PLUS(ScpArgMsg(propName), propValue);
 						inner_yPos = ADD_ITEM_PROPERTY_TEXT(property_gbox, strInfo, 0, inner_yPos);
 					end
 				elseif invitem.ClassType == 'Boots' then
 					if propName ~= "DR" then
-						local strInfo = ABILITY_DESC_PLUS(ScpArgMsg(propName), class[propName], invitem[propName]);
+						local strInfo = ABILITY_DESC_PLUS(ScpArgMsg(propName), propValue);
 						inner_yPos = ADD_ITEM_PROPERTY_TEXT(property_gbox, strInfo, 0, inner_yPos);
 					end
 				else
 					if propName ~= "DEF" then
-						local strInfo = ABILITY_DESC_PLUS(ScpArgMsg(propName), class[propName], invitem[propName]);
+						local strInfo = ABILITY_DESC_PLUS(ScpArgMsg(propName), propValue);
 						inner_yPos = ADD_ITEM_PROPERTY_TEXT(property_gbox, strInfo, 0, inner_yPos);
 					end
 				end
 			else
-				local strInfo = ABILITY_DESC_PLUS(ScpArgMsg(propName), class[propName], invitem[propName]);
+				local strInfo = ABILITY_DESC_PLUS(ScpArgMsg(propName), propValue);
 				inner_yPos = ADD_ITEM_PROPERTY_TEXT(property_gbox, strInfo, 0, inner_yPos);
 			end
 		end
@@ -242,30 +270,37 @@ function DRAW_EQUIP_PROPERTY_MAIN(tooltipframe, invitem, yPos, mainframename)
 -- add code end
 		end
 	end
-
-	for i = 1 , 6 do
+	
+	for i = 1 , maxRandomOptionCnt do
 	    local propGroupName = "RandomOptionGroup_"..i;
 		local propName = "RandomOption_"..i;
 		local propValue = "RandomOptionValue_"..i;
 		local clientMessage = 'None'
 		
-		if invitem[propGroupName] == 'ATK' then
+		local propItem = invitem
+
+		if setItem ~= nil then
+			propItem = setItem
+		end
+
+		if propItem[propGroupName] == 'ATK' then
 		    clientMessage = 'ItemRandomOptionGroupATK'
-		elseif invitem[propGroupName] == 'DEF' then
+		elseif propItem[propGroupName] == 'DEF' then
 		    clientMessage = 'ItemRandomOptionGroupDEF'
-		elseif invitem[propGroupName] == 'UTIL_WEAPON' then
+		elseif propItem[propGroupName] == 'UTIL_WEAPON' then
 		    clientMessage = 'ItemRandomOptionGroupUTIL'
-		elseif invitem[propGroupName] == 'UTIL_ARMOR' then
+		elseif propItem[propGroupName] == 'UTIL_ARMOR' then
 		    clientMessage = 'ItemRandomOptionGroupUTIL'
-		elseif invitem[propGroupName] == 'UTIL_SHILED' then
+		elseif propItem[propGroupName] == 'UTIL_SHILED' then
 		    clientMessage = 'ItemRandomOptionGroupUTIL'
-		elseif invitem[propGroupName] == 'STAT' then
+		elseif propItem[propGroupName] == 'STAT' then
 		    clientMessage = 'ItemRandomOptionGroupSTAT'
 		end
 		
-		if invitem[propValue] ~= 0 and invitem[propName] ~= "None" then
-			local opName = string.format("%s %s", ClMsg(clientMessage), ScpArgMsg(invitem[propName]));
-			local strInfo = ABILITY_DESC_NO_PLUS(opName, invitem[propValue], 0);
+		if propItem[propValue] ~= 0 and propItem[propName] ~= "None" then
+			local opName = string.format("%s %s", ClMsg(clientMessage), ScpArgMsg(propItem[propName]));
+			local strInfo = ABILITY_DESC_NO_PLUS(opName, propItem[propValue], 0);
+
 			inner_yPos = ADD_ITEM_PROPERTY_TEXT(property_gbox, strInfo, 0, inner_yPos);
 		end
 	end
@@ -274,7 +309,7 @@ function DRAW_EQUIP_PROPERTY_MAIN(tooltipframe, invitem, yPos, mainframename)
 		local propName = list2[i];
 		local propValue = invitem[propName];
 		if propValue ~= 0 then
-			local strInfo = ABILITY_DESC_PLUS(ScpArgMsg(propName), class[propName], invitem[propName]);
+			local strInfo = ABILITY_DESC_PLUS(ScpArgMsg(propName), invitem[propName]);
 			inner_yPos = ADD_ITEM_PROPERTY_TEXT(property_gbox, strInfo, 0, inner_yPos);
 		end
 	end
@@ -283,15 +318,23 @@ function DRAW_EQUIP_PROPERTY_MAIN(tooltipframe, invitem, yPos, mainframename)
 		inner_yPos = ADD_ITEM_PROPERTY_TEXT(property_gbox, invitem.OptDesc, 0, inner_yPos);
 	end
 
-	if invitem.IsAwaken == 1 then
-		local opName = string.format("[%s] %s", ClMsg("AwakenOption"), ScpArgMsg(invitem.HiddenProp));
-		local strInfo = ABILITY_DESC_PLUS(opName, invitem.HiddenPropValue, invitem[invitem.HiddenProp]);
-		inner_yPos = ADD_ITEM_PROPERTY_TEXT(property_gbox, strInfo, 0, inner_yPos);
+	if setItem == nil then
+		if invitem.IsAwaken == 1 then
+			local opName = string.format("[%s] %s", ClMsg("AwakenOption"), ScpArgMsg(invitem.HiddenProp));
+			local strInfo = ABILITY_DESC_PLUS(opName, invitem.HiddenPropValue);
+			inner_yPos = ADD_ITEM_PROPERTY_TEXT(property_gbox, strInfo, 0, inner_yPos);
+		end
+	else
+		if setItem.IsAwaken == 1 then
+			local opName = string.format("[%s] %s", ClMsg("AwakenOption"), ScpArgMsg(setItem.HiddenProp));
+			local strInfo = ABILITY_DESC_PLUS(opName, setItem.HiddenPropValue);
+			inner_yPos = ADD_ITEM_PROPERTY_TEXT(property_gbox, strInfo, 0, inner_yPos);
+		end
 	end
 
 	if invitem.ReinforceRatio > 100 then
 		local opName = ClMsg("ReinforceOption");
-		local strInfo = ABILITY_DESC_PLUS(opName, math.floor(10 * invitem.ReinforceRatio/100), ClMsg("ReinforceOption"));
+		local strInfo = ABILITY_DESC_PLUS(opName, math.floor(10 * invitem.ReinforceRatio/100));
 		inner_yPos = ADD_ITEM_PROPERTY_TEXT(property_gbox, strInfo.."0%"..ClMsg("ReinforceOptionAtk"), 0, inner_yPos);
 	end
 
@@ -300,10 +343,8 @@ function DRAW_EQUIP_PROPERTY_MAIN(tooltipframe, invitem, yPos, mainframename)
 	if BOTTOM_MARGIN == nil then
 		BOTTOM_MARGIN = 0
 	end
-
 	tooltip_equip_property_CSet:Resize(tooltip_equip_property_CSet:GetWidth(),tooltip_equip_property_CSet:GetHeight() + property_gbox:GetHeight() + property_gbox:GetY() + BOTTOM_MARGIN);
 
 	gBox:Resize(gBox:GetWidth(),gBox:GetHeight() + tooltip_equip_property_CSet:GetHeight())
-
 	return tooltip_equip_property_CSet:GetHeight() + tooltip_equip_property_CSet:GetY();
 end
