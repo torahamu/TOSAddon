@@ -102,26 +102,27 @@ function STATVIEWERSETTING_CREATE_UI()
 		[5]  = {name="属性攻撃"   ;ename="EATK"     };
 		[6]  = {name="クリ発　"   ;ename="CRTHR"    };
 		[7]  = {name="クリ攻撃"   ;ename="CRTATK"   };
-		[8]  = {name="命中　　"   ;ename="HR"       };
-		[9]  = {name="ブロ貫通"   ;ename="BLK_BREAK"};
-		[10] = {name="ＡＯＥ　"   ;ename="SR"       };
-		[11] = {name="物理防御"   ;ename="DEF"      };
-		[12] = {name="魔法防御"   ;ename="MDEF"     };
-		[13] = {name="回避　　"   ;ename="DR"       };
-		[14] = {name="ブロック"   ;ename="BLK"      };
-		[15] = {name="クリ抵抗"   ;ename="CRTDR"    };
-		[16] = {name="広域防御"   ;ename="SDR"      };
-		[17] = {name="ＨＰ回復"   ;ename="RHP"      };
-		[18] = {name="ＳＰ回復"   ;ename="RSP"      };
-		[19] = {name="スピード"   ;ename="MSPD"     };
-		[20] = {name="所持量　"   ;ename="WHEIGHT"  };
-		[21] = {name="チャンス"   ;ename="CHANCE"   };
-		[22] = {name="力　　　"   ;ename="STR"      };
-		[23] = {name="体力　　"   ;ename="CON"      };
-		[24] = {name="知能　　"   ;ename="INT"      };
-		[25] = {name="精神　　"   ;ename="MNA"      };
-		[26] = {name="敏捷　　"   ;ename="DEX"      };
-		[27] = {name="能力値　"   ;ename="STATUS"   };
+		[8]  = {name="治癒力　"   ;ename="HEAL_PWR" };
+		[9]  = {name="命中　　"   ;ename="HR"       };
+		[10] = {name="ブロ貫通"   ;ename="BLK_BREAK"};
+		[11] = {name="ＡＯＥ　"   ;ename="SR"       };
+		[12] = {name="物理防御"   ;ename="DEF"      };
+		[13] = {name="魔法防御"   ;ename="MDEF"     };
+		[14] = {name="回避　　"   ;ename="DR"       };
+		[15] = {name="ブロック"   ;ename="BLK"      };
+		[16] = {name="クリ抵抗"   ;ename="CRTDR"    };
+		[17] = {name="広域防御"   ;ename="SDR"      };
+		[18] = {name="ＨＰ回復"   ;ename="RHP"      };
+		[19] = {name="ＳＰ回復"   ;ename="RSP"      };
+		[20] = {name="スピード"   ;ename="MSPD"     };
+		[21] = {name="所持量　"   ;ename="WHEIGHT"  };
+		[22] = {name="チャンス"   ;ename="CHANCE"   };
+		[23] = {name="力　　　"   ;ename="STR"      };
+		[24] = {name="体力　　"   ;ename="CON"      };
+		[25] = {name="知能　　"   ;ename="INT"      };
+		[26] = {name="精神　　"   ;ename="MNA"      };
+		[27] = {name="敏捷　　"   ;ename="DEX"      };
+		[28] = {name="能力値　"   ;ename="STATUS"   };
 	};
 	local country=string.lower(option.GetCurrentCountry());
 
@@ -138,7 +139,7 @@ function STATVIEWERSETTING_CREATE_UI()
 	local line = frame:CreateOrGetControl('labelline', 'statviewersetting_line', 15, 25, frame:GetWidth()-30, 2);
 	line:SetSkinName('labelline_def')
 
-	for i = 1 , 10 do
+	for i = 1 , 11 do
 		local text = frame:CreateOrGetControl("richtext", "statviewersetting_label"..i, 30, 40*i, 0, 0);
 		tolua.cast(text, "ui::CRichText");
 		if country=="japanese" then
@@ -181,8 +182,8 @@ function STATVIEWERSETTING_CREATE_UI()
 			end
 		end
 	end
-	for i = 11 , 21 do
-		local text = frame:CreateOrGetControl("richtext", "statviewersetting_label"..i, 450, 40*(i-10), 0, 0);
+	for i = 12 , 22 do
+		local text = frame:CreateOrGetControl("richtext", "statviewersetting_label"..i, 450, 40*(i-11), 0, 0);
 		tolua.cast(text, "ui::CRichText");
 		if option.GetCurrentCountry()=="Japanese" then
 			text:SetText(fontType .. rtLabel[i].name .. "{/}{/}");
@@ -190,7 +191,7 @@ function STATVIEWERSETTING_CREATE_UI()
 			text:SetText(fontType .. rtLabel[i].ename .. "{/}{/}");
 		end
 
-		local check = frame:CreateOrGetControl('checkbox', "statviewersetting_check"..i, 560, 40*(i-10), 24, 24);
+		local check = frame:CreateOrGetControl('checkbox', "statviewersetting_check"..i, 560, 40*(i-11), 24, 24);
 		tolua.cast(check, "ui::CCheckBox");
 		check:SetClickSound('button_click_big');
 		check:SetAnimation("MouseOnAnim", "btn_mouseover");
@@ -204,7 +205,7 @@ function STATVIEWERSETTING_CREATE_UI()
 			check:SetCheck(0);
 		end
 
-		local colorBox = frame:CreateOrGetControl('groupbox', "statviewersetting_color"..i, 600, 40*(i-10), 250, 25);
+		local colorBox = frame:CreateOrGetControl('groupbox', "statviewersetting_color"..i, 600, 40*(i-11), 250, 25);
 		tolua.cast(colorBox, "ui::CGroupBox");
 
 		for j = 0, 9 do
@@ -225,8 +226,8 @@ function STATVIEWERSETTING_CREATE_UI()
 		end
 	end
 
-	for i = 22 , 24 do
-		local text = frame:CreateOrGetControl("richtext", "statviewersetting_label"..i, 30, 40*(i-10), 0, 0);
+	for i = 23 , 25 do
+		local text = frame:CreateOrGetControl("richtext", "statviewersetting_label"..i, 30, 40*(i-11), 0, 0);
 		tolua.cast(text, "ui::CRichText");
 		if country=="japanese" then
 			text:SetText(fontType .. rtLabel[i].name .. "{/}{/}");
@@ -234,7 +235,7 @@ function STATVIEWERSETTING_CREATE_UI()
 			text:SetText(fontType .. rtLabel[i].ename .. "{/}{/}");
 		end
 
-		local check = frame:CreateOrGetControl('checkbox', "statviewersetting_check"..i, 140, 40*(i-10), 24, 24);
+		local check = frame:CreateOrGetControl('checkbox', "statviewersetting_check"..i, 140, 40*(i-11), 24, 24);
 		tolua.cast(check, "ui::CCheckBox");
 		check:SetClickSound('button_click_big');
 		check:SetAnimation("MouseOnAnim", "btn_mouseover");
@@ -248,7 +249,7 @@ function STATVIEWERSETTING_CREATE_UI()
 			check:SetCheck(0);
 		end
 
-		local colorBox = frame:CreateOrGetControl('groupbox', "statviewersetting_color"..i, 180, 40*(i-10), 250, 25);
+		local colorBox = frame:CreateOrGetControl('groupbox', "statviewersetting_color"..i, 180, 40*(i-11), 250, 25);
 		tolua.cast(colorBox, "ui::CGroupBox");
 
 		for j = 0, 9 do
@@ -268,8 +269,8 @@ function STATVIEWERSETTING_CREATE_UI()
 			end
 		end
 	end
-	for i = 25 , 27 do
-		local text = frame:CreateOrGetControl("richtext", "statviewersetting_label"..i, 450, 40*(i-13), 0, 0);
+	for i = 26 , 28 do
+		local text = frame:CreateOrGetControl("richtext", "statviewersetting_label"..i, 450, 40*(i-14), 0, 0);
 		tolua.cast(text, "ui::CRichText");
 		if option.GetCurrentCountry()=="Japanese" then
 			text:SetText(fontType .. rtLabel[i].name .. "{/}{/}");
@@ -281,7 +282,7 @@ function STATVIEWERSETTING_CREATE_UI()
 			end
 		end
 
-		local check = frame:CreateOrGetControl('checkbox', "statviewersetting_check"..i, 560, 40*(i-13), 24, 24);
+		local check = frame:CreateOrGetControl('checkbox', "statviewersetting_check"..i, 560, 40*(i-14), 24, 24);
 		tolua.cast(check, "ui::CCheckBox");
 		check:SetClickSound('button_click_big');
 		check:SetAnimation("MouseOnAnim", "btn_mouseover");
@@ -295,8 +296,8 @@ function STATVIEWERSETTING_CREATE_UI()
 			check:SetCheck(0);
 		end
 
-		if i ~= 27 then
-			local colorBox = frame:CreateOrGetControl('groupbox', "statviewersetting_color"..i, 600, 40*(i-13), 250, 25);
+		if i ~= 28 then
+			local colorBox = frame:CreateOrGetControl('groupbox', "statviewersetting_color"..i, 600, 40*(i-14), 250, 25);
 			tolua.cast(colorBox, "ui::CGroupBox");
 
 			for j = 0, 9 do
@@ -316,7 +317,7 @@ function STATVIEWERSETTING_CREATE_UI()
 				end
 			end
 		else
-			local statustext = frame:CreateOrGetControl("richtext", "statviewersetting_statuslabel"..i, 600, 40*(i-13), 0, 0);
+			local statustext = frame:CreateOrGetControl("richtext", "statviewersetting_statuslabel"..i, 600, 40*(i-14), 0, 0);
 			tolua.cast(statustext, "ui::CRichText");
 			if country=="japanese" then
 				statustext:SetText(fontType .. "他のステータスの色を選択してください" .. "{/}{/}");

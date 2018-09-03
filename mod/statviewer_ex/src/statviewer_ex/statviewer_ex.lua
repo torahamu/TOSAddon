@@ -8,6 +8,7 @@ local label = {
 	["EATK"]      = {name="属性攻撃: "   ;ename="EATK: "     ;kname="　　　속성 공격력 : " ;};
 	["CRTHR"]     = {name="クリ発　: "   ;ename="CRTHR: "    ;kname="　　　치명타 발생 : " ;};
 	["CRTATK"]    = {name="クリ攻撃: "   ;ename="CRTATK: "   ;kname="　   치명타 공격력 : ";};
+	["HEAL_PWR"]  = {name="治癒力　: "   ;ename="HEAL_PWR: " ;kname="　　　　　　  치유 : ";};
 	["HR"]        = {name="命中　　: "   ;ename="HR: "       ;kname="　　　　　　  명중 : ";};
 	["BLK_BREAK"] = {name="ブロ貫通: "   ;ename="BLK_BREAK: ";kname="　　　　블럭 관통 : " ;};
 	["SR"]        = {name="ＡＯＥ　: "   ;ename="SR: "       ;kname="  　광역 공격 비율 : ";};
@@ -129,6 +130,7 @@ function STATVIEWER_EX_SAVE_STATSETTINGS_INIT(filename, statval)
 		CRTHR = true;
 		EATK = true;
 		CRTATK = true;
+		HEAL_PWR = true;
 		HR = true;
 		BLK_BREAK = true;
 		SR = true;
@@ -156,6 +158,7 @@ function STATVIEWER_EX_SAVE_STATSETTINGS_INIT(filename, statval)
 		EATK_COLOR = "FFFFFF";
 		CRTHR_COLOR = "FFFFFF";
 		CRTATK_COLOR = "FFFFFF";
+		HEAL_PWR_COLOR = "FFFFFF";
 		HR_COLOR = "FFFFFF";
 		BLK_BREAK_COLOR = "FFFFFF";
 		SR_COLOR = "FFFFFF";
@@ -231,6 +234,9 @@ function STATVIEWER_EX_UPDATE(frame)
 	end
 	if _G["STATVIEWER_EX"]["statsettings"].CRTATK then
 		STATVIEWER_EX_UPDATE_STAT(frame, "CRTATK"   , pc["CRTATK"], dimensions, _G["STATVIEWER_EX"]["statsettings"].CRTATK_COLOR);
+	end
+	if _G["STATVIEWER_EX"]["statsettings"].HEAL_PWR then
+		STATVIEWER_EX_UPDATE_STAT(frame, "HEAL_PWR" , pc["HEAL_PWR"], dimensions, _G["STATVIEWER_EX"]["statsettings"].HEAL_PWR_COLOR);
 	end
 	if _G["STATVIEWER_EX"]["statsettings"].HR then
 		STATVIEWER_EX_UPDATE_STAT(frame, "HR"       , pc["HR"], dimensions, _G["STATVIEWER_EX"]["statsettings"].HR_COLOR);
@@ -575,6 +581,7 @@ function STATVIEWER_EX_CALL_MENU(frame)
 	table.insert( labelIndex, "EATK");
 	table.insert( labelIndex, "CRTHR");
 	table.insert( labelIndex, "CRTATK");
+	table.insert( labelIndex, "HEAL_PWR");
 	table.insert( labelIndex, "HR");
 	table.insert( labelIndex, "BLK_BREAK");
 	table.insert( labelIndex, "SR");
@@ -589,6 +596,12 @@ function STATVIEWER_EX_CALL_MENU(frame)
 	table.insert( labelIndex, "MSPD");
 	table.insert( labelIndex, "WHEIGHT");
 	table.insert( labelIndex, "CHANCE");
+	table.insert( labelIndex, "STR");
+	table.insert( labelIndex, "CON");
+	table.insert( labelIndex, "INT");
+	table.insert( labelIndex, "MNA");
+	table.insert( labelIndex, "DEX");
+	table.insert( labelIndex, "STATUS");
 	
 	local subContextDisplay = ui.CreateContextMenu("SUBCONTEXT_DISPLAY", "", 0, 0, 0, 0);
 	for i, key in ipairs(labelIndex) do
