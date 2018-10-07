@@ -158,6 +158,7 @@ function COMMONSETTINGSAVE_LOAD()
 	COMMONSETTINGSAVE_LOAD_XML("UseCamShockWave")
 	COMMONSETTINGSAVE_LOAD_XML("UseItemDropEffect")
 	COMMONSETTINGSAVE_LOAD_XML("EnableRenderShadow")
+	config.SetRenderShadow(g.settings.config.EnableRenderShadow);
 	COMMONSETTINGSAVE_LOAD_XML("EnableFXAA")
 	COMMONSETTINGSAVE_LOAD_XML("EnableHighTexture")
 	COMMONSETTINGSAVE_LOAD_XML("EnableNaturalEffect")
