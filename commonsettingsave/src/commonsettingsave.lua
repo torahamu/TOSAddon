@@ -204,6 +204,7 @@ function COMMONSETTINGSAVE_LOAD_UI()
 	COMMONSETTINGSAVE_LOAD_UI_CHECKBOX(frame,"UseCamShockWave","UseCamShockWave")
 	COMMONSETTINGSAVE_LOAD_UI_CHECKBOX(frame,"UseItemDropEffect","UseItemDropEffect")
 	COMMONSETTINGSAVE_LOAD_UI_CHECKBOX(frame,"check_RenderShadow","EnableRenderShadow")
+	SET_RENDER_SHADOW(frame);
 	COMMONSETTINGSAVE_LOAD_UI_CHECKBOX(frame,"check_fxaa","EnableFXAA")
 	COMMONSETTINGSAVE_LOAD_UI_CHECKBOX(frame,"check_highTexture","EnableHighTexture")
 	COMMONSETTINGSAVE_LOAD_UI_CHECKBOX(frame,"check_EnableNaturalEffect","EnableNaturalEffect")
