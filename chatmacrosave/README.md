@@ -12,11 +12,6 @@ chatmacrosave
 任意のキャラクターで定型文を保存しようとすると、メッセージウィンドウが表示されます。  
 そこで「はい」を選ぶと、その後は全キャラクターで定型文が共通化されます。  
 
-	■注意
-
-手動で入れていた方は「addons」フォルダの「statviewer」フォルダの内容を「statviewer_ex」フォルダにコピーしてください。  
-
-
 	■使い方
 
 [アドオンマネージャー](https://github.com/JTosAddon/Tree-of-Savior-Addon-Manager/releases)にてインストールしてください

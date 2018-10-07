@@ -216,6 +216,19 @@
 			"status",
 			"point"
 		]
+	},
+	{
+		"name" : "Common Setting Save",
+		"file" : "commonsettingsave",
+		"extension" : "ipf",
+		"fileVersion" : "v1.0.0",
+		"releaseTag" : "commonsettingsave",
+		"unicode" : "⛄",
+		"description" : "We will share common settings for each character.  キャラクターごとになっている設定を共通化します。",
+		"tags" : [
+			"setting",
+			"common"
+		]
 	}
 
 ]
