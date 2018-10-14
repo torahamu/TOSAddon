@@ -221,10 +221,10 @@
 		"name" : "Common Setting Save",
 		"file" : "commonsettingsave",
 		"extension" : "ipf",
-		"fileVersion" : "v1.0.2",
+		"fileVersion" : "v1.0.3",
 		"releaseTag" : "commonsettingsave",
 		"unicode" : "⛄",
-		"description" : "We will share common settings for each character.  キャラクターごとになっている設定を共通化します。",
+		"description" : "We will share common settings for each character.[v1.0.3 Decided not to share the UI mode.]  キャラクターごとになっている設定を共通化します。[v1.0.3 UIモードは共有化しないようにしました。]",
 		"tags" : [
 			"setting",
 			"common"

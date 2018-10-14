@@ -95,7 +95,9 @@ end
 
 function COMMONSETTINGSAVE_SAVE_UI()
 	--UI Config
-	g.settings.config.ControlMode = config.GetXMLConfig("ControlMode");
+	--キャラ毎に設定変えてる人もいるのでコメントアウト
+	--Some people change the setting for each character so comment out
+	--g.settings.config.ControlMode = config.GetXMLConfig("ControlMode");
 end
 
 function COMMONSETTINGSAVE_SAVE_PVP()
@@ -143,7 +145,11 @@ function COMMONSETTINGSAVE_LOAD()
 	COMMONSETTINGSAVE_LOAD_XML("ShowCurrentGetExp")
 	COMMONSETTINGSAVE_LOAD_XML("ShowSummonedMonName")
 	config.SetAutoCellSelectSpd(g.settings.config.AutoCellSelectSpd)
-	COMMONSETTINGSAVE_LOAD_XML("ControlMode")
+
+	--キャラ毎に設定変えてる人もいるのでコメントアウト
+	--Some people change the setting for each character so comment out
+	--COMMONSETTINGSAVE_LOAD_XML("ControlMode")
+
 	config.SetDmgFontScale(g.settings.config.DmgFontScale)
 	config.SetEnableShowPadSkillRange(g.settings.config.EnableShowPadSkillRange)
 	config.SetEnableSimplifyBuffEffects(g.settings.config.EnableSimplifyBuffEffects)
