@@ -44,8 +44,9 @@ function STATUSPOINTCHECK_QUESTLIST(status_gbox)
 end
 
 function STATUSPOINTCHECK_QUESTCHECK(statuspoint)
+	--questprogresscheck_auto.ies
 	local questList = {
-		"20050", "8537", "20275", "8392", "20201", "8728", "8752", "80047", "20219", "8458", "8498", "20341", "30194", "90217", "60278", "50369"
+		"20050", "8537", "20275", "8392", "20201", "8728", "8752", "80047", "20219", "8458", "8498", "20341", "30194", "90217", "60278", "50369", "72214"
 	}
 	local titleBody = "Quest List For Status Point";
 	local body = "";
@@ -116,10 +117,11 @@ function STATUSPOINTCHECK_QUESTCHECK(statuspoint)
 end
 
 function STATUSPOINTCHECK_STATUSQUESTCHECK(status)
+	--reward_property.ies
 	local questList = {
 		-- 19101 and 9109 is not active
-		--"19051", "9105", "9110", "9106", "19112", "19021", "19101", "9102", "9103", "9109", "19071", "70709", "90077", "80171", "50221", "40760", "16640", "30294", "60042", "60206"
-		"19051", "9105", "9110", "9106", "19112", "19021", "9102", "9103", "19071", "70709", "90077", "80171", "50221", "40760", "16640", "30294", "60042", "60206"
+		--"19051", "9105", "9110", "9106", "19112", "19021", "19101", "9102", "9103", "9109", "19071", "70709", "90077", "80171", "50221", "40760", "16640", "30294", "60042", "60206", "50382", "50398", "50408"
+		"19051", "9105", "9110", "9106", "19112", "19021", "9102", "9103", "19071", "70709", "90077", "80171", "50221", "40760", "16640", "30294", "60042", "60206", "50382", "50398", "50408"
 	}
 	local titleBody = "Quest List For Status";
 	local body = "";
@@ -324,7 +326,18 @@ end
 
 function STATUSPOINTCHECK_ZEMINACHECK(zemina)
 	local mapList = {
-		"f_siauliai_west", "f_siauliai_out", "f_siauliai_16", "d_underfortress_59_2", "f_rokas_31", "f_flash_64", "f_katyn_14", "f_whitetrees_22_2", "f_3cmlake_26_2", "d_startower_76_2"
+		"f_siauliai_west", 
+		"f_siauliai_out", 
+		"f_siauliai_16", 
+		"d_underfortress_59_2", 
+		"f_rokas_31", 
+		"f_flash_64", 
+		"f_katyn_14", 
+		"f_whitetrees_22_2", 
+		"f_3cmlake_26_2", 
+		"d_startower_76_2", 
+		"f_3cmlake_86", 
+		"f_dcapital_105"
 	}
 	local titleBody = "Zemina List";
 	local body = "";

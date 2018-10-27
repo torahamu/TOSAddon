@@ -29,12 +29,12 @@ end
 
 function STATUSPOINTCHECK_PRACTONIUM_CHECK(practonium)
 	local questList = {
-		"50257"
+		"50257", "60305"
 	}
 	local titleBody = "Quest List For Practonium";
 	local body = "";
 	local getPoint = 0;
-	local sumPoint = #questList;
+	local sumPoint = 3;
 	local ypos = 20;
 	local title = practonium:CreateOrGetControl("richtext", "practoniumcheck_questcheck_title"  , 0, 0, 0, 0);
 	for k, questNo in pairs(questList) do
@@ -43,6 +43,7 @@ function STATUSPOINTCHECK_PRACTONIUM_CHECK(practonium)
 		gbox:SetSkinName("none");
 		local name   = gbox:CreateOrGetControl("richtext", "practoniumcheck_questcheck_name"..k  , nameX  , 0, 0, 0);
 		local result = gbox:CreateOrGetControl("richtext", "practoniumcheck_questcheck_result"..k, resultX, 0, 0, 0);
+		local point  = gbox:CreateOrGetControl("richtext", "practoniumcheck_questcheck_point"..k , pointX , 0, 0, 0);
 		local map    = gbox:CreateOrGetControl("richtext", "practoniumcheck_questcheck_map"..k   , mapX   , 0, 0, 0);
 		local nameBody = "";
 		local resultBody = "";
@@ -50,17 +51,24 @@ function STATUSPOINTCHECK_PRACTONIUM_CHECK(practonium)
 		local color = "";
 		name = tolua.cast(name, "ui::CRichText");
 		result = tolua.cast(result, "ui::CRichText");
+		point = tolua.cast(point, "ui::CRichText");
 		map = tolua.cast(map, "ui::CRichText");
+
+		local tempPoint = 1;
+		if questNo == "60305" then
+			tempPoint = 2;
+		end
 
 		local questCls = GetClassByType('QuestProgressCheck', questNo);
 		local questDetail = GetClassByType('QuestProgressCheck_Auto', questNo);
 		-- questDetail.Success_ItemName1 is Clear Item(Point_Stone_100_Q)
 		nameBody = questCls.Name;
+		pointBody = " x "..tempPoint
 		if STATUSPOINTCHECK_QUESTCLEARCHECK(questNo) then
 			color = "{#FF3333}{ol}{b}{s16}";
 			resultBody = "OK"
 			mapBody = ""
-			getPoint = getPoint + 1;
+			getPoint = getPoint + tempPoint;
 		else
 			local mapprop = geMapTable.GetMapProp(questCls.StartMap);
 			local mapName = tostring(dictionary.ReplaceDicIDInCompStr(mapprop:GetName()));
@@ -70,6 +78,7 @@ function STATUSPOINTCHECK_PRACTONIUM_CHECK(practonium)
 		end
 		name:SetText(color..nameBody.."{/}{/}{/}{/}")
 		result:SetText(color..resultBody.."{/}{/}{/}{/}")
+		point:SetText(color..pointBody.."{/}{/}{/}{/}")
 		map:SetText(color..mapBody.."{/}{/}{/}{/}")
 
 		gbox:SetEventScript(ui.LBUTTONUP, "STATUSPOINTCHECK_QUEST_REQUEST");
@@ -78,6 +87,8 @@ function STATUSPOINTCHECK_PRACTONIUM_CHECK(practonium)
 		name:SetEventScriptArgString(ui.LBUTTONUP, questNo);
 		result:SetEventScript(ui.LBUTTONUP, "STATUSPOINTCHECK_QUEST_REQUEST");
 		result:SetEventScriptArgString(ui.LBUTTONUP, questNo);
+		point:SetEventScript(ui.LBUTTONUP, "STATUSPOINTCHECK_QUEST_REQUEST");
+		point:SetEventScriptArgString(ui.LBUTTONUP, questNo);
 		map:SetEventScript(ui.LBUTTONUP, "STATUSPOINTCHECK_QUEST_REQUEST");
 		map:SetEventScriptArgString(ui.LBUTTONUP, questNo);
 

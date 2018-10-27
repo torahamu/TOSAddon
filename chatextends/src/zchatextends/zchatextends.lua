@@ -155,6 +155,13 @@ function ZCHATEXTENDS_ON_INIT(addon, frame)
 			TOGGLE_BOTTOM_CHAT = CHATEXTENDS_CHAT_TOGGLE_BOTTOM_CHAT;
 		end
 
+		-- 表示種類変えるたびに割と重いので、処理だけ残して実際には呼ばれないように
+		-- 使いたい場合は、↓のコメントアウトしているところのコメント消してやってください
+		--if nil == CHATEXTENDS_CHAT_TAB_BTN_CLICK_OLD then
+		--	CHATEXTENDS_CHAT_TAB_BTN_CLICK_OLD = CHAT_TAB_BTN_CLICK;
+		--	CHAT_TAB_BTN_CLICK = CHATEXTENDS_CHAT_TAB_BTN_CLICK;
+		--end
+
 		if nil == CHATEXTENDS_SetChatType_OLD then
 			CHATEXTENDS_SetChatType_OLD = _G['ui'].SetChatType;
 			_G['ui'].SetChatType = CHATEXTENDS_SetChatType;
@@ -290,40 +297,24 @@ end
 -- チャットオプションフレームに設定追加
 function CHATEXTENDS_CREATE_CHATOPTION_FRAME()
 	local chat_option_frame = ui.GetFrame("chat_option");
-	chat_option_frame:Resize(600,chat_option_frame:GetHeight());
-	local tabgbox1 = GET_CHILD(chat_option_frame ,"tabgbox1");
-	tabgbox1:SetGravity(ui.LEFT, ui.TOP);
-	tabgbox1:SetOffset(37, tabgbox1:GetY());
-	local tabgbox2 = GET_CHILD(chat_option_frame ,"tabgbox2");
-	tabgbox2:SetGravity(ui.LEFT, ui.TOP);
-	tabgbox2:SetOffset(37, tabgbox2:GetY());
-	local tabgbox3 = GET_CHILD(chat_option_frame ,"tabgbox3");
-	tabgbox3:SetGravity(ui.LEFT, ui.TOP);
-	tabgbox3:SetOffset(37, tabgbox3:GetY());
+	chat_option_frame:Resize(950,chat_option_frame:GetHeight());
 
-	local header = chat_option_frame:CreateOrGetControl("richtext", "CHATEXTENDS_HEADER", 300, 43, 120, 34);
+	local battleTextBgBox = GET_CHILD(chat_option_frame ,"battleTextBgBox");
+	battleTextBgBox:Resize(300,battleTextBgBox:GetHeight());
+
+	local headerGBox = chat_option_frame:CreateOrGetControl("picture", "CHATEXTENDS_HEADER_GBOX", 650, 47, 300, 30);
+	tolua.cast(headerGBox, "ui::CPicture");
+	headerGBox:SetImage("test_partyquest_slot")
+
+	local header = chat_option_frame:CreateOrGetControl("richtext", "CHATEXTENDS_HEADER", 660, 52, 120, 34);
 	tolua.cast(header, 'ui::CRichText');
 	header:SetFontName("white_16_ol");
-	header:SetText("{@st42}"..headertxt.."{/}");
+	header:SetText(headertxt);
+	--header:SetText("{@st42}"..headertxt.."{/}");
 
-	local system_total_flg_chk = chat_option_frame:CreateOrGetControl('checkbox', "CHATEXTENDS_SYSTEM_TOTAL_FLG", 315, 65, 120, 24);
-	system_total_flg_chk = tolua.cast(system_total_flg_chk, "ui::CCheckBox");
-	system_total_flg_chk:SetFontName("white_16_ol");
-	system_total_flg_chk:SetText(systemtxt);
-	system_total_flg_chk:SetClickSound('button_click_big');
-	system_total_flg_chk:SetAnimation("MouseOnAnim", "btn_mouseover");
-	system_total_flg_chk:SetAnimation("MouseOffAnim", "btn_mouseoff");
-	system_total_flg_chk:SetOverSound('button_over');
-	system_total_flg_chk:SetEventScript(ui.LBUTTONUP, "CHATEXTENDS_TOGGLE_SYSTEM_TOTAL_FLG");
-	if g.settings.SYSTEM_TOTAL_FLG then
-		system_total_flg_chk:SetCheck(1);
-	else
-		system_total_flg_chk:SetCheck(0);
-	end
-
-	local nico_chat_flg_chk = chat_option_frame:CreateOrGetControl('checkbox', "CHATEXTENDS_NICO_CHAT_FLG", 315, 115, 120, 24);
+	local nico_chat_flg_chk = chat_option_frame:CreateOrGetControl('checkbox', "CHATEXTENDS_NICO_CHAT_FLG", 650, 85, 300, 35);
 	nico_chat_flg_chk = tolua.cast(nico_chat_flg_chk, "ui::CCheckBox");
-	nico_chat_flg_chk:SetFontName("white_16_ol");
+	nico_chat_flg_chk:SetFontName("brown_16_b");
 	nico_chat_flg_chk:SetText(nicotxt);
 	nico_chat_flg_chk:SetClickSound('button_click_big');
 	nico_chat_flg_chk:SetAnimation("MouseOnAnim", "btn_mouseover");
@@ -336,9 +327,9 @@ function CHATEXTENDS_CREATE_CHATOPTION_FRAME()
 		nico_chat_flg_chk:SetCheck(0);
 	end
 
-	local rec_chat_flg_chk = chat_option_frame:CreateOrGetControl('checkbox', "CHATEXTENDS_REC_CHAT_FLG", 315, 165, 120, 24);
+	local rec_chat_flg_chk = chat_option_frame:CreateOrGetControl('checkbox', "CHATEXTENDS_REC_CHAT_FLG", 650, 120, 300, 35);
 	rec_chat_flg_chk = tolua.cast(rec_chat_flg_chk, "ui::CCheckBox");
-	rec_chat_flg_chk:SetFontName("white_16_ol");
+	rec_chat_flg_chk:SetFontName("brown_16_b");
 	rec_chat_flg_chk:SetText(rectxt);
 	rec_chat_flg_chk:SetClickSound('button_click_big');
 	rec_chat_flg_chk:SetAnimation("MouseOnAnim", "btn_mouseover");
@@ -351,9 +342,9 @@ function CHATEXTENDS_CREATE_CHATOPTION_FRAME()
 		rec_chat_flg_chk:SetCheck(0);
 	end
 
-	local ballon_flg_chk = chat_option_frame:CreateOrGetControl('checkbox', "CHATEXTENDS_BALLON_FLG", 315, 215, 120, 24);
+	local ballon_flg_chk = chat_option_frame:CreateOrGetControl('checkbox', "CHATEXTENDS_BALLON_FLG", 650, 155, 300, 35);
 	ballon_flg_chk = tolua.cast(ballon_flg_chk, "ui::CCheckBox");
-	ballon_flg_chk:SetFontName("white_16_ol");
+	ballon_flg_chk:SetFontName("brown_16_b");
 	ballon_flg_chk:SetText(ballontxt);
 	ballon_flg_chk:SetClickSound('button_click_big');
 	ballon_flg_chk:SetAnimation("MouseOnAnim", "btn_mouseover");
@@ -366,9 +357,9 @@ function CHATEXTENDS_CREATE_CHATOPTION_FRAME()
 		ballon_flg_chk:SetCheck(0);
 	end
 
-	local enable_type_flg_chk = chat_option_frame:CreateOrGetControl('checkbox', "CHATEXTENDS_ENABLE_TYPE_FLG", 315, 265, 120, 24);
+	local enable_type_flg_chk = chat_option_frame:CreateOrGetControl('checkbox', "CHATEXTENDS_ENABLE_TYPE_FLG", 650, 190, 300, 35);
 	enable_type_flg_chk = tolua.cast(enable_type_flg_chk, "ui::CCheckBox");
-	enable_type_flg_chk:SetFontName("white_16_ol");
+	enable_type_flg_chk:SetFontName("brown_16_b");
 	enable_type_flg_chk:SetText(enable_type_txt);
 	enable_type_flg_chk:SetClickSound('button_click_big');
 	enable_type_flg_chk:SetAnimation("MouseOnAnim", "btn_mouseover");
@@ -381,9 +372,9 @@ function CHATEXTENDS_CREATE_CHATOPTION_FRAME()
 		enable_type_flg_chk:SetCheck(0);
 	end
 
-	local auto_read_flg_chk = chat_option_frame:CreateOrGetControl('checkbox', "CHATEXTENDS_AUTO_READ_FLG", 315, 315, 120, 24);
+	local auto_read_flg_chk = chat_option_frame:CreateOrGetControl('checkbox', "CHATEXTENDS_AUTO_READ_FLG", 650, 225, 300, 35);
 	auto_read_flg_chk = tolua.cast(auto_read_flg_chk, "ui::CCheckBox");
-	auto_read_flg_chk:SetFontName("white_16_ol");
+	auto_read_flg_chk:SetFontName("brown_16_b");
 	auto_read_flg_chk:SetText(auto_read_txt);
 	auto_read_flg_chk:SetClickSound('button_click_big');
 	auto_read_flg_chk:SetAnimation("MouseOnAnim", "btn_mouseover");
@@ -392,7 +383,7 @@ function CHATEXTENDS_CREATE_CHATOPTION_FRAME()
 	auto_read_flg_chk:SetEventScript(ui.LBUTTONUP, "TOGGLE_BOTTOM_CHAT");
 	auto_read_flg_chk:SetCheck(config.GetXMLConfig("ToggleBottomChat"));
 
-	local soundbtn = chat_option_frame:CreateOrGetControl("button", "CHATEXTENDS_SOUNDS_BUTTON", 320, 365, 150, 30);
+	local soundbtn = chat_option_frame:CreateOrGetControl("button", "CHATEXTENDS_SOUNDS_BUTTON", 650, 300, 150, 30);
 	soundbtn = tolua.cast(soundbtn, "ui::CButton");
 	soundbtn:SetFontName("white_16_ol");
 	soundbtn:SetText(sounds_txt);
@@ -457,6 +448,14 @@ function CHATEXTENDS_TOGGLE_BALLON_FLG(frame, ctrl, argStr, argNum)
 		g.settings.BALLON_FLG = false;
 	end
 	CHATEXTENDS_SAVE_SETTINGS();
+	local mainchatFrame = ui.GetFrame("chatframe");
+	local retbit = CHAT_FRAME_GET_NOW_SELECT_VALUE(mainchatFrame);
+	local groupboxname = "chatgbox_"..retbit;
+	if retbit == MAX_CHAT_CONFIG_VALUE then
+		groupboxname = "chatgbox_TOTAL";
+	end
+	local groupbox = GET_CHILD(mainchatFrame, groupboxname);
+	DESTROY_CHILD_BYNAME(groupbox, 'cluster_');
 	ui.ReDrawAllChatMsg();
 end
 
@@ -469,6 +468,14 @@ function CHATEXTENDS_TOGGLE_ENABLE_TYPE_FLG(frame, ctrl, argStr, argNum)
 	end
 	CHATEXTENDS_SAVE_SETTINGS();
 	if g.settings.BALLON_FLG == false then
+		local mainchatFrame = ui.GetFrame("chatframe");
+		local retbit = CHAT_FRAME_GET_NOW_SELECT_VALUE(mainchatFrame);
+		local groupboxname = "chatgbox_"..retbit;
+		if retbit == MAX_CHAT_CONFIG_VALUE then
+			groupboxname = "chatgbox_TOTAL";
+		end
+		local groupbox = GET_CHILD(mainchatFrame, groupboxname);
+		DESTROY_CHILD_BYNAME(groupbox, 'cluster_');
 		ui.ReDrawAllChatMsg();
 	end
 end
@@ -554,6 +561,23 @@ function CHATEXTENDS_WhisperTo(familyName)
 	CHATEXTENDS_WhisperTo_OLD(familyName)
 	g.chattype = ui.GetChatType();
 end
+
+-- チャット表示種類ボタン押下時
+-- 表示種類変えるたびに割と重いので、処理だけ残して実際には呼ばれないように
+-- 使いたい場合は、ON_INIT処理内のコメントアウトしているところのコメント消してやってください
+function CHATEXTENDS_CHAT_TAB_BTN_CLICK(parent, ctrl)
+	CHATEXTENDS_CHAT_TAB_BTN_CLICK_OLD(parent, ctrl);
+	local frame = parent:GetTopParentFrame();
+	local retbit = CHAT_FRAME_GET_NOW_SELECT_VALUE(frame);
+	local groupboxname = "chatgbox_"..retbit;
+	if retbit == MAX_CHAT_CONFIG_VALUE then
+		groupboxname = "chatgbox_TOTAL";
+	end
+	local groupbox = GET_CHILD(frame, groupboxname);
+	DESTROY_CHILD_BYNAME(groupbox, 'cluster_');
+	ui.ReDrawAllChatMsg();
+end
+
 --************************************************
 -- DRAW_CHAT_MSGのフック
 -- 　引数：String groupboxname
@@ -564,30 +588,31 @@ end
 -- 　引数：String framename
 -- 　　　　処理対象フレーム名
 --************************************************
-function CHATEXTENDS_DRAW_CHAT_MSG(groupboxname, startindex, chatframe)
-	local mainchatFrame = ui.GetFrame("chatframe")
+function CHATEXTENDS_DRAW_CHAT_MSG(groupboxname, startindex, chatframe, removeChatIDList)
+	local mainchatFrame = ui.GetFrame("chatframe");
 	local groupbox = GET_CHILD(chatframe, groupboxname);
-	local size = session.ui.GetMsgInfoSize(groupboxname)
+	local size = session.ui.GetMsgInfoSize(groupboxname);
 
 	if groupbox == nil then
 		return 1;
 	end
-
-	if groupbox:IsVisible() == 0 then
+	
+	if groupbox:IsVisible() == 0 or chatframe:IsVisible() == 0 then
 		return 1;
 	end
 
 	CHATEXTENDS_CHAT_SET_OPACITY(groupbox);
 
-	if startindex == 0 then
-		DESTROY_CHILD_BYNAME(groupbox, "cluster_");
+	if removeChatIDList ~= nil then
+		for i = 1, #removeChatIDList do
+			groupbox:RemoveChild("cluster_" .. removeChatIDList[i]);
+		end
 	end
 
 	local marginLeft = 20;
 	local marginRight = 0;
 	local ypos = 0;
-
-	for i = startindex , size - 1 do
+	for i = startindex, size - 1 do
 		local beforeclusterinfo = nil
 		if i ~= 0 then
 			beforeclusterinfo = session.ui.GetChatMsgInfo(groupboxname, i-1)
@@ -599,204 +624,238 @@ function CHATEXTENDS_DRAW_CHAT_MSG(groupboxname, startindex, chatframe)
 				end
 			end
 		end
-
-		local clusterinfo = session.ui.GetChatMsgInfo(groupboxname, i)
+		local clusterinfo = session.ui.GetChatMsgInfo(groupboxname, i);
 		if clusterinfo == nil then
 			return 0;
 		end
-		local clustername = "cluster_"..clusterinfo:GetMsgInfoID();
-		local msgType = clusterinfo:GetMsgType();
-		local commnderName = clusterinfo:GetCommanderName();
-		local tempCommnderName = string.gsub(commnderName,"( %[.+%])", "");
-		local colorType = session.chat.GetRoomConfigColorType(clusterinfo:GetRoomID())
-		local colorCls = GetClassByType("ChatColorStyle", colorType)
 
-		local fontSize = GET_CHAT_FONT_SIZE();
+		local clustername = "cluster_" .. clusterinfo:GetMsgInfoID();
+
+		local chatCtrl = GET_CHILD(groupbox, clustername);
+
+		if i > 0 then
+			local prevClusterInfo = session.ui.GetChatMsgInfo(groupboxname, i - 1);
+			if prevClusterInfo ~= nil then
+				local precClusterName = "cluster_" .. prevClusterInfo:GetMsgInfoID();
+				precCluster = GET_CHILD(groupbox, precClusterName);
+				if precCluster ~= nil then
+					ypos = precCluster:GetY() + precCluster:GetHeight();
+				else
+					-- ui가 다 날아갔는데, 메시지가 들어온 경우
+					-- 재접할때 발생한다.
+					return DRAW_CHAT_MSG(groupboxname, 0, chatframe, removeChatIDList);
+				end
+			end
+		end
 
 		local offsetX = chatframe:GetUserConfig("CTRLSET_OFFSETX");
-		if g.settings.BALLON_FLG then
-			CHATEXTENDS_BALLON_DRAW(groupboxname, groupbox, clustername, clusterinfo, commnderName, msgType, marginRight, marginLeft, ypos, fontSize, beforeclusterinfo)
-		else
 
-			local chatCtrl = groupbox:CreateOrGetControlSet('chatTextVer', clustername, ui.LEFT, ui.TOP, marginLeft, ypos , marginRight, 1);
+		if startindex == 0 and chatCtrl ~= nil then
+			chatCtrl:SetOffset(marginLeft, ypos);
 
-			-- システムメッセージ削除処理
-			if ( g.settings.SYSTEM_TOTAL_FLG and (msgType == "System" or msgType == "Notice") and groupboxname ~= "chatgbox_TOTAL") then
-				chatCtrl:SetOffset( 0 , ypos);
-				chatCtrl:Resize( 0 , 0);
-				chatCtrl:ShowWindow(0);
-			elseif beforeclusterinfo ~= nil and (tostring(beforeclusterinfo:GetRoomID()) == tostring(clusterinfo:GetRoomID())) and (tostring(beforeclusterinfo:GetCommanderName()) == tostring(clusterinfo:GetCommanderName())) and (tostring(beforeclusterinfo:GetMsg()) == tostring(clusterinfo:GetMsg())) and (tostring(beforeclusterinfo:GetTimeStr()) == tostring(clusterinfo:GetTimeStr())) then
-				chatCtrl:SetOffset( 0 , ypos);
-				chatCtrl:Resize( 0 , 0);
-				chatCtrl:ShowWindow(0);
+			local label = chatCtrl:GetChild('bg');
+			local txt = GET_CHILD(chatCtrl, "text");
+			local timeCtrl = GET_CHILD(chatCtrl, "time");
+
+			RESIZE_CHAT_CTRL(groupbox, chatCtrl, label, txt, timeCtrl, offsetX);
+		end
+
+		if chatCtrl == nil then
+			local msgType = clusterinfo:GetMsgType();
+			local commnderName = clusterinfo:GetCommanderName();
+			local tempCommnderName = string.gsub(commnderName,"( %[.+%])", "");
+			local colorType = session.chat.GetRoomConfigColorType(clusterinfo:GetRoomID())
+			local colorCls = GetClassByType("ChatColorStyle", colorType)
+
+			local fontSize = GET_CHAT_FONT_SIZE();
+			local tempfontSize = string.format("{s%s}", fontSize);
+			
+			if g.settings.BALLON_FLG then
+				CHATEXTENDS_BALLON_DRAW(groupboxname, groupbox, clustername, clusterinfo, commnderName, msgType, marginRight, marginLeft, ypos, fontSize, beforeclusterinfo)
 			else
+				chatCtrl = groupbox:CreateOrGetControlSet('chatTextVer', clustername, ui.LEFT, ui.TOP, marginLeft, ypos , marginRight, 1);
 
-				chatCtrl:EnableHitTest(1);
-				chatCtrl:EnableAutoResize(true,false);
-
-
-				if tempCommnderName ~= GETMYFAMILYNAME() then
-					chatCtrl:SetSkinName("")
-				end
-				local commnderNameUIText = commnderName .. " : "
-
-				local label = chatCtrl:GetChild('bg');
-				local txt = GET_CHILD(chatCtrl, "text");
-				local timeCtrl = GET_CHILD(chatCtrl, "time");
-
-				local msgFront = "";
-				local msgString = "";
-				local fontStyle = nil;
-				local msgIsMine = false;
-
-				if tempCommnderName == GETMYFAMILYNAME() then
-					msgIsMine = true;
-					label:SetColorTone("FF000000");
-					label:SetAlpha(60);
+				-- 同じメッセージ削除処理
+				if beforeclusterinfo ~= nil and (tostring(beforeclusterinfo:GetRoomID()) == tostring(clusterinfo:GetRoomID())) and (tostring(beforeclusterinfo:GetCommanderName()) == tostring(clusterinfo:GetCommanderName())) and (tostring(beforeclusterinfo:GetMsg()) == tostring(clusterinfo:GetMsg())) and (tostring(beforeclusterinfo:GetTimeStr()) == tostring(clusterinfo:GetTimeStr())) then
+					chatCtrl:SetOffset( 0 , ypos);
+					chatCtrl:Resize( 0 , 0);
+					chatCtrl:ShowWindow(0);
 				else
-					label:SetAlpha(0);
-				end;
+					chatCtrl:EnableHitTest(1);
+					chatCtrl:EnableAutoResize(true,false);
+				
+					if tempCommnderName ~= GETMYFAMILYNAME() then
+						chatCtrl:SetSkinName("")
+					end
+					local commnderNameUIText = commnderName .. " : "
+					
+					local label = chatCtrl:GetChild('bg');
+					local txt = GET_CHILD(chatCtrl, "text");
+					local timeCtrl = GET_CHILD(chatCtrl, "time");
 
-				if msgType == "friendmem" then
+					local msgFront = "";
+					local msgString = "";	
+					local fontStyle = nil;
+					local msgIsMine = false;
 
-					fontStyle = mainchatFrame:GetUserConfig("TEXTCHAT_FONTSTYLE_SYSTEM");
-					msgFront = "#86E57F";
-
-				elseif msgType == "guildmem" then
-
-					fontStyle = mainchatFrame:GetUserConfig("TEXTCHAT_FONTSTYLE_SYSTEM");
-					msgFront = "#A566FF";
-
-				elseif msgType ~= "System" then
-
-
-					chatCtrl:SetEventScript(ui.RBUTTONDOWN, 'CHAT_RBTN_POPUP');
-					chatCtrl:SetUserValue("TARGET_NAME", commnderName);
-
-					txt:SetEventScript(ui.RBUTTONDOWN, 'CHAT_RBTN_POPUP');
-					txt:SetUserValue("TARGET_NAME", commnderName);
-
-					if msgType == "Normal" then
-
-						fontStyle = CHATEXTENDS_CHAT_TEXT_IS_MINE_AND_SETFONT(msgIsMine, "TEXTCHAT_FONTSTYLE_NORMAL");
-						msgFront = CHATEXTENDS_GET_TYPE_CHARNAME(ScpArgMsg("ChatType_1"), commnderNameUIText);
-
-					elseif msgType == "Shout" then
-
-						fontStyle = CHATEXTENDS_CHAT_TEXT_IS_MINE_AND_SETFONT(msgIsMine, "TEXTCHAT_FONTSTYLE_SHOUT");
-						msgFront = CHATEXTENDS_GET_TYPE_CHARNAME(ScpArgMsg("ChatType_2"), commnderNameUIText);
-
-					elseif msgType == "Party" then
-
-						fontStyle = CHATEXTENDS_CHAT_TEXT_IS_MINE_AND_SETFONT(msgIsMine, "TEXTCHAT_FONTSTYLE_PARTY");
-						msgFront = CHATEXTENDS_GET_TYPE_CHARNAME(ScpArgMsg("ChatType_3"), commnderNameUIText);
-
-					elseif msgType == "Guild" then
-
-						fontStyle = CHATEXTENDS_CHAT_TEXT_IS_MINE_AND_SETFONT(msgIsMine, "TEXTCHAT_FONTSTYLE_GUILD");
-						msgFront = CHATEXTENDS_GET_TYPE_CHARNAME(ScpArgMsg("ChatType_4"), commnderNameUIText);
-
-					elseif msgType == "Notice" then
-
-						fontStyle = CHATEXTENDS_CHAT_TEXT_IS_MINE_AND_SETFONT(msgIsMine, "TEXTCHAT_FONTSTYLE_NOTICE");
-						msgFront = string.format("[%s]", ScpArgMsg("ChatType_8"));
-
-					elseif msgType == "Whisper" then
-
-						chatCtrl:SetEventScript(ui.LBUTTONDOWN, 'CHAT_GBOX_LBTN_DOWN');
-						chatCtrl:SetEventScriptArgString(ui.LBUTTONDOWN, clusterinfo:GetRoomID());
-
-						txt:SetUserValue("ROOM_ID", clusterinfo:GetRoomID());
-
-						fontStyle = CHATEXTENDS_CHAT_TEXT_IS_MINE_AND_SETFONT(msgIsMine, "TEXTCHAT_FONTSTYLE_WHISPER");
-
-						msgFront = CHATEXTENDS_GET_TYPE_CHARNAME(ScpArgMsg("ChatType_5"), commnderNameUIText);
-
-					elseif msgType == "Group" then
-
-						chatCtrl:SetEventScript(ui.LBUTTONDOWN, 'CHAT_GBOX_LBTN_DOWN');
-						chatCtrl:SetEventScriptArgString(ui.LBUTTONDOWN, clusterinfo:GetRoomID());
-
-						txt:SetUserValue("ROOM_ID", clusterinfo:GetRoomID());
-
-						if colorCls ~= nil then
-							fontStyle = "{#"..colorCls.TextColor.."}{ol}"
-						else
-							fontStyle = CHATEXTENDS_CHAT_TEXT_IS_MINE_AND_SETFONT(msgIsMine, "TEXTCHAT_FONTSTYLE_WHISPER");
-						end
-
-						msgFront = CHATEXTENDS_GET_TYPE_CHARNAME(ScpArgMsg("ChatType_6"), commnderNameUIText);
+					if tempCommnderName == GETMYFAMILYNAME() then
+						msgIsMine = true;
+						label:SetColorTone("FF000000");
+						label:SetAlpha(60);
 					else
-						chatCtrl:SetEventScript(ui.LBUTTONDOWN, 'CHAT_GBOX_LBTN_DOWN');
-						chatCtrl:SetEventScriptArgString(ui.LBUTTONDOWN, clusterinfo:GetRoomID());
-
-						txt:SetUserValue("ROOM_ID", clusterinfo:GetRoomID());
-
-						if colorCls ~= nil then
-							fontStyle = "{#"..colorCls.TextColor.."}{ol}"
-						end
-
-						msgFront = commnderNameUIText;
+						label:SetAlpha(0);
 					end
 
-				elseif msgType == "System" then
+					if msgType == "friendmem" then
 
-					fontStyle = mainchatFrame:GetUserConfig("TEXTCHAT_FONTSTYLE_SYSTEM");
-					msgFront = string.format("[%s]", ScpArgMsg("ChatType_7"));
+						fontStyle = mainchatFrame:GetUserConfig("TEXTCHAT_FONTSTYLE_SYSTEM");
+						msgFront = "#86E57F";
+
+					elseif msgType == "guildmem" then
+
+						fontStyle = mainchatFrame:GetUserConfig("TEXTCHAT_FONTSTYLE_SYSTEM");
+						msgFront = "#A566FF";
+					elseif msgType == "partymem" then
+
+						fontStyle = mainchatFrame:GetUserConfig("TEXTCHAT_FONTSTYLE_SYSTEM");
+						msgFront = "#86E57F";
+					elseif msgType == "Battle" then
+						fontStyle = '';			
+					elseif msgType ~= "System" then
+						chatCtrl:SetEventScript(ui.RBUTTONDOWN, 'CHAT_RBTN_POPUP');
+						chatCtrl:SetUserValue("TARGET_NAME", commnderName);
+
+						txt:SetEventScript(ui.RBUTTONDOWN, 'CHAT_RBTN_POPUP');
+						txt:SetUserValue("TARGET_NAME", commnderName);
+							
+						if msgType == "Normal" then
+
+							fontStyle = CHATEXTENDS_CHAT_TEXT_IS_MINE_AND_SETFONT(msgIsMine, "TEXTCHAT_FONTSTYLE_NORMAL");
+							msgFront = CHATEXTENDS_GET_TYPE_CHARNAME(ScpArgMsg("ChatType_1"), commnderNameUIText);
+
+						elseif msgType == "Shout" then
+
+							fontStyle = CHATEXTENDS_CHAT_TEXT_IS_MINE_AND_SETFONT(msgIsMine, "TEXTCHAT_FONTSTYLE_SHOUT");
+							msgFront = CHATEXTENDS_GET_TYPE_CHARNAME(ScpArgMsg("ChatType_2"), commnderNameUIText);
+
+						elseif msgType == "Party" then
+
+							fontStyle = CHATEXTENDS_CHAT_TEXT_IS_MINE_AND_SETFONT(msgIsMine, "TEXTCHAT_FONTSTYLE_PARTY");
+							msgFront = CHATEXTENDS_GET_TYPE_CHARNAME(ScpArgMsg("ChatType_3"), commnderNameUIText);
+
+						elseif msgType == "Guild" then
+
+							fontStyle = CHATEXTENDS_CHAT_TEXT_IS_MINE_AND_SETFONT(msgIsMine, "TEXTCHAT_FONTSTYLE_GUILD");
+							msgFront = CHATEXTENDS_GET_TYPE_CHARNAME(ScpArgMsg("ChatType_4"), commnderNameUIText);
+
+						elseif msgType == "Notice" then
+
+							fontStyle = CHATEXTENDS_CHAT_TEXT_IS_MINE_AND_SETFONT(msgIsMine, "TEXTCHAT_FONTSTYLE_NOTICE");
+							msgFront = string.format("[%s]", ScpArgMsg("ChatType_8"));
+
+						elseif msgType == "Whisper" then
+
+							chatCtrl:SetEventScript(ui.LBUTTONDOWN, 'CHAT_GBOX_LBTN_DOWN');
+							chatCtrl:SetEventScriptArgString(ui.LBUTTONDOWN, clusterinfo:GetRoomID());
+
+							txt:SetUserValue("ROOM_ID", clusterinfo:GetRoomID());
+					
+							fontStyle = CHATEXTENDS_CHAT_TEXT_IS_MINE_AND_SETFONT(msgIsMine, "TEXTCHAT_FONTSTYLE_WHISPER");
+
+							msgFront = CHATEXTENDS_GET_TYPE_CHARNAME(ScpArgMsg("ChatType_5"), commnderNameUIText);
+
+						elseif msgType == "Group" then
+
+							chatCtrl:SetEventScript(ui.LBUTTONDOWN, 'CHAT_GBOX_LBTN_DOWN');
+							chatCtrl:SetEventScriptArgString(ui.LBUTTONDOWN, clusterinfo:GetRoomID());
+
+							txt:SetUserValue("ROOM_ID", clusterinfo:GetRoomID());
+				
+							if colorCls ~= nil then
+								fontStyle = "{#"..colorCls.TextColor.."}{ol}"
+							else
+								fontStyle = CHATEXTENDS_CHAT_TEXT_IS_MINE_AND_SETFONT(msgIsMine, "TEXTCHAT_FONTSTYLE_WHISPER");
+							end
+
+							msgFront = CHATEXTENDS_GET_TYPE_CHARNAME(ScpArgMsg("ChatType_6"), commnderNameUIText);
+						else
+							chatCtrl:SetEventScript(ui.LBUTTONDOWN, 'CHAT_GBOX_LBTN_DOWN');
+							chatCtrl:SetEventScriptArgString(ui.LBUTTONDOWN, clusterinfo:GetRoomID());
+
+							txt:SetUserValue("ROOM_ID", clusterinfo:GetRoomID());
+					
+							if colorCls ~= nil then
+								fontStyle = "{#"..colorCls.TextColor.."}{ol}"
+							end
+
+							msgFront = commnderNameUIText;
+						end
+
+					elseif msgType == "System" then
+						fontStyle = mainchatFrame:GetUserConfig("TEXTCHAT_FONTSTYLE_SYSTEM");
+						local colorOverride = clusterinfo:GetColor();
+						if colorOverride ~= '' then
+							fontStyle = string.gsub(fontStyle, '{#%x+}', '{#'..colorOverride..'}');				
+						end
+
+						msgFront = string.format("[%s]", ScpArgMsg("ChatType_7"));			
+					end	
+
+					local tempMsg = clusterinfo:GetMsg()
+					if msgType == "friendmem" or  msgType == "guildmem" or msgType == "partymem" then
+						msgString = string.format("{%s}%s{nl}",msgFront, tempMsg);		
+					else			
+						msgString = string.format("%s%s{nl}", msgFront, tempMsg);		
+					end
+
+					local tempfontSize = string.format("{s%s}", fontSize);
+
+					msgString = string.gsub(msgString, "({img emoticon.-}){/}{/}", "%1");
+					msgString = string.format("%s%s{/}{/}{nl}", tempfontSize, msgString);
+					txt:SetTextByKey("font", fontStyle);
+					txt:SetTextByKey("size", fontSize);
+					txt:SetTextByKey("text", CHAT_TEXT_LINKCHAR_FONTSET(mainchatFrame, msgString));
+					timeCtrl:SetTextByKey("time", clusterinfo:GetTimeStr());	
+
+					local slflag = string.find(clusterinfo:GetMsg(),'a SL%a')
+					if slflag == nil then
+						txt:EnableHitTest(0)
+					else
+						txt:EnableHitTest(1)
+					end
+				
+					RESIZE_CHAT_CTRL(groupbox, chatCtrl, label, txt, timeCtrl, offsetX);
 				end
-
-				local tempMsg = clusterinfo:GetMsg()
-				if msgType == "friendmem" or  msgType == "guildmem" then
-					msgString = string.format("{%s}%s",msgFront, tempMsg);
-				else
-					msgString = string.format("%s%s", msgFront, tempMsg);
-				end
-
-				local tempfontSize = string.format("{s%s}", fontSize);
-
-				msgString = string.gsub(msgString, "({img emoticon.-}){/}{/}", "%1");
-				msgString = string.format("%s%s{/}{/}{nl}", tempfontSize, msgString);
-				txt:SetTextByKey("font", fontStyle);
-				txt:SetTextByKey("size", fontSize);
-				txt:SetTextByKey("text", CHAT_TEXT_LINKCHAR_FONTSET(mainchatFrame, msgString));
-
-				timeCtrl:SetTextByKey("time", clusterinfo:GetTimeStr());
-
-				local slflag = string.find(clusterinfo:GetMsg(),'a SL%a')
-				if slflag == nil then
-					txt:EnableHitTest(0)
-				else
-					txt:EnableHitTest(1)
-				end
-
-				RESIZE_CHAT_CTRL(groupbox, chatCtrl, label, txt, timeCtrl, offsetX);
-
 			end
 		end
 	end
-
 
 	local scrollend = false
 	if groupbox:GetLineCount() == groupbox:GetCurLine() + groupbox:GetVisibleLineCount() then
 		scrollend = true;
 	end
 
-	local beforeLineCount = groupbox:GetLineCount();
+	local beforeLineCount = groupbox:GetLineCount();	
 	groupbox:UpdateData();
-
+	
 	local afterLineCount = groupbox:GetLineCount();
 	local changedLineCount = afterLineCount - beforeLineCount;
 	local curLine = groupbox:GetCurLine();
 
-	if (startindex == 0) or (config.GetXMLConfig("ToggleBottomChat") == 1) or (scrollend == true) then
+	if (config.GetXMLConfig("ToggleBottomChat") == 1) or (scrollend == true) then
 		groupbox:SetScrollPos(99999);
 	else 
-		groupbox:SetScrollPos(curLine);
+		groupbox:SetScrollPos(curLine + changedLineCount);
 	end
 
-	UPDATE_READ_FLAG_BY_GBOX_NAME(groupboxname)
+	local gboxtype = string.sub(groupboxname,string.len("chatgbox_") + 1)
+	local tonumberret = tonumber(gboxtype)
 
-	return 1
+    if tonumberret ~= nil and tonumberret > MAX_CHAT_CONFIG_VALUE then
+		UPDATE_READ_FLAG_BY_GBOX_NAME("chatgbox_" .. gboxtype)
+	end
+
+	return 1;
 end
 
 -- ***************************************
@@ -863,7 +922,7 @@ function CHATEXTENDS_NICO_CHAT_DRAW(frame, msg)
 	if (msgType ~= "Notice") and (msgType ~= "System") then
 		-- 内容
 		local nicoMsg = string.gsub(clusterinfo:GetMsg(), "({/}{/})", "%1{@st64}");
-		NICO_CHAT(string.format("[%s] : %s", clusterinfo:GetCommanderName(), nicoMsg));
+		CHATEXTENDS_NICO_CHAT(string.format("[%s] : %s", clusterinfo:GetCommanderName(), nicoMsg));
 	end
 end
 
@@ -939,12 +998,8 @@ function CHATEXTENDS_BALLON_DRAW(groupboxname, groupbox, clustername, clusterinf
 		horzGravity = ui.RIGHT;
 	end
 	local chatCtrl = groupbox:CreateOrGetControlSet(chatCtrlName, clustername, horzGravity, ui.TOP, marginLeft, ypos + 5, marginRight, 0);
-	-- システムメッセージ削除処理
-	if ( g.settings.SYSTEM_TOTAL_FLG and (msgType == "System" or msgType == "Notice") and groupboxname ~= "chatgbox_TOTAL") then
-		chatCtrl:SetOffset( 0 , ypos);
-		chatCtrl:Resize( 0 , 0);
-		chatCtrl:ShowWindow(0);
-	elseif beforeclusterinfo ~= nil and (tostring(beforeclusterinfo:GetRoomID()) == tostring(clusterinfo:GetRoomID())) and (tostring(beforeclusterinfo:GetCommanderName()) == tostring(clusterinfo:GetCommanderName())) and (tostring(beforeclusterinfo:GetMsg()) == tostring(clusterinfo:GetMsg())) and (tostring(beforeclusterinfo:GetTimeStr()) == tostring(clusterinfo:GetTimeStr())) then
+	-- 同じメッセージ削除処理
+	if beforeclusterinfo ~= nil and (tostring(beforeclusterinfo:GetRoomID()) == tostring(clusterinfo:GetRoomID())) and (tostring(beforeclusterinfo:GetCommanderName()) == tostring(clusterinfo:GetCommanderName())) and (tostring(beforeclusterinfo:GetMsg()) == tostring(clusterinfo:GetMsg())) and (tostring(beforeclusterinfo:GetTimeStr()) == tostring(clusterinfo:GetTimeStr())) then
 		chatCtrl:SetOffset( 0 , ypos);
 		chatCtrl:Resize( 0 , 0);
 		chatCtrl:ShowWindow(0);
@@ -1333,4 +1388,36 @@ function CHATEXTENDS_CHAT_SET_OPACITY(gbox)
 
 	CHAT_SET_CHAT_FRAME_OPACITY(parentframe, colorToneStr)
 
+end
+
+--************************************************
+-- NICO_CHAT独自用
+--************************************************
+function CHATEXTENDS_NICO_CHAT(msg)
+
+	local x = ui.GetClientInitialWidth();
+	local factor;
+	if IMCRandom(0, 1) == 1 then
+		factor = IMCRandomFloat(0.05, 0.4);
+	else
+		factor = IMCRandomFloat(0.6, 0.9);
+	end
+
+	local y = ui.GetClientInitialHeight() * factor;
+	local spd = -IMCRandom(150, 200);
+
+	-- change
+	local frame = ui.GetFrame("fieldui");
+	local name = UI_EFFECT_GET_NAME(frame, "NICO_");
+	local ctrl = frame:CreateControl("richtext", name, x, y, 200, 20);
+	
+	ctrl:ShowWindow(1);
+	ctrl = tolua.cast(ctrl, "ui::CRichText");
+	ctrl:EnableResizeByText(1);
+	ctrl:SetText("{@st64}" .. msg);
+	ctrl:RunUpdateScript("NICO_MOVING");
+	ctrl:SetUserValue("NICO_SPD", spd);
+	ctrl:SetUserValue("NICO_START_X", x);
+
+	frame:RunUpdateScript("INVALIDATE_NICO");
 end
