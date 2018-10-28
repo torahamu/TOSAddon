@@ -1282,10 +1282,10 @@ function CHATEXTENDS_CHAT_SET_FONTSIZE_N_COLOR(chatframe)
 					local clusterinfo = session.ui.GetChatMsgInfo(childName, j);
 					local commnderName = "";
 					local tempCommnderName = "";
-					if clusterinfo ~= nil then
-						commnderName = clusterinfo:GetCommanderName();
-						tempCommnderName = string.gsub(commnderName,"( %[.+%])", "");
-					end
+					--if clusterinfo ~= nil then
+					--	commnderName = clusterinfo:GetCommanderName();
+					--	tempCommnderName = string.gsub(commnderName,"( %[.+%])", "");
+					--end
 				
 					local chatCtrl = groupBox:GetChildByIndex(j);
 					if chatCtrl:GetClassName() == "controlset" then
