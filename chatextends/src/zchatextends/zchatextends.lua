@@ -630,7 +630,6 @@ function CHATEXTENDS_DRAW_CHAT_MSG(groupboxname, startindex, chatframe, removeCh
 		end
 
 		local clustername = "cluster_" .. clusterinfo:GetMsgInfoID();
-
 		local chatCtrl = GET_CHILD(groupbox, clustername);
 
 		if i > 0 then
@@ -652,12 +651,19 @@ function CHATEXTENDS_DRAW_CHAT_MSG(groupboxname, startindex, chatframe, removeCh
 
 		if startindex == 0 and chatCtrl ~= nil then
 			chatCtrl:SetOffset(marginLeft, ypos);
-
-			local label = chatCtrl:GetChild('bg');
-			local txt = GET_CHILD(chatCtrl, "text");
-			local timeCtrl = GET_CHILD(chatCtrl, "time");
-
-			RESIZE_CHAT_CTRL(groupbox, chatCtrl, label, txt, timeCtrl, offsetX);
+			if g.settings.BALLON_FLG then
+				local commnderName = clusterinfo:GetCommanderName();
+				local tempCommnderName = string.gsub(commnderName,"( %[.+%])", "");
+				local label = chatCtrl:GetChild('bg');
+				local txt = GET_CHILD(label, "text", "ui::CRichText");
+				local timeBox = GET_CHILD(chatCtrl, "timebox", "ui::CGroupBox");
+				CHATEXTENDS_RESIZE_CHAT_CTRL_BALLON(chatCtrl, label, txt, timeBox, tempCommnderName)
+			else
+				local label = chatCtrl:GetChild('bg');
+				local txt = GET_CHILD(chatCtrl, "text");
+				local timeCtrl = GET_CHILD(chatCtrl, "time");
+				RESIZE_CHAT_CTRL(groupbox, chatCtrl, label, txt, timeCtrl, offsetX);
+			end
 		end
 
 		if chatCtrl == nil then
@@ -854,7 +860,7 @@ function CHATEXTENDS_DRAW_CHAT_MSG(groupboxname, startindex, chatframe, removeCh
     if tonumberret ~= nil and tonumberret > MAX_CHAT_CONFIG_VALUE then
 		UPDATE_READ_FLAG_BY_GBOX_NAME("chatgbox_" .. gboxtype)
 	end
-
+	
 	return 1;
 end
 
@@ -997,7 +1003,7 @@ function CHATEXTENDS_BALLON_DRAW(groupboxname, groupbox, clustername, clusterinf
 	if chatCtrlName == 'chati' then
 		horzGravity = ui.RIGHT;
 	end
-	local chatCtrl = groupbox:CreateOrGetControlSet(chatCtrlName, clustername, horzGravity, ui.TOP, marginLeft, ypos + 5, marginRight, 0);
+		local chatCtrl = groupbox:CreateOrGetControlSet(chatCtrlName, clustername, horzGravity, ui.TOP, marginLeft, ypos + 5, marginRight, 0);
 	-- 同じメッセージ削除処理
 	if beforeclusterinfo ~= nil and (tostring(beforeclusterinfo:GetRoomID()) == tostring(clusterinfo:GetRoomID())) and (tostring(beforeclusterinfo:GetCommanderName()) == tostring(clusterinfo:GetCommanderName())) and (tostring(beforeclusterinfo:GetMsg()) == tostring(clusterinfo:GetMsg())) and (tostring(beforeclusterinfo:GetTimeStr()) == tostring(clusterinfo:GetTimeStr())) then
 		chatCtrl:SetOffset( 0 , ypos);
@@ -1064,7 +1070,7 @@ function CHATEXTENDS_BALLON_DRAW(groupboxname, groupbox, clustername, clusterinf
 			label:EnableHitTest(1)
 		end
 		UPDATE_READ_FLAG_BY_GBOX_NAME(groupboxname);
-		CHATEXTENDS_RESIZE_CHAT_CTRL_BALLON(chatCtrl, label, txt, timeBox);
+		CHATEXTENDS_RESIZE_CHAT_CTRL_BALLON(chatCtrl, label, txt, timeBox, tempCommnderName);
 	end
 end
 
@@ -1110,29 +1116,36 @@ end
 --************************************************
 -- 吹き出しの表示位置調整
 --************************************************
-function CHATEXTENDS_RESIZE_CHAT_CTRL_BALLON(chatCtrl, label, txt, timeBox)
-
+function CHATEXTENDS_RESIZE_CHAT_CTRL_BALLON(chatCtrl, label, txt, timeBox, tempCommnderName)
 	local lablWidth = txt:GetWidth() + 40;
 	local chatWidth = chatCtrl:GetWidth();
 	label:Resize(lablWidth, txt:GetHeight() + 20);
 
 	chatCtrl:Resize(chatWidth, label:GetY() + label:GetHeight() + 10);
 
+	local chatCtrlName = 'chatu';
+	if tempCommnderName == GETMYFAMILYNAME() then
+		chatCtrlName = 'chati';
+	end
 	if chatCtrlName == 'chati' then
 		local offsetX = label:GetX() + txt:GetWidth() - 60;
 		if 35 > offsetX then
 			offsetX = offsetX + 40;
 		end
-		if label:GetWidth() < timeBox:GetWidth() + 20 then
-			offsetX = math.min(offsetX, label:GetX() - timeBox:GetWidth()/2);
+		if timeBox ~= nil then
+			if label:GetWidth() < timeBox:GetWidth() + 20 then
+				offsetX = math.min(offsetX, label:GetX() - timeBox:GetWidth()/2);
+			end
+			timeBox:SetOffset(offsetX, label:GetY() + label:GetHeight() - 10);
 		end
-		timeBox:SetOffset(offsetX, label:GetY() + label:GetHeight() - 10);
 	else
-		local offsetX = label:GetX() + txt:GetWidth() - 60;
-		if 35 > offsetX then
-			offsetX = offsetX + 40;
+		if timeBox ~= nil then
+			local offsetX = label:GetX() + txt:GetWidth() - 60;
+			if 35 > offsetX then
+				offsetX = offsetX + 40;
+			end
+			timeBox:SetOffset(offsetX, label:GetY() + label:GetHeight() - 10);
 		end
-		timeBox:SetOffset(offsetX, label:GetY() + label:GetHeight() - 10);
 	end
 end
 
@@ -1266,6 +1279,14 @@ function CHATEXTENDS_CHAT_SET_FONTSIZE_N_COLOR(chatframe)
 				local lastChild = nil;
 				local ctrlSetCount = groupBox:GetChildCount();
 				for j = 0 , ctrlSetCount - 1 do
+					local clusterinfo = session.ui.GetChatMsgInfo(childName, j);
+					local commnderName = "";
+					local tempCommnderName = "";
+					if clusterinfo ~= nil then
+						commnderName = clusterinfo:GetCommanderName();
+						tempCommnderName = string.gsub(commnderName,"( %[.+%])", "");
+					end
+				
 					local chatCtrl = groupBox:GetChildByIndex(j);
 					if chatCtrl:GetClassName() == "controlset" then
 						local label = chatCtrl:GetChild('bg');
@@ -1292,8 +1313,8 @@ function CHATEXTENDS_CHAT_SET_FONTSIZE_N_COLOR(chatframe)
 								end
 							end
 
-							local timeBox = GET_CHILD(chatCtrl, "timebox");
-							CHATEXTENDS_RESIZE_CHAT_CTRL_BALLON(chatCtrl, label, txt, timeBox)
+							local timeBox = GET_CHILD(chatCtrl, "timebox", "ui::CGroupBox");
+							CHATEXTENDS_RESIZE_CHAT_CTRL_BALLON(chatCtrl, label, txt, timeBox, tempCommnderName)
 						else
 
 							local txt = GET_CHILD(chatCtrl, "text", "ui::CRichText");
