@@ -1,4 +1,4 @@
-CHAT_SYSTEM("MARKET SHOW LEVEL v1.3.0 loaded!");
+CHAT_SYSTEM("MARKET SHOW LEVEL v2.0.0 loaded!");
 
 local addonName = "MARKETSHOWLEVEL";
 local addonNameLower = string.lower(addonName);
@@ -18,6 +18,7 @@ g.loaded=false
 
 if not g.loaded then
 	g.settings = {
+		oldflg=true; --表示を古くするか
 		flg=false; --どこかの設定があれば、trueになる
 		hairFlg=false; --どこかの設定があれば、trueになる
 		hairTypeFlg=false; --どこかの設定があれば、trueになる
@@ -141,12 +142,13 @@ local itemColor = {
 local AwakenText="Awaken Option"
 local SocketText="Socket"
 local PotentialText="Potential"
+local newoldText="Simple Equipment List"
 local OptionFilterButtonText = "OPTION FILTER"
 if option.GetCurrentCountry()=="Japanese" then
 	AwakenText="覚醒オプション"
 	SocketText="ソケット"
 	PotentialText="ポテンシャル"
-	
+	newoldText="装備を簡易リストにする"
 end
 
 -- Hat prop Name and Max Values
@@ -248,7 +250,44 @@ function MARKETSHOWLEVEL_ON_INIT(addon, frame)
 	frame:ShowWindow(0);
 	-- 元関数封印
 	-- marketnamesでも同じ箇所にHOOKしているので、毎ロード時実行
-	acutil.setupHook(ON_MARKET_ITEM_LIST_HOOKED, "ON_MARKET_ITEM_LIST");
+
+	if nil == MARKETSHOWLEVEL_ON_MARKET_ITEM_LIST_OLD then
+		MARKETSHOWLEVEL_ON_MARKET_ITEM_LIST_OLD = ON_MARKET_ITEM_LIST;
+		ON_MARKET_ITEM_LIST = MARKETSHOWLEVEL_ON_MARKET_ITEM_LIST_HOOKED;
+	end
+	if nil == MARKETSHOWLEVEL_MARKET_DRAW_CTRLSET_DEFAULT_OLD then
+		MARKETSHOWLEVEL_MARKET_DRAW_CTRLSET_DEFAULT_OLD = MARKET_DRAW_CTRLSET_DEFAULT;
+		MARKET_DRAW_CTRLSET_DEFAULT = MARKETSHOWLEVEL_MARKET_DRAW_CTRLSET_DEFAULT_HOOKED;
+	end
+	if nil == MARKETSHOWLEVEL_MARKET_DRAW_CTRLSET_EQUIP_OLD then
+		MARKETSHOWLEVEL_MARKET_DRAW_CTRLSET_EQUIP_OLD = MARKET_DRAW_CTRLSET_EQUIP;
+		MARKET_DRAW_CTRLSET_EQUIP = MARKETSHOWLEVEL_MARKET_DRAW_CTRLSET_EQUIP_HOOKED;
+	end
+	if nil == MARKETSHOWLEVEL_MARKET_DRAW_CTRLSET_RECIPE_OLD then
+		MARKETSHOWLEVEL_MARKET_DRAW_CTRLSET_RECIPE_OLD = MARKET_DRAW_CTRLSET_RECIPE;
+		MARKET_DRAW_CTRLSET_RECIPE = MARKETSHOWLEVEL_MARKET_DRAW_CTRLSET_RECIPE_HOOKED;
+	end
+	if nil == MARKETSHOWLEVEL_MARKET_DRAW_CTRLSET_RECIPE_SEARCHLIST_OLD then
+		MARKETSHOWLEVEL_MARKET_DRAW_CTRLSET_RECIPE_SEARCHLIST_OLD = MARKET_DRAW_CTRLSET_RECIPE_SEARCHLIST;
+		MARKET_DRAW_CTRLSET_RECIPE_SEARCHLIST = MARKETSHOWLEVEL_MARKET_DRAW_CTRLSET_RECIPE_SEARCHLIST_HOOKED;
+	end
+	if nil == MARKETSHOWLEVEL_MARKET_DRAW_CTRLSET_ACCESSORY_OLD then
+		MARKETSHOWLEVEL_MARKET_DRAW_CTRLSET_ACCESSORY_OLD = MARKET_DRAW_CTRLSET_ACCESSORY;
+		MARKET_DRAW_CTRLSET_ACCESSORY = MARKETSHOWLEVEL_MARKET_DRAW_CTRLSET_ACCESSORY_HOOKED;
+	end
+	if nil == MARKETSHOWLEVEL_MARKET_DRAW_CTRLSET_GEM_OLD then
+		MARKETSHOWLEVEL_MARKET_DRAW_CTRLSET_GEM_OLD = MARKET_DRAW_CTRLSET_GEM;
+		MARKET_DRAW_CTRLSET_GEM = MARKETSHOWLEVEL_MARKET_DRAW_CTRLSET_GEM_HOOKED;
+	end
+	if nil == MARKETSHOWLEVEL_MARKET_DRAW_CTRLSET_CARD_OLD then
+		MARKETSHOWLEVEL_MARKET_DRAW_CTRLSET_CARD_OLD = MARKET_DRAW_CTRLSET_CARD;
+		MARKET_DRAW_CTRLSET_CARD = MARKETSHOWLEVEL_MARKET_DRAW_CTRLSET_CARD_HOOKED;
+	end
+	if nil == MARKETSHOWLEVEL_MARKET_DRAW_CTRLSET_EXPORB_OLD then
+		MARKETSHOWLEVEL_MARKET_DRAW_CTRLSET_EXPORB_OLD = MARKET_DRAW_CTRLSET_EXPORB;
+		MARKET_DRAW_CTRLSET_EXPORB = MARKETSHOWLEVEL_MARKET_DRAW_CTRLSET_EXPORB_HOOKED;
+	end
+
 	-- イベント登録
 	acutil.setupEvent(addon, "ON_OPEN_MARKET", "MARKETSHOWLEVEL_ON_OPEN_MARKET");
 	g.loaded = true;
@@ -257,7 +296,26 @@ end
 function MARKETSHOWLEVEL_ON_OPEN_MARKET(frame, msg)
 	MARKETSHOWLEVEL_FLG_INIT();
 	CUSTOM_DETAIL_BOX();
+	CREATE_NEWOLD_CHECK();
 	CREATE_FILTER_FRAME();
+end
+
+function CREATE_NEWOLD_CHECK()
+	local frame = ui.GetFrame("market")
+	local newoldCheck = frame:CreateOrGetControl("checkbox", "marketshowlevel_check_newold", 620, 55, 250, 35);
+	tolua.cast(newoldCheck, "ui::CCheckBox");
+	newoldCheck:SetClickSound("button_click_big");
+	newoldCheck:SetAnimation("MouseOnAnim",  "btn_mouseover");
+	newoldCheck:SetAnimation("MouseOffAnim", "btn_mouseoff");
+	newoldCheck:SetOverSound("button_over");
+	newoldCheck:SetEventScript(ui.LBUTTONUP, "MARKETSHOWLEVEL_NEWOLD_FLG");
+	newoldCheck:SetFontName("white_16_ol");
+	newoldCheck:SetText(newoldText);
+	if g.settings.oldflg then
+		newoldCheck:SetCheck(1);
+	else
+		newoldCheck:SetCheck(0);
+	end
 end
 
 function CUSTOM_DETAIL_BOX()
@@ -667,7 +725,18 @@ function MARKETSHOWLEVEL_FILTER_SEARCH(frame, ctrl)
 	else
 		g.settings.andFlg=false
 	end
-	MARGET_FIND_PAGE(marketframe, session.market.GetCurPage());
+	MARKET_FIND_PAGE(marketframe, session.market.GetCurPage());
+end
+
+
+function MARKETSHOWLEVEL_NEWOLD_FLG(frame, ctrl, argStr, argNum)
+	local marketframe = ui.GetFrame("market");
+	if ctrl:IsChecked() == 1 then
+		g.settings.oldflg = true;
+	else
+		g.settings.oldflg = false;
+	end
+	MARKET_FIND_PAGE(marketframe, session.market.GetCurPage());
 end
 
 function MARKETSHOWLEVEL_FILTER(frame, ctrl, argStr, argNum)
@@ -684,7 +753,7 @@ function MARKETSHOWLEVEL_FILTER(frame, ctrl, argStr, argNum)
 			g.settings.flg = true;
 		end
 	end
-	MARGET_FIND_PAGE(marketframe, session.market.GetCurPage());
+	MARKET_FIND_PAGE(marketframe, session.market.GetCurPage());
 end
 
 function MARKETSHOWLEVEL_HAIRTYPE_FILTER(frame, ctrl, argStr, argNum)
@@ -701,7 +770,7 @@ function MARKETSHOWLEVEL_HAIRTYPE_FILTER(frame, ctrl, argStr, argNum)
 			g.settings.hairTypeFlg = true;
 		end
 	end
-	MARGET_FIND_PAGE(marketframe, session.market.GetCurPage());
+	MARKET_FIND_PAGE(marketframe, session.market.GetCurPage());
 end
 
 function MARKETSHOWLEVEL_HAIRCOS_FILTER(frame, ctrl, argStr, argNum)
@@ -718,7 +787,7 @@ function MARKETSHOWLEVEL_HAIRCOS_FILTER(frame, ctrl, argStr, argNum)
 			g.settings.hairFlg = true;
 		end
 	end
-	MARGET_FIND_PAGE(marketframe, session.market.GetCurPage());
+	MARKET_FIND_PAGE(marketframe, session.market.GetCurPage());
 end
 
 function MARKETSHOWLEVEL_FLG_INIT()
@@ -726,6 +795,7 @@ function MARKETSHOWLEVEL_FLG_INIT()
 	g.settings.hairFlg=false;
 	g.settings.hairTypeFlg=false;
 	g.settings.andFlg=false;
+	g.settings.oldflg=true;
 	for k,v in pairs(g.settings.filter) do
 		g.settings.filter[k] = false;
 	end
@@ -745,7 +815,7 @@ function MARKETSHOWLEVEL_FILTER_CLEAR()
 	CREATE_RANDOMFILTER_GBOX(random_gbox)
 	local haircos_gbox = GET_CHILD(frame, "MARKETSHOWLEVEL_FILTER_HAIRCOSTUME_GBOX");
 	CREATE_HAIRCOSTUMEFILTER_GBOX(haircos_gbox)
-	MARGET_FIND_PAGE(marketframe, session.market.GetCurPage());
+	MARKET_FIND_PAGE(marketframe, session.market.GetCurPage());
 end
 
 function MARKETSHOWLEVEL_FILTER_HAIRCOSTUME()
@@ -770,66 +840,6 @@ end
 
 function CLOSE_FILTER_FRAME()
 	ui.CloseFrame("marketshowlevel");
-end
-
-function GET_GEM_INFO(itemObj)
-	local gemInfo = "";
-	local fn = GET_FULL_NAME_OLD or GET_FULL_NAME;
-
-	local socketId;
-	local rstLevel;
-	local gemName;
-	local exp;
-	local color="";
-
-	for i = 0, 4 do
-
-		socketId = itemObj["Socket_Equip_" .. i];
-		rstLevel = itemObj["Socket_JamLv_" .. i];
-		exp = itemObj["SocketItemExp_" .. i];
-
-		if socketId > 0 then
-			if #gemInfo > 0 then
-				gemInfo = gemInfo.." ";
-			end
-
-			local obj = GetClassByType("Item", socketId);
-			gemName = fn(obj);
-			local gemLevel = 0;
-
-			if exp >= 27014700 then
-				gemLevel = 10;
-			elseif exp >= 5414700 then
-				gemLevel = 9;
-			elseif exp >= 1094700 then
-				gemLevel = 8;
-			elseif exp >= 230700 then
-				gemLevel = 7;
-			elseif exp >= 57900 then
-				gemLevel = 6;
-			elseif exp >= 14700 then
-				gemLevel = 5;
-			elseif exp >= 3900 then
-				gemLevel = 4;
-			elseif exp >= 1200 then
-				gemLevel = 3;
-			elseif exp >= 300 then
-				gemLevel = 2;
-			else
-				gemLevel = 1;
-			end
-
-			if gemLevel <= rstLevel then
-				gemInfo = gemInfo .. "{#FF7F50}{ol}Lv" .. gemLevel .. ":" .. GET_ITEM_IMG_BY_CLS(obj, 20) .. "{/}{/}";
-			else
-				gemInfo = gemInfo .. "{#FFFFFF}{ol}Lv" .. gemLevel .. ":" .. GET_ITEM_IMG_BY_CLS(obj, 20) .. "{/}{/}";
-			end
-
-		end
-	end
-
-	return gemInfo;
-
 end
 
 function GET_HAT_PROP(itemObj,ctrlSet)
@@ -1011,11 +1021,10 @@ function GET_ITEM_VALUE_COLOR(propname,value, max)
 end
 
 function GET_EQUIP_PROP(ctrlSet, itemObj, row)
-	local gemInfo = GET_GEM_INFO(itemObj);
 	local prop = GET_HAT_PROP(itemObj,ctrlSet);
 	local randomInfo = GET_INFO_RANDOM(itemObj,ctrlSet)
 
-	local propDetail = ctrlSet:CreateControl("richtext", "PROP_ITEM_" .. row, 100, 42, 0, 0);
+	local propDetail = ctrlSet:CreateControl("richtext", "PROP_ITEM_" .. row, 70, 42, 0, 0);
 	tolua.cast(propDetail, 'ui::CRichText');
 	propDetail:SetFontName("brown_16_b");
 	if #randomInfo > 0 then
@@ -1031,248 +1040,904 @@ function GET_EQUIP_PROP(ctrlSet, itemObj, row)
 	if itemObj.ClassType == "Hat" then
 		propDetail:SetText(charScale..prop.."{/}");
 	else
-		propDetail:SetText(charScale..randomInfo..gemInfo.."{/}");
+		propDetail:SetText(charScale..randomInfo.."{/}");
 	end
 	propDetail:Resize(100, propDetail:GetY()-12)
 	propDetail:SetTextAlign(propAlign, "top");
 end
 
 function GET_SOCKET_POTENSIAL_AWAKEN_PROP(ctrlSet, itemObj, row)
-	local nowusesocketcount = 0
-	for i = 0, itemObj.MaxSocket - 1 do
-		local nowsockettype = itemObj['Socket_' .. i]
-
-		if nowsockettype ~= 0 then
-			nowusesocketcount = nowusesocketcount + 1
-		end
-	end
-
 	local awakenProp = "";
 
 	if itemObj.IsAwaken == 1 then
 		awakenProp = "{#3300FF}{b}"..AwakenText.."["..propList[itemObj.HiddenProp].name.. " "..itemObj.HiddenPropValue.."]{/}{/}";
 	end
 
-	local maxPR = 0;
-	if itemObj.MaxPR == 0 then
-		local itemCls = GetClass("Item",itemObj.ClassName)
-		maxPR = itemCls.PR
-	else
-		maxPR = itemObj.MaxPR
-	end
-
-
-	local socketDetail = ctrlSet:CreateControl("richtext", "SOCKTE_ITEM_" .. row, 100, 7, 0, 0);
+	local socketDetail = ctrlSet:CreateControl("richtext", "SOCKTE_ITEM_" .. row, 70, 7, 0, 0);
 	tolua.cast(socketDetail, 'ui::CRichText');
 	socketDetail:SetFontName("brown_16_b");
-	if itemObj.NeedAppraisal ~= 0 then
-		socketDetail:SetText("{s13}"..SocketText.."[??/??] "..PotentialText.."[??/??] "..awakenProp.."{/}");
-	else
-		socketDetail:SetText("{s13}"..SocketText.."["..nowusesocketcount.."/"..itemObj.MaxSocket.."] "..PotentialText.."["..itemObj.PR.."/"..maxPR.."] "..awakenProp.."{/}");
-	end
+	socketDetail:SetText("{s13}"..awakenProp.."{/}");
 	socketDetail:Resize(400, 0)
 	socketDetail:SetTextAlign(propAlign, "center");
 end
 
---Market names integration
-function SHOW_MARKET_NAMES(ctrlSet, marketItem)
-	if marketItem == nil then
-		return;
-	end
+function MARKETSHOWLEVEL_ON_MARKET_ITEM_LIST_HOOKED(frame, msg, argStr, argNum)
+	MARKETSHOWLEVEL_ON_MARKET_ITEM_LIST_OLD(frame, msg, argStr, argNum);
 
-	if _G["MARKETNAMES"] == nil then
-		return;
-	end
-	
-	local marketName = _G["MARKETNAMES"][marketItem:GetSellerCID()];
-	if marketName == nil then
-		return;
-	end
-	
-	local buyButton = ctrlSet:GetChild("button_1");
+	local itemlist = GET_CHILD_RECURSIVELY(frame, "itemListGbox");
+	itemlist:EnableScrollBar(1);
+	frame:Resize(1440,1000);
+	itemlist:Resize(1090,730);
+end
 
-	if buyButton ~= nil then
-		buyButton:SetTextTooltip("Buy from " .. marketName.characterName .. " " .. marketName.familyName .. "!");
+-- OLD関数内で呼ばれているlocal fanctionを移行 (addon.ipf/market/market.lua)
+function MARKETSHOWLEVEL_MARKET_CTRLSET_SET_ICON(ctrlSet, itemObj, marketItem)
+	local pic = GET_CHILD_RECURSIVELY(ctrlSet, "pic");
+	SET_SLOT_ITEM_CLS(pic, itemObj)
+	SET_ITEM_TOOLTIP_ALL_TYPE(pic:GetIcon(), marketItem, itemObj.ClassName, "market", marketItem.itemType, marketItem:GetMarketGuid());
+
+    SET_SLOT_STYLESET(pic, itemObj)
+    if itemObj.MaxStack > 1 then
+		SET_SLOT_COUNT_TEXT(pic, marketItem.count, '{s16}{ol}{b}');
 	end
 end
 
-function ON_MARKET_ITEM_LIST_HOOKED(frame, msg, argStr, argNum)
-	if frame:IsVisible() == 0 then
-		return;
-	end
+function MARKETSHOWLEVEL_MARKET_DRAW_CTRLSET_DEFAULT_HOOKED(frame, isShowLevel)
+	MARKETSHOWLEVEL_MARKET_DRAW_CTRLSET_DEFAULT_NEWFRAME(frame, isShowLevel);
+end
 
-	local itemlist = GET_CHILD(frame, "itemlist", "ui::CDetailListBox");
+function MARKETSHOWLEVEL_MARKET_DRAW_CTRLSET_EQUIP_HOOKED(frame)
+	if g.settings.oldflg then
+		MARKETSHOWLEVEL_MARKET_ITEM_OLDLIST(frame)
+	else
+		MARKETSHOWLEVEL_MARKET_DRAW_CTRLSET_EQUIP_NEWFRAME(frame);
+	end
+end
+
+function MARKETSHOWLEVEL_MARKET_DRAW_CTRLSET_RECIPE_HOOKED(frame)
+	MARKETSHOWLEVEL_MARKET_DRAW_CTRLSET_RECIPE_OLD(frame);
+end
+
+function MARKETSHOWLEVEL_MARKET_DRAW_CTRLSET_RECIPE_SEARCHLIST_HOOKED(frame)
+	MARKETSHOWLEVEL_MARKET_DRAW_CTRLSET_RECIPE_SEARCHLIST_OLD(frame);
+end
+
+function MARKETSHOWLEVEL_MARKET_DRAW_CTRLSET_ACCESSORY_HOOKED(frame)
+	MARKETSHOWLEVEL_MARKET_DRAW_CTRLSET_ACCESSORY_OLD(frame);
+end
+
+function MARKETSHOWLEVEL_MARKET_DRAW_CTRLSET_GEM_HOOKED(frame)
+	MARKETSHOWLEVEL_MARKET_DRAW_CTRLSET_GEM_NEWFRAME(frame);
+end
+
+function MARKETSHOWLEVEL_MARKET_DRAW_CTRLSET_CARD_HOOKED(frame)
+	MARKETSHOWLEVEL_MARKET_DRAW_CTRLSET_CARD_OLD(frame);
+end
+
+function MARKETSHOWLEVEL_MARKET_DRAW_CTRLSET_EXPORB_HOOKED(frame)
+	MARKETSHOWLEVEL_MARKET_DRAW_CTRLSET_EXPORB_OLD(frame);
+end
+
+
+function MARKETSHOWLEVEL_MARKET_DRAW_CTRLSET_DEFAULT_NEWFRAME(frame, isShowLevel)
+	local itemlist = GET_CHILD_RECURSIVELY(frame, "itemListGbox");
 	itemlist:RemoveAllChild();
 	local mySession = session.GetMySession();
 	local cid = mySession:GetCID();
-
 	local count = session.market.GetItemCount();
+
+	MARKET_SELECT_SHOW_TITLE(frame, "defaultTitle")
+	local defaultTitle_level = GET_CHILD_RECURSIVELY(frame, "defaultTitle_level")
+	if isShowLevel ~= nil and isShowLevel == false then
+		defaultTitle_level:ShowWindow(0)
+	else
+		defaultTitle_level:ShowWindow(1)
+	end
+
+	local yPos = 0
 	for i = 0 , count - 1 do
 		local marketItem = session.market.GetItemByIndex(i);
 		local itemObj = GetIES(marketItem:GetObject());
-
-
 		local refreshScp = itemObj.RefreshScp;
 		if refreshScp ~= "None" then
 			refreshScp = _G[refreshScp];
 			refreshScp(itemObj);
 		end	
 
-		local ctrlSet = INSERT_CONTROLSET_DETAIL_LIST(itemlist, i, 0, "market_item_detail");
-		ctrlSet = tolua.cast(ctrlSet, "ui::CControlSet");
-		ctrlSet:EnableHitTestSet(1);
+		local ctrlSet = itemlist:CreateControlSet("market_item_detail_default", "ITEM_EQUIP_" .. i, ui.LEFT, ui.TOP, 0, 0, 0, yPos);
+		AUTO_CAST(ctrlSet)
 		ctrlSet:SetUserValue("DETAIL_ROW", i);
 
-		SET_ITEM_TOOLTIP_ALL_TYPE(ctrlSet, marketItem, itemObj.ClassName, "market", marketItem.itemType, marketItem:GetMarketGuid());
+		MARKETSHOWLEVEL_MARKET_CTRLSET_SET_ICON(ctrlSet, itemObj, marketItem);
 
-		local pic = GET_CHILD(ctrlSet, "pic", "ui::CPicture");
-		local imgName = GET_ITEM_ICON_IMAGE(itemObj);
-		pic:SetImage(imgName);
+		if itemObj.GroupName == "ExpOrb" then
+			local curExp, maxExp = GET_LEGENDEXPPOTION_EXP(itemObj)
+			local expPoint = 0
+			if maxExp ~= nil and maxExp ~= 0 then
+				expPoint = curExp / maxExp * 100
+			else 
+				expPoint = 0
+			end
+			local expStr = string.format("%.2f", expPoint)
+
+			MARKET_SET_EXPORB_ICON(ctrlSet, curExp, maxExp, itemObj)
+		end
 
 		local name = ctrlSet:GetChild("name");
-
--- add code start
-
-		local itemLevel = GET_ITEM_LEVEL(itemObj);
-		local itemGroup = itemObj.GroupName;
-
-		if itemGroup == "Weapon" or itemGroup == "SubWeapon" or itemGroup == "Armor" then
-			name:SetTextByKey("value", GET_FULL_NAME(itemObj));
-			if itemObj.NeedAppraisal ~= 0 or itemObj.NeedRandomOption ~= 0 then
-				pic:SetColorTone("CC222222");
-			end
-			if itemObj.ClassType ~= "Hat" then
-				GET_SOCKET_POTENSIAL_AWAKEN_PROP(ctrlSet, itemObj, i);
-			end
-			GET_EQUIP_PROP(ctrlSet, itemObj, i);
-		elseif itemGroup == "Gem" or itemGroup == "Card" then
-			name:SetTextByKey("value", "Lv".. itemLevel .. ":" .. GET_FULL_NAME(itemObj));
-
-			local propDetail = ctrlSet:CreateControl("richtext", "PROP_ITEM_" .. i, 100, 42, 0, 0);
-			tolua.cast(propDetail, 'ui::CRichText');
-			propDetail:SetFontName("brown_16_b");
-			local charScale = "{s14}";
-
-			if itemGroup == "Gem" then
-				-- Monster Jem
-				if itemObj["EquipXpGroup"] == "Gem_Skill" then
-					local gemSkill = string.sub(itemObj["ClassName"],5);
-					local skillClass = GetClass("Skill", gemSkill);
-
-					local equipList = StringSplit(itemObj["EnableEquipParts"], "/");
-					local equipPos = "";
-					local sep = "/";
-					for equipIndex = 1 , #equipList do
-						if equipIndex == #equipList then
-							sep = "";
-						end
-						if equipList[equipIndex] == "TopLeg" then
-							equipPos = equipPos .. ClMsg("Shirt").. "/";
-							equipPos = equipPos .. ClMsg("Pants").. sep;
-						elseif equipList[equipIndex] == "Hand" then
-							equipPos = equipPos .. ClMsg("Gloves").. sep;
-						elseif equipList[equipIndex] == "Foot" then
-							equipPos = equipPos .. ClMsg("Boots").. sep;
-						else
-							equipPos = equipPos .. ClMsg(equipList[equipIndex]).. sep;
-						end
-					end
-					propDetail:SetText(charScale.."Skill:{#FFFFFF}{ol}"..skillClass.Name.."{/}{/}  Equip:{#FFFFFF}{ol}["..equipPos.."]{/}{/}{/}");
-				end
-			elseif itemGroup == "Card" then
-				propDetail:SetText(charScale..itemObj["Desc"].."{/}");
-			end
-
-			propDetail:Resize(100, propDetail:GetY()-12)
-			propDetail:SetTextAlign(propAlign, "top");
-
-		elseif (itemObj.ClassName == "Scroll_SkillItem") then
+		if (itemObj.ClassName == "Scroll_SkillItem") then
 			local skillClass = GetClassByType("Skill", itemObj.SkillType);
 			name:SetTextByKey("value", "Lv".. itemObj.SkillLevel .. " " .. skillClass.Name .. ":" .. GET_FULL_NAME(itemObj));
 		else
 			name:SetTextByKey("value", GET_FULL_NAME(itemObj));
 		end
 
--- add code end
-
-		local count = ctrlSet:GetChild("count");
-		count:SetTextByKey("value", marketItem.count);
-		
 		local level = ctrlSet:GetChild("level");
-		level:SetTextByKey("value", itemObj.UseLv);
-
-		local price = ctrlSet:GetChild("price");
-		price:SetTextByKey("value", GetCommaedText(marketItem.sellPrice));
-		price:SetUserValue("Price", marketItem.sellPrice);
-
-		--Marketnames integration
-		if (marketItem ~= nil) then
-			SHOW_MARKET_NAMES(ctrlSet, marketItem)
+		local levelValue = ""
+		if itemObj.GroupName == "Gem" then
+			levelValue = GET_ITEM_LEVEL_EXP(itemObj)
+		elseif itemObj.GroupName == "Card" then
+			levelValue = itemObj.Level
+		elseif itemObj.ItemType == "Equip" and itemObj.GroupName ~= "Premium" then
+			levelValue = itemObj.UseLv
 		end
+		level:SetTextByKey("value", levelValue);
+
+		local price_num = ctrlSet:GetChild("price_num");
+		price_num:SetTextByKey("value", GetCommaedText(marketItem.sellPrice));
+		price_num:SetUserValue("Price", marketItem.sellPrice);
+
+		local price_text = ctrlSet:GetChild("price_text");
+		price_text:SetTextByKey("value", GetMonetaryString(marketItem.sellPrice));
 
 		if cid == marketItem:GetSellerCID() then
-			local button_1 = ctrlSet:GetChild("button_1");
-			button_1:SetEnable(0);
+			local buyBtn = GET_CHILD_RECURSIVELY(ctrlSet, "buyBtn");
+			buyBtn:ShowWindow(0)
+			buyBtn:SetEnable(0);
+			local cancelBtn = GET_CHILD_RECURSIVELY(ctrlSet, "cancelBtn");
+			cancelBtn:ShowWindow(1)
+			cancelBtn:SetEnable(1)
 
-			local btnmargin = 639
 			if USE_MARKET_REPORT == 1 then
-				local button_report = ctrlSet:GetChild("button_report");
-				button_report:SetEnable(0);
-				btnmargin = 720
+				local reportBtn = ctrlSet:GetChild("reportBtn");
+				reportBtn:SetEnable(0);
 			end
 
-			local btn = ctrlSet:CreateControl("button", "DETAIL_ITEM_" .. i, btnmargin, 8, 100, 50);
-			btn = tolua.cast(btn, "ui::CButton");
-			btn:ShowWindow(1);
-			btn:SetText("{@st41b}" .. ClMsg("Cancel"));
-			btn:SetTextAlign("center", "center");
-
-			if notUseAnim ~= true then
-				btn:SetAnimation("MouseOnAnim", "btn_mouseover");
-				btn:SetAnimation("MouseOffAnim", "btn_mouseoff");
-			end
-			btn:UseOrifaceRectTextpack(true)
-			btn:SetEventScript(ui.LBUTTONUP, "CANCEL_MARKET_ITEM");
-			btn:SetEventScriptArgString(ui.LBUTTONUP,marketItem:GetMarketGuid());
-			btn:SetSkinName("test_pvp_btn");
-			local totalPrice = ctrlSet:GetChild("totalPrice");
-			totalPrice:SetTextByKey("value", 0);
+			local totalPrice_num = ctrlSet:GetChild("totalPrice_num");
+			totalPrice_num:SetTextByKey("value", 0);
+			local totalPrice_text = ctrlSet:GetChild("totalPrice_text");
+			totalPrice_text:SetTextByKey("value", 0);
 		else
-			local btnmargin = 639
-			if USE_MARKET_REPORT == 1 then
-				btnmargin = 560
-			end
-			local numUpDown = ctrlSet:CreateControl("numupdown", "DETAIL_ITEM_" .. i, btnmargin, 20, 100, 30);
-			numUpDown = tolua.cast(numUpDown, "ui::CNumUpDown");
-			numUpDown:SetFontName("white_18_ol");
-			numUpDown:MakeButtons("btn_numdown", "btn_numup", "editbox");
-			numUpDown:ShowWindow(1);
-			numUpDown:SetMaxValue(marketItem.count);
-			numUpDown:SetMinValue(1);
-			numUpDown:SetNumChangeScp("MARKET_CHANGE_COUNT");
-			numUpDown:SetClickSound('button_click_chat');
-			numUpDown:SetNumberValue(1)
 
-			local totalPrice = ctrlSet:GetChild("totalPrice");
-				totalPrice:SetTextByKey("value", GetCommaedText(marketItem.sellPrice));
-				totalPrice:SetUserValue("Price", marketItem.sellPrice);
+			local buyBtn = GET_CHILD_RECURSIVELY(ctrlSet, "buyBtn");
+			buyBtn:ShowWindow(1)
+			buyBtn:SetEnable(1);
+			local cancelBtn = GET_CHILD_RECURSIVELY(ctrlSet, "cancelBtn");
+			cancelBtn:ShowWindow(0)
+			cancelBtn:SetEnable(0)
+
+			local editCount = GET_CHILD_RECURSIVELY(ctrlSet, "count")
+			editCount:SetMinNumber(1)
+			editCount:SetMaxNumber(marketItem.count)
+			editCount:SetText("1")
+			editCount:SetNumChangeScp("MARKET_CHANGE_COUNT");
+			ctrlSet:SetUserValue("minItemCount", 1)
+			ctrlSet:SetUserValue("maxItemCount", marketItem.count)
+			local totalPrice_num = ctrlSet:GetChild("totalPrice_num");
+			totalPrice_num:SetTextByKey("value", GetCommaedText(marketItem.sellPrice));
+			totalPrice_num:SetUserValue("Price", marketItem.sellPrice);
+
+			local totalPrice_text = ctrlSet:GetChild("totalPrice_text");
+			totalPrice_text:SetTextByKey("value", GetMonetaryString(marketItem.sellPrice));
 		end		
+
+		ctrlSet:SetUserValue("sellPrice", marketItem.sellPrice)
 	end
 
-	itemlist:RealignItems();
-	GBOX_AUTO_ALIGN(itemlist, 10, 0, 0, false, true);
+	GBOX_AUTO_ALIGN(itemlist, 4, 0, 0, false, true);
 
 	local maxPage = math.ceil(session.market.GetTotalCount() / MARKET_ITEM_PER_PAGE);
 	local curPage = session.market.GetCurPage();
 	local pagecontrol = GET_CHILD(frame, 'pagecontrol', 'ui::CPageController')
-	if maxPage < 1 then
-		maxPage = 1;
-	end
+    if maxPage < 1 then
+        maxPage = 1;
+    end
 
 	pagecontrol:SetMaxPage(maxPage);
 	pagecontrol:SetCurPage(curPage);
+end
 
-	if nil ~= argNum and  argNum == 1 then
-		MARGET_FIND_PAGE(frame, session.market.GetCurPage());
+function MARKETSHOWLEVEL_MARKET_DRAW_CTRLSET_EQUIP_NEWFRAME(frame)
+	local itemlist = GET_CHILD_RECURSIVELY(frame, "itemListGbox");
+	itemlist:RemoveAllChild();
+	local mySession = session.GetMySession();
+	local cid = mySession:GetCID();
+	local count = session.market.GetItemCount();
+
+	MARKET_SELECT_SHOW_TITLE(frame, "equipTitle")
+	local tempTitleGbox = GET_CHILD_RECURSIVELY(frame, "equipTitle")
+	local equipTitle_stats = GET_CHILD_RECURSIVELY(tempTitleGbox, "equipTitle_stats")
+	equipTitle_stats:ShowWindow(1)
+	local equipTitle_level = GET_CHILD_RECURSIVELY(tempTitleGbox, "equipTitle_level")
+	equipTitle_level:SetOffset(equipTitle_level:GetOriginalX(), equipTitle_level:GetOriginalY());
+
+	local yPos = 0
+	for i = 0 , count - 1 do
+		local marketItem = session.market.GetItemByIndex(i);
+		local itemObj = GetIES(marketItem:GetObject());
+		local refreshScp = itemObj.RefreshScp;
+		if refreshScp ~= "None" then
+			refreshScp = _G[refreshScp];
+			refreshScp(itemObj);
+		end
+
+		local ctrlSet = itemlist:CreateControlSet("market_item_detail_equip", "ITEM_EQUIP_" .. i, ui.LEFT, ui.TOP, 0, 0, 0, yPos);
+		AUTO_CAST(ctrlSet)
+		ctrlSet:SetUserValue("DETAIL_ROW", i);
+		ctrlSet:SetUserValue("optionIndex", 0)
+
+		local inheritanceItem = GetClass('Item', itemObj.InheritanceItemName)
+		MARKETSHOWLEVEL_MARKET_CTRLSET_SET_ICON(ctrlSet, itemObj, marketItem);
+
+		local name = GET_CHILD_RECURSIVELY(ctrlSet, "name");
+		name:SetTextByKey("value", GET_FULL_NAME(itemObj));
+
+		local level = GET_CHILD_RECURSIVELY(ctrlSet, "level");
+		level:SetTextByKey("value", itemObj.UseLv);
+
+		--ATK, MATK, DEF 
+		local atkdefImageSize = ctrlSet:GetUserConfig("ATKDEF_IMAGE_SIZE")
+ 		local basicProp = 'None';
+ 		local atkdefText = "";
+    	if itemObj.BasicTooltipProp ~= 'None' then
+    		local basicTooltipPropList = StringSplit(itemObj.BasicTooltipProp, ';');
+    	    for i = 1, #basicTooltipPropList do
+    	        basicProp = basicTooltipPropList[i];
+    	        if basicProp == 'ATK' then
+				    typeiconname = 'test_sword_icon'
+					typestring = ScpArgMsg("Melee_Atk")
+					if TryGetProp(itemObj, 'EquipGroup') == "SubWeapon" then
+						typestring = ScpArgMsg("PATK_SUB")
+					end
+					arg1 = itemObj.MINATK;
+					arg2 = itemObj.MAXATK;
+				elseif basicProp == 'MATK' then
+				    typeiconname = 'test_sword_icon'
+					typestring = ScpArgMsg("Magic_Atk")
+					arg1 = itemObj.MATK;
+					arg2 = itemObj.MATK;
+				else
+					typeiconname = 'test_shield_icon'
+					typestring = ScpArgMsg(basicProp);
+					if itemObj.RefreshScp ~= 'None' then
+						local scp = _G[itemObj.RefreshScp];
+						if scp ~= nil then
+							scp(itemObj);
+						end
+					end
+					
+					arg1 = TryGetProp(itemObj, basicProp);
+					arg2 = TryGetProp(itemObj, basicProp);
+				end
+
+				local tempStr = string.format("{img %s %d %d}", typeiconname, atkdefImageSize, atkdefImageSize)
+				local tempATKDEF = ""
+				if arg1 == arg2 or arg2 == 0 then
+					tempATKDEF = " " .. arg1
+				else
+					tempATKDEF = " " .. arg1 .. "~" .. arg2
+				end
+
+				if i == 1 then
+					atkdefText = atkdefText .. tempStr .. typestring .. tempATKDEF
+				else
+					atkdefText = atkdefText .. "{nl}" .. tempStr .. typestring .. tempATKDEF
+				end
+    	    end
+   		end
+
+    	local atkdef = GET_CHILD_RECURSIVELY(ctrlSet, "atkdef");
+		atkdef:SetTextByKey("value", atkdefText);
+
+		--SOCKET
+
+		local socket = GET_CHILD_RECURSIVELY(ctrlSet, "socket")
+		
+		local needAppraisal = TryGetProp(itemObj, "NeedAppraisal");
+		local needRandomOption = TryGetProp(itemObj, "NeedRandomOption");
+			local maxSocketCount = itemObj.MaxSocket
+			local drawFlag = 0
+			if maxSocketCount > 3 then
+				drawFlag = 1
+			end
+
+			local curCount = 1
+			local socketText = ""
+			local tempStr = ""
+			for i = 0, maxSocketCount - 1 do
+				if itemObj['Socket_' .. i] > 0 then
+					
+					local isEquip = itemObj['Socket_Equip_' .. i]
+					if isEquip == 0 then
+						tempStr = ctrlSet:GetUserConfig("SOCKET_IMAGE_EMPTY")
+						if drawFlag == 1 and curCount % 2 == 1 then
+							socketText = socketText .. tempStr
+						else
+							socketText = socketText .. tempStr .. "{nl}"
+						end
+					else
+						local gemClass = GetClassByType("Item", isEquip);
+						if gemClass.ClassName == 'gem_circle_1' then
+							tempStr = ctrlSet:GetUserConfig("SOCKET_IMAGE_RED")
+						elseif gemClass.ClassName == 'gem_square_1' then
+							tempStr = ctrlSet:GetUserConfig("SOCKET_IMAGE_BLUE")
+						elseif gemClass.ClassName == 'gem_diamond_1' then
+							tempStr = ctrlSet:GetUserConfig("SOCKET_IMAGE_GREEN")
+						elseif gemClass.ClassName == 'gem_star_1' then
+							tempStr = ctrlSet:GetUserConfig("SOCKET_IMAGE_YELLOW")
+						elseif gemClass.ClassName == 'gem_White_1' then
+							tempStr = ctrlSet:GetUserConfig("SOCKET_IMAGE_WHITE")
+						elseif gemClass.EquipXpGroup == "Gem_Skill" then
+							tempStr = ctrlSet:GetUserConfig("SOCKET_IMAGE_MONSTER")
+						end
+						
+						local gemLv = GET_ITEM_LEVEL_EXP(gemClass, itemObj['SocketItemExp_' .. i])
+						tempStr = tempStr .. "Lv" .. gemLv
+
+						if drawFlag == 1 and curCount % 2 == 1 then
+							socketText = socketText .. tempStr
+						else
+							socketText = socketText .. tempStr .. "{nl}"
+						end
+					end									
+				end
+				curCount = curCount + 1
+			end
+			socket:SetTextByKey("value", socketText)
+
+		-- POTENTIAL
+
+		local potential = GET_CHILD_RECURSIVELY(ctrlSet, "potential");
+		if needAppraisal == 1 then
+			potential:SetTextByKey("value1", "?")
+			potential:SetTextByKey("value2", "?")			
+		else
+			potential:SetTextByKey("value1", itemObj.PR)
+			potential:SetTextByKey("value2", itemObj.MaxPR)
+		end
+
+		-- OPTION
+
+		local originalItemObj = itemObj
+		if inheritanceItem ~= nil then
+			itemObj = inheritanceItem
+		end
+
+		if needAppraisal == 1 or needRandomOption == 1 then
+			SET_MARKET_EQUIP_CTRLSET_OPTION_TEXT(ctrlSet, '{@st66b}'..ScpArgMsg("AppraisalItem"))
+		end
+
+		local basicList = GET_EQUIP_TOOLTIP_PROP_LIST(itemObj);
+	    local list = {};
+    	local basicTooltipPropList = StringSplit(itemObj.BasicTooltipProp, ';');
+    	for i = 1, #basicTooltipPropList do
+    	    local basicTooltipProp = basicTooltipPropList[i];
+    	    list = GET_CHECK_OVERLAP_EQUIPPROP_LIST(basicList, basicTooltipProp, list);
+    	end
+
+		local list2 = GET_EUQIPITEM_PROP_LIST();
+		local cnt = 0;
+		local class = GetClassByType("Item", itemObj.ClassID);
+
+		local maxRandomOptionCnt = MAX_OPTION_EXTRACT_COUNT;
+		local randomOptionProp = {};
+		for i = 1, maxRandomOptionCnt do
+			if itemObj['RandomOption_'..i] ~= 'None' then
+				randomOptionProp[itemObj['RandomOption_'..i]] = itemObj['RandomOptionValue_'..i];
+			end
+		end
+
+		if g.settings.hairFlg or g.settings.hairTypeFlg then
+			ctrlSet:SetSkinName("tooltip1")
+			local gbox = GET_CHILD_RECURSIVELY(ctrlSet, "optionGbox");
+			gbox:SetSkinName("None")
+		end
+		local propNameList = {};
+		for i = 1 , 3 do
+			local propName = "HatPropName_"..i;
+			local propValue = "HatPropValue_"..i;
+			if itemObj[propValue] ~= 0 and itemObj[propName] ~= "None" then
+				local opName = string.format("%s", ScpArgMsg(itemObj[propName]));
+				local strInfo = ABILITY_DESC_PLUS(opName, itemObj[propValue]);
+				SET_MARKET_EQUIP_CTRLSET_OPTION_TEXT(ctrlSet, strInfo);
+				if g.settings.hairFlg then
+					if g.settings.andFlg then
+						propNameList[itemObj[propName]] = true;
+					else
+						if g.settings.hairFilter[itemObj[propName]] then
+							ctrlSet:SetSkinName("market_listbase")
+							local gbox = GET_CHILD_RECURSIVELY(ctrlSet, "optionGbox");
+							gbox:SetSkinName("equip_detail_skin")
+						end
+					end
+				end
+			end
+		end
+		local propTypeList = {};
+		local propType = "";
+		propType = itemObj.EqpType;
+		if g.settings.hairTypeFlg then
+			if g.settings.andFlg then
+				propTypeList[propType] = true;
+			else
+				if g.settings.hairTypeFilter[propType] then
+					ctrlSet:SetSkinName("market_listbase")
+					local gbox = GET_CHILD_RECURSIVELY(ctrlSet, "optionGbox");
+					gbox:SetSkinName("equip_detail_skin")
+				end
+			end
+		end
+
+		if g.settings.hairFlg or g.settings.hairTypeFlg then
+			if g.settings.andFlg then
+				local matchFlg = true;
+				for k, v in pairs(g.settings.hairFilter) do
+					if v then
+						if nil == propNameList[k] then
+							matchFlg = false;
+						end
+					end
+				end
+				for k, v in pairs(g.settings.hairTypeFilter) do
+					if v then
+						if nil == propTypeList[k] then
+							matchFlg = false;
+						end
+					end
+				end
+				if matchFlg then
+					ctrlSet:SetSkinName("market_listbase")
+					local gbox = GET_CHILD_RECURSIVELY(ctrlSet, "optionGbox");
+					gbox:SetSkinName("equip_detail_skin")
+				end
+			end
+		end
+	
+		if g.settings.flg then
+			ctrlSet:SetSkinName("tooltip1")
+			local gbox = GET_CHILD_RECURSIVELY(ctrlSet, "optionGbox");
+			gbox:SetSkinName("None")
+		end
+		local propNameList = {};
+		for i = 1 , maxRandomOptionCnt do
+		    local propGroupName = "RandomOptionGroup_"..i;
+			local propName = "RandomOption_"..i;
+			local propValue = "RandomOptionValue_"..i;
+			local clientMessage = 'None'
+
+			local propItem = originalItemObj
+
+			if propItem[propGroupName] == 'ATK' then
+			    clientMessage = 'ItemRandomOptionGroupATK'
+			elseif propItem[propGroupName] == 'DEF' then
+			    clientMessage = 'ItemRandomOptionGroupDEF'
+			elseif propItem[propGroupName] == 'UTIL_WEAPON' then
+			    clientMessage = 'ItemRandomOptionGroupUTIL'
+			elseif propItem[propGroupName] == 'UTIL_ARMOR' then
+			    clientMessage = 'ItemRandomOptionGroupUTIL'
+			elseif propItem[propGroupName] == 'UTIL_SHILED' then
+			    clientMessage = 'ItemRandomOptionGroupUTIL'
+			elseif propItem[propGroupName] == 'STAT' then
+			    clientMessage = 'ItemRandomOptionGroupSTAT'
+			end
+			
+			if propItem[propValue] ~= 0 and propItem[propName] ~= "None" then
+				local opName = string.format("%s %s", ClMsg(clientMessage), ScpArgMsg(propItem[propName]));
+				local strInfo = ABILITY_DESC_NO_PLUS(opName, propItem[propValue], 0);
+				SET_MARKET_EQUIP_CTRLSET_OPTION_TEXT(ctrlSet, strInfo);
+				if g.settings.flg then
+					if g.settings.andFlg then
+						propNameList[propItem[propName]] = true;
+					else
+						if g.settings.filter[propItem[propName]] then
+							ctrlSet:SetSkinName("market_listbase")
+							local gbox = GET_CHILD_RECURSIVELY(ctrlSet, "optionGbox");
+							gbox:SetSkinName("equip_detail_skin")
+						end
+					end
+				end
+			end
+		end
+		if g.settings.flg then
+			if g.settings.andFlg then
+				local matchFlg = true;
+				for k, v in pairs(g.settings.filter) do
+					if v then
+						if nil == propNameList[k] then
+							matchFlg = false;
+						end
+					end
+				end
+				if matchFlg then
+					ctrlSet:SetSkinName("market_listbase")
+					local gbox = GET_CHILD_RECURSIVELY(ctrlSet, "optionGbox");
+					gbox:SetSkinName("equip_detail_skin")
+				end
+			end
+		end
+
+        if originalItemObj['RandomOptionRareValue'] ~= 0 and originalItemObj['RandomOptionRare'] ~= "None" then
+			local strInfo = _GET_RANDOM_OPTION_RARE_CLIENT_TEXT(originalItemObj['RandomOptionRare'], originalItemObj['RandomOptionRareValue']);
+            if strInfo ~= nil then
+			    SET_MARKET_EQUIP_CTRLSET_OPTION_TEXT(ctrlSet, strInfo);
+            end
+		end
+
+		if itemObj.OptDesc ~= nil and itemObj.OptDesc ~= 'None' then
+			SET_MARKET_EQUIP_CTRLSET_OPTION_TEXT(ctrlSet, itemObj.OptDesc);
+		end
+
+		if inheritanceItem == nil then
+		if itemObj.IsAwaken == 1 then
+			local opName = string.format("[%s] %s", ClMsg("AwakenOption"), ScpArgMsg(itemObj.HiddenProp));
+			local strInfo = ABILITY_DESC_PLUS(opName, itemObj.HiddenPropValue);
+				SET_MARKET_EQUIP_CTRLSET_OPTION_TEXT(ctrlSet, strInfo);
+			end
+		else
+			if inheritanceItem.IsAwaken == 1 then
+				local opName = string.format("[%s] %s", ClMsg("AwakenOption"), ScpArgMsg(inheritanceItem.HiddenProp));
+				local strInfo = ABILITY_DESC_PLUS(opName, inheritanceItem.HiddenPropValue);
+				SET_MARKET_EQUIP_CTRLSET_OPTION_TEXT(ctrlSet, strInfo);
+			end
+		end
+
+		if itemObj.ReinforceRatio > 100 then
+			local opName = ClMsg("ReinforceOption");
+			local strInfo = ABILITY_DESC_PLUS(opName, math.floor(10 * itemObj.ReinforceRatio/100));
+			SET_MARKET_EQUIP_CTRLSET_OPTION_TEXT(ctrlSet, strInfo);
+		end
+
+
+
+		-- 내 판매리스트 처리
+
+		if cid == marketItem:GetSellerCID() then
+			local buyBtn = GET_CHILD_RECURSIVELY(ctrlSet, "buyBtn");
+			buyBtn:ShowWindow(0)
+			buyBtn:SetEnable(0);
+			local cancelBtn = GET_CHILD_RECURSIVELY(ctrlSet, "cancelBtn");
+			cancelBtn:ShowWindow(1)
+			cancelBtn:SetEnable(1)
+
+			if USE_MARKET_REPORT == 1 then
+				local reportBtn = GET_CHILD_RECURSIVELY(ctrlSet, "reportBtn");
+				reportBtn:SetEnable(0);
+			end
+
+			local totalPrice_num = GET_CHILD_RECURSIVELY(ctrlSet, "totalPrice_num");
+			totalPrice_num:SetTextByKey("value", 0);
+			local totalPrice_text = GET_CHILD_RECURSIVELY(ctrlSet, "totalPrice_text");
+			totalPrice_text:SetTextByKey("value", 0);
+		else
+
+			local buyBtn = GET_CHILD_RECURSIVELY(ctrlSet, "buyBtn");
+			buyBtn:ShowWindow(1)
+			buyBtn:SetEnable(1);
+			local cancelBtn = GET_CHILD_RECURSIVELY(ctrlSet, "cancelBtn");
+			cancelBtn:ShowWindow(0)
+			cancelBtn:SetEnable(0)
+
+			local totalPrice_num = GET_CHILD_RECURSIVELY(ctrlSet, "totalPrice_num");
+			totalPrice_num:SetTextByKey("value", GetCommaedText(marketItem.sellPrice));
+			totalPrice_num:SetUserValue("Price", marketItem.sellPrice);
+
+			local totalPrice_text = GET_CHILD_RECURSIVELY(ctrlSet, "totalPrice_text");
+			totalPrice_text:SetTextByKey("value", GetMonetaryString(marketItem.sellPrice));
+			
+		end		
+
+		ctrlSet:SetUserValue("sellPrice", marketItem.sellPrice)
 	end
+
+	GBOX_AUTO_ALIGN(itemlist, 4, 0, 0, true, false)
+
+	local maxPage = math.ceil(session.market.GetTotalCount() / MARKET_ITEM_PER_PAGE);
+	local curPage = session.market.GetCurPage();
+	local pagecontrol = GET_CHILD(frame, 'pagecontrol', 'ui::CPageController')
+    if maxPage < 1 then
+        maxPage = 1;
+    end
+
+	pagecontrol:SetMaxPage(maxPage);
+	pagecontrol:SetCurPage(curPage);
+end
+
+function MARKETSHOWLEVEL_MARKET_DRAW_CTRLSET_GEM_NEWFRAME(frame)
+	--SAME CARD UI
+	
+	local itemlist = GET_CHILD_RECURSIVELY(frame, "itemListGbox");
+	itemlist:RemoveAllChild();
+	local mySession = session.GetMySession();
+	local cid = mySession:GetCID();
+	local count = session.market.GetItemCount();
+
+	MARKET_SELECT_SHOW_TITLE(frame, "cardTitle")
+
+	local yPos = 0
+	for i = 0 , count - 1 do
+		local marketItem = session.market.GetItemByIndex(i);
+		local itemObj = GetIES(marketItem:GetObject());
+		local refreshScp = itemObj.RefreshScp;
+		if refreshScp ~= "None" then
+			refreshScp = _G[refreshScp];
+			refreshScp(itemObj);
+		end	
+
+		local ctrlSet = itemlist:CreateControlSet("market_item_detail_card", "ITEM_EQUIP_" .. i, ui.LEFT, ui.TOP, 0, 0, 0, yPos);
+		AUTO_CAST(ctrlSet)
+		ctrlSet:SetUserValue("DETAIL_ROW", i);
+
+		MARKETSHOWLEVEL_MARKET_CTRLSET_SET_ICON(ctrlSet, itemObj, marketItem);
+
+		local name = ctrlSet:GetChild("name");
+		name:SetTextByKey("value", GET_FULL_NAME(itemObj));
+
+		local level = GET_CHILD_RECURSIVELY(ctrlSet, "level")
+		local gemLevelValue = GET_ITEM_LEVEL_EXP(itemObj)
+		level:SetTextByKey("value", gemLevelValue)
+
+		local option = GET_CHILD_RECURSIVELY(ctrlSet, "option")
+
+		-- Monster Jem
+		local tempText1 = "";
+		if itemObj["EquipXpGroup"] == "Gem_Skill" then
+			local gemSkill = string.sub(itemObj["ClassName"],5);
+			local skillClass = GetClass("Skill", gemSkill);
+
+			local equipList = StringSplit(itemObj["EnableEquipParts"], "/");
+			local equipPos = "";
+			local sep = "/";
+			for equipIndex = 1 , #equipList do
+				if equipIndex == #equipList then
+					sep = "";
+				end
+				if equipList[equipIndex] == "TopLeg" then
+					equipPos = equipPos .. ClMsg("Shirt").. "/";
+					equipPos = equipPos .. ClMsg("Pants").. sep;
+				elseif equipList[equipIndex] == "Hand" then
+					equipPos = equipPos .. ClMsg("Gloves").. sep;
+				elseif equipList[equipIndex] == "Foot" then
+					equipPos = equipPos .. ClMsg("Boots").. sep;
+				else
+					equipPos = equipPos .. ClMsg(equipList[equipIndex]).. sep;
+				end
+			end
+			tempText1 = "Skill:{#FFFFFF}{ol}"..skillClass.Name.."{/}{/}  Equip:{#FFFFFF}{ol}["..equipPos.."]{/}{/}";
+		end
+
+		local textDesc = string.format("%s", tempText1)	
+		option:SetTextByKey("value", textDesc);
+
+		if cid == marketItem:GetSellerCID() then
+			local buyBtn = GET_CHILD_RECURSIVELY(ctrlSet, "buyBtn");
+			buyBtn:ShowWindow(0)
+			buyBtn:SetEnable(0);
+			local cancelBtn = GET_CHILD_RECURSIVELY(ctrlSet, "cancelBtn");
+			cancelBtn:ShowWindow(1)
+			cancelBtn:SetEnable(1)
+
+			if USE_MARKET_REPORT == 1 then
+				local reportBtn = ctrlSet:GetChild("reportBtn");
+				reportBtn:SetEnable(0);
+			end
+
+			local totalPrice_num = ctrlSet:GetChild("totalPrice_num");
+			totalPrice_num:SetTextByKey("value", 0);
+			local totalPrice_text = ctrlSet:GetChild("totalPrice_text");
+			totalPrice_text:SetTextByKey("value", 0);
+		else
+
+			local buyBtn = GET_CHILD_RECURSIVELY(ctrlSet, "buyBtn");
+			buyBtn:ShowWindow(1)
+			buyBtn:SetEnable(1);
+			local cancelBtn = GET_CHILD_RECURSIVELY(ctrlSet, "cancelBtn");
+			cancelBtn:ShowWindow(0)
+			cancelBtn:SetEnable(0)
+
+			local totalPrice_num = ctrlSet:GetChild("totalPrice_num");
+			totalPrice_num:SetTextByKey("value", GetCommaedText(marketItem.sellPrice));
+			totalPrice_num:SetUserValue("Price", marketItem.sellPrice);
+
+			local totalPrice_text = ctrlSet:GetChild("totalPrice_text");
+			totalPrice_text:SetTextByKey("value", GetMonetaryString(marketItem.sellPrice));
+			
+		end		
+
+		ctrlSet:SetUserValue("sellPrice", marketItem.sellPrice)
+	end
+
+	GBOX_AUTO_ALIGN(itemlist, 4, 0, 0, false, true);
+
+	local maxPage = math.ceil(session.market.GetTotalCount() / MARKET_ITEM_PER_PAGE);
+	local curPage = session.market.GetCurPage();
+	local pagecontrol = GET_CHILD(frame, 'pagecontrol', 'ui::CPageController')
+    if maxPage < 1 then
+        maxPage = 1;
+    end
+
+	pagecontrol:SetMaxPage(maxPage);
+	pagecontrol:SetCurPage(curPage);
+end
+
+
+function MARKETSHOWLEVEL_MARKET_ITEM_OLDLIST(frame)
+	local itemlist = GET_CHILD_RECURSIVELY(frame, "itemListGbox");
+	itemlist:RemoveAllChild();
+	local mySession = session.GetMySession();
+	local cid = mySession:GetCID();
+	local count = session.market.GetItemCount();
+
+	MARKET_SELECT_SHOW_TITLE(frame, "equipTitle")
+	local tempTitleGbox = GET_CHILD_RECURSIVELY(frame, "equipTitle")
+	local equipTitle_stats = GET_CHILD_RECURSIVELY(tempTitleGbox, "equipTitle_stats")
+	equipTitle_stats:ShowWindow(0)
+	local equipTitle_level = GET_CHILD_RECURSIVELY(tempTitleGbox, "equipTitle_level")
+	equipTitle_level:SetOffset(equipTitle_level:GetOriginalX() + 100, equipTitle_level:GetOriginalY());
+
+	local yPos = 0
+	for i = 0 , count - 1 do
+		local marketItem = session.market.GetItemByIndex(i);
+		local itemObj = GetIES(marketItem:GetObject());
+		local refreshScp = itemObj.RefreshScp;
+		if refreshScp ~= "None" then
+			refreshScp = _G[refreshScp];
+			refreshScp(itemObj);
+		end
+
+		local ctrlSet = itemlist:CreateControlSet("market_item_detail_equip", "ITEM_EQUIP_" .. i, ui.LEFT, ui.TOP, 0, 0, 0, yPos);
+		AUTO_CAST(ctrlSet)
+		ctrlSet:SetUserValue("DETAIL_ROW", i);
+		ctrlSet:SetUserValue("optionIndex", 0)
+		ctrlSet:Resize(ctrlSet:GetWidth(), 66)
+
+		local inheritanceItem = GetClass('Item', itemObj.InheritanceItemName)
+		MARKETSHOWLEVEL_MARKET_CTRLSET_SET_ICON(ctrlSet, itemObj, marketItem);
+
+		local name = GET_CHILD_RECURSIVELY(ctrlSet, "name");
+		name:SetText("{s16}"..GET_FULL_NAME(itemObj).."{/}");
+		name:Resize(280, name:GetHeight());
+		name:EnableTextOmitByWidth(1);
+
+		local level = GET_CHILD_RECURSIVELY(ctrlSet, "level");
+		level:SetTextByKey("value", itemObj.UseLv);
+		level:SetOffset(level:GetX() + 110, level:GetY()-20);
+
+		--ATK, MATK, DEF 
+		local atkdef = GET_CHILD_RECURSIVELY(ctrlSet, "atkdef");
+		atkdef:SetTextByKey("value", "");
+		ctrlSet:RemoveChild("atkdef")
+
+		--SOCKET
+
+		local socket = GET_CHILD_RECURSIVELY(ctrlSet, "socket")
+		
+		local needAppraisal = TryGetProp(itemObj, "NeedAppraisal");
+		local needRandomOption = TryGetProp(itemObj, "NeedRandomOption");
+			local maxSocketCount = itemObj.MaxSocket
+			local drawFlag = 0
+			if maxSocketCount > 3 then
+				drawFlag = 1
+			end
+
+			local curCount = 1
+			local socketText = ""
+			local tempStr = ""
+			for i = 0, maxSocketCount - 1 do
+				if itemObj['Socket_' .. i] > 0 then
+					
+					local isEquip = itemObj['Socket_Equip_' .. i]
+					if isEquip == 0 then
+						tempStr = ctrlSet:GetUserConfig("SOCKET_IMAGE_EMPTY")
+						if drawFlag == 1 and curCount % 2 == 1 then
+							socketText = socketText .. tempStr
+						else
+							socketText = socketText .. tempStr .. "{nl}"
+						end
+					else
+						local gemClass = GetClassByType("Item", isEquip);
+						if gemClass.ClassName == 'gem_circle_1' then
+							tempStr = ctrlSet:GetUserConfig("SOCKET_IMAGE_RED")
+						elseif gemClass.ClassName == 'gem_square_1' then
+							tempStr = ctrlSet:GetUserConfig("SOCKET_IMAGE_BLUE")
+						elseif gemClass.ClassName == 'gem_diamond_1' then
+							tempStr = ctrlSet:GetUserConfig("SOCKET_IMAGE_GREEN")
+						elseif gemClass.ClassName == 'gem_star_1' then
+							tempStr = ctrlSet:GetUserConfig("SOCKET_IMAGE_YELLOW")
+						elseif gemClass.ClassName == 'gem_White_1' then
+							tempStr = ctrlSet:GetUserConfig("SOCKET_IMAGE_WHITE")
+						elseif gemClass.EquipXpGroup == "Gem_Skill" then
+							tempStr = ctrlSet:GetUserConfig("SOCKET_IMAGE_MONSTER")
+						end
+						
+						local gemLv = GET_ITEM_LEVEL_EXP(gemClass, itemObj['SocketItemExp_' .. i])
+						tempStr = tempStr .. "Lv" .. gemLv
+
+						if drawFlag == 1 and curCount % 2 == 1 then
+							socketText = socketText .. tempStr
+						else
+							socketText = socketText .. tempStr .. "{nl}"
+						end
+					end									
+				end
+				curCount = curCount + 1
+			end
+			socket:SetTextByKey("value", socketText)
+
+		-- POTENTIAL
+
+		local potential = GET_CHILD_RECURSIVELY(ctrlSet, "potential");
+		if needAppraisal == 1 then
+			potential:SetTextByKey("value1", "?")
+			potential:SetTextByKey("value2", "?")			
+		else
+			potential:SetTextByKey("value1", itemObj.PR)
+			potential:SetTextByKey("value2", itemObj.MaxPR)
+		end
+
+		-- OPTION
+		if itemObj.ClassType ~= "Hat" then
+			GET_SOCKET_POTENSIAL_AWAKEN_PROP(ctrlSet, itemObj, i);
+		end
+		GET_EQUIP_PROP(ctrlSet, itemObj, i);
+
+		-- 내 판매리스트 처리
+
+		if cid == marketItem:GetSellerCID() then
+			local buyBtn = GET_CHILD_RECURSIVELY(ctrlSet, "buyBtn");
+			buyBtn:ShowWindow(0)
+			buyBtn:SetEnable(0);
+			local cancelBtn = GET_CHILD_RECURSIVELY(ctrlSet, "cancelBtn");
+			cancelBtn:ShowWindow(1)
+			cancelBtn:SetEnable(1)
+
+			if USE_MARKET_REPORT == 1 then
+				local reportBtn = GET_CHILD_RECURSIVELY(ctrlSet, "reportBtn");
+				reportBtn:SetEnable(0);
+			end
+
+			local totalPrice_num = GET_CHILD_RECURSIVELY(ctrlSet, "totalPrice_num");
+			totalPrice_num:SetTextByKey("value", 0);
+			local totalPrice_text = GET_CHILD_RECURSIVELY(ctrlSet, "totalPrice_text");
+			totalPrice_text:SetTextByKey("value", 0);
+		else
+
+			local buyBtn = GET_CHILD_RECURSIVELY(ctrlSet, "buyBtn");
+			buyBtn:ShowWindow(1)
+			buyBtn:SetEnable(1);
+			local cancelBtn = GET_CHILD_RECURSIVELY(ctrlSet, "cancelBtn");
+			cancelBtn:ShowWindow(0)
+			cancelBtn:SetEnable(0)
+
+			local totalPrice_num = GET_CHILD_RECURSIVELY(ctrlSet, "totalPrice_num");
+			totalPrice_num:SetTextByKey("value", GetCommaedText(marketItem.sellPrice));
+			totalPrice_num:SetUserValue("Price", marketItem.sellPrice);
+
+			local totalPrice_text = GET_CHILD_RECURSIVELY(ctrlSet, "totalPrice_text");
+			totalPrice_text:SetTextByKey("value", GetMonetaryString(marketItem.sellPrice));
+			
+		end		
+
+		ctrlSet:SetUserValue("sellPrice", marketItem.sellPrice)
+	end
+
+	GBOX_AUTO_ALIGN(itemlist, 4, 0, 0, true, false)
+
+	local maxPage = math.ceil(session.market.GetTotalCount() / MARKET_ITEM_PER_PAGE);
+	local curPage = session.market.GetCurPage();
+	local pagecontrol = GET_CHILD(frame, 'pagecontrol', 'ui::CPageController')
+    if maxPage < 1 then
+        maxPage = 1;
+    end
+
+	pagecontrol:SetMaxPage(maxPage);
+	pagecontrol:SetCurPage(curPage);
 end
