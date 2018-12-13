@@ -105,7 +105,7 @@ function INDUNPLUS_GET_PLAY_COUNT(indun)
 end
 
 function INDUNPLUS_GET_MAX_PLAY_COUNT(indun)
-  if indun.id == 42 then
+  if indun.id == 33 then
     return 99;
   end
   local cls = GetClassByType("Indun", indun.id);
@@ -152,7 +152,7 @@ function INDUNPLUS_GET_RESETTIME(targetwday)
     resetTime = os.time(resetDate);
 
     if currentDate.hour < g.settings.resetHour then
-      resetTime = resetTime - 24*3600*7;
+      resetTime = resetTime - 24*3600;
     end
   end
 
@@ -624,7 +624,7 @@ function INDUNPLUS_SAVE_TIME()
     ["name"] = charName,
     ["time"] = time,
     ["job"] = job,
-    ["money"] = GET_TOTAL_MONEY();
+    ["money"] = GET_TOTAL_MONEY_STR();
     ["counts"] = {},
   };
 
@@ -648,8 +648,11 @@ end
 function INDUNPLUS_REFLESH_COUNTS()
   local resetTime = INDUNPLUS_GET_RESETTIME();
   local resetWeekTime = INDUNPLUS_GET_RESETTIME(2);
+print("resetTime:"..tostring(resetTime))
+print("resetWeekTime:"..tostring(resetWeekTime))
 
   for cid, record in pairs(g.records) do
+print("record.time:"..tostring(record.time))
     if record.time < resetTime then
 
       local counts = record.counts;
