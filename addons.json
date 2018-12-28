@@ -58,10 +58,10 @@
 		"name" : "Hair Enchant Extend",
 		"file" : "hairenchantextend",
 		"extension" : "ipf",
-		"fileVersion" : "v1.0.4",
+		"fileVersion" : "v1.0.5",
 		"releaseTag" : "hairenchantextend",
 		"unicode" : "⛄",
-		"description" : "An add-on that changes enchantment option color.[v1.0.4 Fixed Velcoffer patch.]  魔法付与スクロール使用時やヘアアクセの装備確認時もオプションの値によって色を変更する。[v1.0.4 ベルカッパーパッチ用に修正]",
+		"description" : "An add-on that changes enchantment option color.[v1.0.5 Probably corresponded.]  魔法付与スクロール使用時やヘアアクセの装備確認時もオプションの値によって色を変更する。[v1.0.5 多分対応した]",
 		"tags" : [
 			"ui",
 			"hair",

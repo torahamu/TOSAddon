@@ -127,11 +127,7 @@ function HAIRENCHANT_UPDATE_ITEM_OPTION_MAIN(itemIES)
 	end
 end
 
-function DRAW_EQUIP_PROPERTY_HOOKED(tooltipframe, invitem, yPos, mainframename)
-	return DRAW_EQUIP_PROPERTY_MAIN(tooltipframe, invitem, yPos, mainframename)
-end
-
-function DRAW_EQUIP_PROPERTY_MAIN(tooltipframe, invitem, yPos, mainframename)
+function DRAW_EQUIP_PROPERTY_HOOKED(tooltipframe, invitem, yPos, mainframename, setItem, drawLableline)
 	local gBox = GET_CHILD(tooltipframe,mainframename,'ui::CGroupBox')
 	gBox:RemoveChild('tooltip_equip_property');
 	
@@ -144,47 +140,12 @@ function DRAW_EQUIP_PROPERTY_MAIN(tooltipframe, invitem, yPos, mainframename)
     end
 
 	local list2 = GET_EUQIPITEM_PROP_LIST();
-	local cnt = 0;
-	for i = 1 , #list do
-
-		local propName = list[i];
-		local propValue = invitem[propName];
-		
-		if propValue ~= 0 then
-            local checkPropName = propName;
-            if propName == 'MINATK' or propName == 'MAXATK' then
-                checkPropName = 'ATK';
-            end
-            if EXIST_ITEM(basicTooltipPropList, checkPropName) == false then
-                cnt = cnt + 1;
-            end
-		end
-	end
-
-	for i = 1 , #list2 do
-		local propName = list2[i];
-		local propValue = invitem[propName];
-		if propValue ~= 0 then
-
-			cnt = cnt +1
-		end
-	end
-
-	for i = 1 , 3 do
-		local propName = "HatPropName_"..i;
-		local propValue = "HatPropValue_"..i;
-		if invitem[propValue] ~= 0 and invitem[propName] ~= "None" then
-			cnt = cnt +1
-		end
-	end
-
-	if cnt <= 0 and (invitem.OptDesc == nil or invitem.OptDesc == "None" ) then -- 일단 그릴 프로퍼티가 있는지 검사. 없으면 컨트롤 셋 자체를 안만듬
+	if IS_NEED_TO_DRAW_TOOLTIP_PROPERTY(list, list2, invitem, basicTooltipPropList) == false and (invitem.OptDesc == nil or invitem.OptDesc == "None" ) then -- 일단 그릴 프로퍼티가 있는지 검사. 없으면 컨트롤 셋 자체를 안만듬
 		if setItem == nil then
-		if invitem.ReinforceRatio == 100 then
-    		return yPos
-    	end
-	end
-
+			if invitem.ReinforceRatio == 100 then				
+    			return yPos
+    		end
+		end		
 	end
 
 	local tooltip_equip_property_CSet = gBox:CreateOrGetControlSet('tooltip_equip_property', 'tooltip_equip_property', 0, yPos);
@@ -201,7 +162,7 @@ function DRAW_EQUIP_PROPERTY_MAIN(tooltipframe, invitem, yPos, mainframename)
 
 	local inner_yPos = 0;
 	
-	local maxRandomOptionCnt = 6;
+	local maxRandomOptionCnt = MAX_OPTION_EXTRACT_COUNT;
 	local randomOptionProp = {};
 	for i = 1, maxRandomOptionCnt do
 		if invitem['RandomOption_'..i] ~= 'None' then
@@ -215,7 +176,7 @@ function DRAW_EQUIP_PROPERTY_MAIN(tooltipframe, invitem, yPos, mainframename)
 	--	if socketitem ~= nil then
 	--		propValue = socketitem[propName]
 	--	end
-		
+
 		local needToShow = true;
 		for j = 1, #basicTooltipPropList do
 			if basicTooltipPropList[j] == propName then
@@ -276,7 +237,7 @@ function DRAW_EQUIP_PROPERTY_MAIN(tooltipframe, invitem, yPos, mainframename)
 		local propName = "RandomOption_"..i;
 		local propValue = "RandomOptionValue_"..i;
 		local clientMessage = 'None'
-		
+
 		local propItem = invitem
 
 		if setItem ~= nil then
@@ -305,6 +266,8 @@ function DRAW_EQUIP_PROPERTY_MAIN(tooltipframe, invitem, yPos, mainframename)
 		end
 	end
 
+   
+
 	for i = 1 , #list2 do
 		local propName = list2[i];
 		local propValue = invitem[propName];
@@ -317,7 +280,7 @@ function DRAW_EQUIP_PROPERTY_MAIN(tooltipframe, invitem, yPos, mainframename)
 	if invitem.OptDesc ~= nil and invitem.OptDesc ~= 'None' then
 		inner_yPos = ADD_ITEM_PROPERTY_TEXT(property_gbox, invitem.OptDesc, 0, inner_yPos);
 	end
-
+    
 	if setItem == nil then
 		if invitem.IsAwaken == 1 then
 			local opName = string.format("[%s] %s", ClMsg("AwakenOption"), ScpArgMsg(invitem.HiddenProp));
@@ -337,7 +300,11 @@ function DRAW_EQUIP_PROPERTY_MAIN(tooltipframe, invitem, yPos, mainframename)
 		local strInfo = ABILITY_DESC_PLUS(opName, math.floor(10 * invitem.ReinforceRatio/100));
 		inner_yPos = ADD_ITEM_PROPERTY_TEXT(property_gbox, strInfo.."0%"..ClMsg("ReinforceOptionAtk"), 0, inner_yPos);
 	end
-
+    if setItem ~= nil then
+	    inner_yPos = ADD_RANDOM_OPTION_RARE_TEXT(property_gbox, setItem, inner_yPos);
+    else
+        inner_yPos = ADD_RANDOM_OPTION_RARE_TEXT(property_gbox, invitem, inner_yPos);
+    end
 	local BOTTOM_MARGIN = tooltipframe:GetUserConfig("BOTTOM_MARGIN"); -- 맨 아랫쪽 여백
 	BOTTOM_MARGIN = tonumber(BOTTOM_MARGIN)
 	if BOTTOM_MARGIN == nil then
@@ -348,3 +315,4 @@ function DRAW_EQUIP_PROPERTY_MAIN(tooltipframe, invitem, yPos, mainframename)
 	gBox:Resize(gBox:GetWidth(),gBox:GetHeight() + tooltip_equip_property_CSet:GetHeight())
 	return tooltip_equip_property_CSet:GetHeight() + tooltip_equip_property_CSet:GetY();
 end
+
