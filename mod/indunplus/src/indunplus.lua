@@ -37,7 +37,7 @@ if not g.loaded then
     --1列に表示するキャラ数
     rowMax = 5,
     --貯金
-    deposit = 0
+    deposit = "0"
   };
 
   g.sortType = {
@@ -47,6 +47,9 @@ if not g.loaded then
   };
 
   g.challengeDebuffId = 100102;
+  g.moneysplit = 1000000000;
+  g.moneysplitlength = 10;
+  g.weekResetWday = 2;
 end
 
 function INDUNPLUS_RELOAD()
@@ -143,16 +146,16 @@ function INDUNPLUS_GET_RESETTIME(targetwday)
     end
   else
     -- 指定がある場合は、指定曜日の6時リセット
-    -- リセットされる日は、指定日-現在の曜日、マイナスなら来週として7を足す
+    -- リセットされる日は、指定日-現在の曜日、0以下なら来週として7を足す
     local addwday = targetwday - resetDate.wday;
-    if addwday < 0 then
+    if addwday <= 0 then
       addwday = addwday + 7
     end
     resetDate.day = resetDate.day + addwday;
     resetTime = os.time(resetDate);
-
-    if currentDate.hour < g.settings.resetHour then
-      resetTime = resetTime - 24*3600;
+    -- 月曜かつ6時前なら、来週の月曜6時じゃなくて今日の6時リセットにする
+    if addwday == 0 and currentDate.hour < g.settings.resetHour then
+      resetTime = resetTime - 24*3600*7;
     end
   end
 
@@ -180,7 +183,16 @@ function INDUNPLUS_CREATE_CHARALABEL(parent, cid, record, fontSize, x, y, width,
   if record.money ~= nil then
     local silverText = parent:CreateOrGetControl("richtext", "silver_"..cid, x, y, width, height)
     tolua.cast(silverText, "ui::CRichText");
-    silverText:SetText("{@st48}{#AAAAAA}"..GetCommaedText(record.money).."s{/}{/}");
+    local moneyStr = tostring(record.money);
+    local outMoney = "";
+    if #moneyStr >= g.moneysplitlength then
+      local money10 = math.floor(tonumber(moneyStr) / g.moneysplit);
+      local money = string.sub(moneyStr,#tostring(money10)+1);
+      outMoney = GetCommaedText(money10)..","..GetCommaedText(money);
+    else
+      outMoney = GetCommaedText(tonumber(moneyStr));
+    end
+    silverText:SetText("{@st48}{#AAAAAA}"..outMoney.."s{/}{/}");
     silverText:SetGravity(ui.RIGHT, ui.TOP);
   end
 
@@ -341,12 +353,35 @@ end
 
 
 function INDUNPLUS_GET_TOTAL_MONEY()
-  local sum = g.settings.deposit or 0;
+  --10桁以上用格納
+  local sum10 = 0;
+  --9桁以下格納
+  local sum = 0;
+  local depositstr = tostring(g.settings.deposit) or "0";
+  --10桁以上なら、10桁以上用変数に10桁目以降を入れる
+  if #depositstr >= g.moneysplitlength then
+    sum10 = math.floor(tonumber(depositstr) / g.moneysplit);
+    local tempSum = string.sub(depositstr,#tostring(sum10)+1);
+    sum = tonumber(tempSum);
+  end
   for i, record in pairs(g.records) do
-    sum = sum + record.money
+    local moneyStr = tostring(record.money);
+    if #moneyStr >= g.moneysplitlength then
+      local money10 = math.floor(tonumber(moneyStr) / g.moneysplit);
+      local money = string.sub(moneyStr,#tostring(money10)+1);
+      sum10 = sum10 + money10;
+      sum = sum + tonumber(money)
+    else
+      sum = sum + record.money
+    end
+
+    if sum > g.moneysplit then
+      sum10 = sum10 + 1;
+      sum = sum - g.moneysplit;
+    end
   end
 
-  return sum
+  return sum10, sum
 end
 
 function INDUNPLUS_SHOW_PLAYCOUNT()
@@ -647,12 +682,7 @@ end
 
 function INDUNPLUS_REFLESH_COUNTS()
   local resetTime = INDUNPLUS_GET_RESETTIME();
-  local resetWeekTime = INDUNPLUS_GET_RESETTIME(2);
-print("resetTime:"..tostring(resetTime))
-print("resetWeekTime:"..tostring(resetWeekTime))
-
   for cid, record in pairs(g.records) do
-print("record.time:"..tostring(record.time))
     if record.time < resetTime then
 
       local counts = record.counts;
@@ -666,9 +696,12 @@ print("record.time:"..tostring(record.time))
           counts[indun.type]["playCount"] = 0;
           counts[indun.type]["maxPlayCount"] = INDUNPLUS_GET_MAX_PLAY_COUNT(indun);
         else
-          if record.time < resetWeekTime then
-            counts[indun.type]["playCount"] = 0;
-            counts[indun.type]["maxPlayCount"] = INDUNPLUS_GET_MAX_PLAY_COUNT(indun);
+          if os.date("*t").wday == g.weekResetWday then
+            local resetWeekTime = INDUNPLUS_GET_RESETTIME(g.weekResetWday);
+            if record.time < resetWeekTime then
+              counts[indun.type]["playCount"] = 0;
+              counts[indun.type]["maxPlayCount"] = INDUNPLUS_GET_MAX_PLAY_COUNT(indun);
+            end
           end
         end
       end
@@ -703,13 +736,12 @@ function INDUNPLUS_SAVE_DEPOSIT()
   local itemList = session.GetEtcItemList(IT_ACCOUNT_WAREHOUSE);
   local index = itemList:Head();
   local itemCnt = itemList:Count();
-  local deposit = 0;
 
   while itemList:InvalidIndex() ~= index do
     local invItem = itemList:Element(index);
     local obj = GetIES(invItem:GetObject());
     if obj.ClassName == MONEY_NAME then
-      g.settings.deposit = invItem.count;
+      g.settings.deposit = invItem:GetAmountStr();
       acutil.saveJSON(g.settingsFileLoc, g.settings);
       INDUNPLUS_SHOW_PLAYCOUNT();
       return;
@@ -719,18 +751,53 @@ function INDUNPLUS_SAVE_DEPOSIT()
 end
 
 function INDUNPLUS_UPDATE_TOTAL_MONEY()
-  local money = INDUNPLUS_GET_TOTAL_MONEY();
+  local money10, money = INDUNPLUS_GET_TOTAL_MONEY();
   local title = GET_CHILD(g.frame, "title", "ui::CRichText");
   
   --ツールチップ
-  local deposit = g.settings.deposit or 0;
-  local other = money - g.settings.deposit;
-  local tooltip = string.format("{@st48}Deposit {img silver 20 20}%s{nl}Other   {img silver 20 20}%s{/}", GetCommaedText(deposit), GetCommaedText(other));
+  local depositstr = tostring(g.settings.deposit) or "0";
+  local outDeposit = "";
+  local other = 0;
+  local outOther = "";
+  if #depositstr >= g.moneysplitlength then
+    local deposit10 = math.floor(tonumber(depositstr) / g.moneysplit);
+    local deposit = string.sub(depositstr,#tostring(deposit10)+1);
+    other = money - deposit;
+    while other < 0 do
+      money10 = money10 - 1;
+      other = other + g.moneysplit;
+    end
+    if money10 > 0 then
+      outOther = GetCommaedText(money10)..","..GetCommaedText(other);
+    else
+      outOther = GetCommaedText(other)
+    end
+    outDeposit = GetCommaedText(deposit10)..","..GetCommaedText(deposit);
+  else
+    other = money - tonumber(depositstr);
+    while other < 0 do
+      money10 = money10 - 1;
+      other = other + g.moneysplit;
+    end
+    if money10 > 0 then
+      outOther = GetCommaedText(money10)..","..GetCommaedText(other);
+    else
+      outOther = GetCommaedText(other)
+    end
+    outDeposit = GetCommaedText(depositstr)
+  end
+  local tooltip = string.format("{@st48}Deposit {img silver 20 20}%s{nl}Other   {img silver 20 20}%s{/}", outDeposit, outOther);
   title:SetTextTooltip(tooltip);
 
-  if g.settings.minimize then
-    title:SetText(string.format("{@st48}/idp {img silver 20 20}%s{/}", GetCommaedText(money)));
+  local outMoney = "";
+  if money10 > 0 then
+    outMoney = GetCommaedText(money10)..","..GetCommaedText(money);
   else
-    title:SetText(string.format("{@st48}Total{img silver 20 20}%s{/}", GetCommaedText(money)));
+    outMoney = GetCommaedText(money)
+  end
+  if g.settings.minimize then
+    title:SetText(string.format("{@st48}/idp {img silver 20 20}%s{/}", outMoney));
+  else
+    title:SetText(string.format("{@st48}Total{img silver 20 20}%s{/}", outMoney));
   end
 end
