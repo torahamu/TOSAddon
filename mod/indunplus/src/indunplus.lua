@@ -363,6 +363,8 @@ function INDUNPLUS_GET_TOTAL_MONEY()
     sum10 = math.floor(tonumber(depositstr) / g.moneysplit);
     local tempSum = string.sub(depositstr,#tostring(sum10)+1);
     sum = tonumber(tempSum);
+  else
+    sum = tonumber(depositstr);
   end
   for i, record in pairs(g.records) do
     local moneyStr = tostring(record.money);
@@ -753,7 +755,7 @@ end
 function INDUNPLUS_UPDATE_TOTAL_MONEY()
   local money10, money = INDUNPLUS_GET_TOTAL_MONEY();
   local title = GET_CHILD(g.frame, "title", "ui::CRichText");
-  
+
   --ツールチップ
   local depositstr = tostring(g.settings.deposit) or "0";
   local outDeposit = "";
