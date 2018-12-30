@@ -17,10 +17,10 @@
 		"name" : "Market Show Level",
 		"file" : "marketshowlevel",
 		"extension" : "ipf",
-		"fileVersion" : "v2.0.0",
+		"fileVersion" : "v3.0.0",
 		"releaseTag" : "marketshowlevel",
 		"unicode" : "⛄",
-		"description" : "Update Stop.  更新停止。",
+		"description" : "Simple Market List.  マーケットをシンプルなリストにします。",
 		"tags" : [
 			"ui",
 			"market"
