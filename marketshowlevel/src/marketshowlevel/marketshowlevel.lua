@@ -323,15 +323,15 @@ function MARKETSHOWLEVEL_ON_INIT(addon, frame)
 		MARKET_FIND_PAGE = MARKETSHOWLEVEL_MARKET_FIND_PAGE_HOOKED;
 	end
 
-	if nil == MARKETSHOWLEVEL_MARKET_TRY_SAVE_CATEGORY_OPTION_OLD then
-		MARKETSHOWLEVEL_MARKET_TRY_SAVE_CATEGORY_OPTION_OLD = MARKET_TRY_SAVE_CATEGORY_OPTION;
-		MARKET_TRY_SAVE_CATEGORY_OPTION = MARKETSHOWLEVEL_MARKET_TRY_SAVE_CATEGORY_OPTION_HOOKED;
-	end
+	--if nil == MARKETSHOWLEVEL_MARKET_TRY_SAVE_CATEGORY_OPTION_OLD then
+	--	MARKETSHOWLEVEL_MARKET_TRY_SAVE_CATEGORY_OPTION_OLD = MARKET_TRY_SAVE_CATEGORY_OPTION;
+	--	MARKET_TRY_SAVE_CATEGORY_OPTION = MARKETSHOWLEVEL_MARKET_TRY_SAVE_CATEGORY_OPTION_HOOKED;
+	--end
 
-	if nil == MARKETSHOWLEVEL_MARKET_TRY_LOAD_CATEGORY_OPTION_OLD then
-		MARKETSHOWLEVEL_MARKET_TRY_LOAD_CATEGORY_OPTION_OLD = MARKET_TRY_LOAD_CATEGORY_OPTION;
-		MARKET_TRY_LOAD_CATEGORY_OPTION = MARKETSHOWLEVEL_MARKET_TRY_LOAD_CATEGORY_OPTION_HOOKED;
-	end
+	--if nil == MARKETSHOWLEVEL_MARKET_TRY_LOAD_CATEGORY_OPTION_OLD then
+	--	MARKETSHOWLEVEL_MARKET_TRY_LOAD_CATEGORY_OPTION_OLD = MARKET_TRY_LOAD_CATEGORY_OPTION;
+	--	MARKET_TRY_LOAD_CATEGORY_OPTION = MARKETSHOWLEVEL_MARKET_TRY_LOAD_CATEGORY_OPTION_HOOKED;
+	--end
 
 	if nil == MARKETSHOWLEVEL_EASYSEARCH_INV_RBTN_OLD and nil ~= EASYSEARCH_INV_RBTN then
 		MARKETSHOWLEVEL_EASYSEARCH_INV_RBTN_OLD = EASYSEARCH_INV_RBTN;
@@ -472,27 +472,27 @@ function MARKETSHOWLEVEL_SHOW_OPTION(parent, ctrl)
 
 end
 
-function MARKETSHOWLEVEL_MARKET_TRY_SAVE_CATEGORY_OPTION_HOOKED(parent, ctrl)
-	local frame = ui.GetFrame("market");
-	local optionBox = GET_CHILD_RECURSIVELY(frame, 'optionBox');
-	local optionOptionBox = GET_CHILD(optionBox, 'optionOptionBox');
-	if nil ~= optionOptionBox then
-		optionOptionBox:ShowWindow(0);
-	end
-	optionBox:Resize(optionBox:GetOriginalWidth(), optionBox:GetOriginalHeight());
-	return MARKETSHOWLEVEL_MARKET_TRY_SAVE_CATEGORY_OPTION_OLD(parent, ctrl)
-end
+--function MARKETSHOWLEVEL_MARKET_TRY_SAVE_CATEGORY_OPTION_HOOKED(parent, ctrl)
+--	local frame = ui.GetFrame("market");
+--	local optionBox = GET_CHILD_RECURSIVELY(frame, 'optionBox');
+--	local optionOptionBox = GET_CHILD(optionBox, 'optionOptionBox');
+--	if nil ~= optionOptionBox then
+--		optionOptionBox:ShowWindow(0);
+--	end
+--	optionBox:Resize(optionBox:GetOriginalWidth(), optionBox:GetOriginalHeight());
+--	return MARKETSHOWLEVEL_MARKET_TRY_SAVE_CATEGORY_OPTION_OLD(parent, ctrl)
+--end
 
-function MARKETSHOWLEVEL_MARKET_TRY_LOAD_CATEGORY_OPTION_HOOKED(parent, ctrl)
-	local frame = ui.GetFrame("market");
-	local optionBox = GET_CHILD_RECURSIVELY(frame, 'optionBox');
-	local optionOptionBox = GET_CHILD(optionBox, 'optionOptionBox');
-	if nil ~= optionOptionBox then
-		optionOptionBox:ShowWindow(0);
-	end
-	optionBox:Resize(optionBox:GetOriginalWidth(), optionBox:GetOriginalHeight());
-	return MARKETSHOWLEVEL_MARKET_TRY_LOAD_CATEGORY_OPTION_OLD(parent, ctrl);
-end
+--function MARKETSHOWLEVEL_MARKET_TRY_LOAD_CATEGORY_OPTION_HOOKED(parent, ctrl)
+--	local frame = ui.GetFrame("market");
+--	local optionBox = GET_CHILD_RECURSIVELY(frame, 'optionBox');
+--	local optionOptionBox = GET_CHILD(optionBox, 'optionOptionBox');
+--	if nil ~= optionOptionBox then
+--		optionOptionBox:ShowWindow(0);
+--	end
+--	optionBox:Resize(optionBox:GetOriginalWidth(), optionBox:GetOriginalHeight());
+--	return MARKETSHOWLEVEL_MARKET_TRY_LOAD_CATEGORY_OPTION_OLD(parent, ctrl);
+--end
 
 function MARKETSHOWLEVEL_EASYSEARCH_INV_RBTN_HOOKED(itemObj)
 	local frame = ui.GetFrame("market");
@@ -560,7 +560,6 @@ function MARKETSHOWLEVEL_ADD_DETAIL_OPTION_SETTING(detailBox, ypos, parentCatego
 	if parentCategory ~= 'Weapon' and parentCategory ~= 'Accessory' and parentCategory ~= 'Armor' and parentCategory ~= 'Recipe' and parentCategory ~= 'HairAcc' then
 		return ypos;
 	end
-print("forceOpen:"..tostring(forceOpen))
 
 	if parentCategory ~= 'HairAcc' and parentCategory ~= 'Recipe' then
 		local market_detail_setting = detailBox:CreateOrGetControlSet('market_detail_setting', 'detailOptionSet', 0, ypos);
@@ -656,9 +655,7 @@ function MARKETSHOWLEVEL_MARKET_FIND_PAGE_HOOKED(frame, page)
 		return;
 	end
 
-	--local optionKey, optionValue = GET_SEARCH_OPTION(frame);
-	local optionKey = {};
-	local optionValue = {};
+	local optionKey, optionValue = MARKETSHOWLEVEL_GET_SEARCH_OPTION(frame);
 	local itemCntPerPage = GET_MARKET_SEARCH_ITEM_COUNT(_category);		
 	MarketSearch(page + 1, orderByDesc, searchText, category, optionKey, optionValue, itemCntPerPage);	
 	DISABLE_BUTTON_DOUBLECLICK_WITH_CHILD(frame:GetName(), 'commitSet', 'searchBtn', 1);
@@ -726,6 +723,11 @@ function MARKETSHOWLEVEL_DRAW_DETAIL_CATEGORY_HOOKED(frame, selectedCtrlset, sub
 	end
 
 	local ypos = MARKETSHOWLEVEL_ADD_SUB_CATEGORY(detailBox, parentCategory, subCategoryList);
+	ypos = MARKETSHOWLEVEL_ADD_LEVEL_RANGE(detailBox, ypos, parentCategory);
+	ypos = MARKETSHOWLEVEL_ADD_ITEM_GRADE(detailBox, ypos, parentCategory);
+	ypos = MARKETSHOWLEVEL_ADD_APPRAISAL_OPTION(detailBox, ypos, parentCategory);
+	ypos = MARKETSHOWLEVEL_ADD_DETAIL_OPTION_SETTING(detailBox, ypos, parentCategory, forceOpen);
+	ypos = MARKETSHOWLEVEL_ADD_GEM_OPTION(detailBox, ypos, parentCategory);
 
 	detailBox:Resize(detailBox:GetWidth(), ypos);
 	return detailBox;
@@ -951,6 +953,180 @@ end
 function MARKETSHOWLEVEL_SORT_CATEGORY(categoryList, sortFunc)
 	table.sort(categoryList, sortFunc);
 	return categoryList;
+end
+
+-- OLD関数内で呼ばれているlocal fanctionを移行 (addon.ipf/market/market.lua)
+function MARKETSHOWLEVEL_GET_SEARCH_OPTION(frame)
+	local optionName, optionValue = {}, {};
+	local optionSet = {}; -- for checking duplicate option
+	local category = frame:GetUserValue('SELECTED_CATEGORY');
+
+	-- level range
+	local levelRangeSet = GET_CHILD_RECURSIVELY(frame, 'levelRangeSet');
+	if levelRangeSet ~= nil and levelRangeSet:IsVisible() == 1 then
+		local minEdit = GET_CHILD_RECURSIVELY(levelRangeSet, 'minEdit');
+		local maxEdit = GET_CHILD_RECURSIVELY(levelRangeSet, 'maxEdit');
+		local opValue = MARKETSHOWLEVEL_GET_MINMAX_QUERY_VALUE_STRING(minEdit, maxEdit);
+		if opValue ~= '' then
+			local opName = 'CT_UseLv';
+			if category == 'OPTMisc' then
+				opName = 'Level';
+			end
+			optionName[#optionName + 1] = opName;
+			optionValue[#optionValue + 1] = opValue;
+			optionSet[opName] = true;
+		end
+	end
+
+	-- grade
+	local gradeCheckSet = GET_CHILD_RECURSIVELY(frame, 'gradeCheckSet');
+	if gradeCheckSet ~= nil and gradeCheckSet:IsVisible() == 1 then
+		local checkStr = '';
+		local matchCnt, lastMatch = 0, nil;
+		local childCnt = gradeCheckSet:GetChildCount();
+		for i = 0, childCnt - 1 do
+			local child = gradeCheckSet:GetChildByIndex(i);
+			if string.find(child:GetName(), 'gradeCheck_') ~= nil then
+				AUTO_CAST(child);
+				if child:IsChecked() == 1 then
+					local grade = string.sub(child:GetName(), string.find(child:GetName(), '_') + 1);
+					checkStr = checkStr..grade..';';
+					matchCnt = matchCnt + 1;
+					lastMatch = grade;
+				end
+			end
+		end
+		if checkStr ~= '' then
+			if matchCnt == 1 then
+				checkStr = checkStr..lastMatch;
+			end
+			local opName = 'CT_ItemGrade';
+			optionName[#optionName + 1] = opName;
+			optionValue[#optionValue + 1] = checkStr;
+			optionSet[opName] = true;
+		end
+	end
+
+	-- random option flag
+	local appCheckSet = GET_CHILD_RECURSIVELY(frame, 'appCheckSet');
+	if appCheckSet ~= nil and appCheckSet:IsVisible() == 1 then
+		local ranOpName, ranOpValue;
+		local appCheck_0 = GET_CHILD(appCheckSet, 'appCheck_0');
+		if appCheck_0:IsChecked() == 1 then
+			ranOpName = 'Random_Item';
+			ranOpValue = '2'
+		end
+
+		local appCheck_1 = GET_CHILD(appCheckSet, 'appCheck_1');
+		if appCheck_1:IsChecked() == 1 then
+			ranOpName = 'Random_Item';
+			ranOpValue = '1'
+		end
+
+		if ranOpName ~= nil then
+			optionName[#optionName + 1] = ranOpName;
+			optionValue[#optionValue + 1] = ranOpValue;
+			optionSet[ranOpName] = true;
+		end
+	end
+
+	-- detail setting
+	local detailOptionSet = GET_CHILD_RECURSIVELY(frame, 'detailOptionSet');
+	if detailOptionSet ~= nil and detailOptionSet:IsVisible() == 1 then
+		local curCnt = detailOptionSet:GetUserIValue('ADD_SELECT_COUNT');
+		for i = 0, curCnt do
+			local selectSet = GET_CHILD_RECURSIVELY(detailOptionSet, 'SELECT_'..i);
+			if selectSet ~= nil and selectSet:IsVisible() == 1 then
+				local nameList = GET_CHILD(selectSet, 'groupList');
+				local opName = nameList:GetSelItemKey();
+				if opName ~= '' then
+					local opValue = MARKETSHOWLEVEL_GET_MINMAX_QUERY_VALUE_STRING(GET_CHILD_RECURSIVELY(selectSet, 'minEdit'), GET_CHILD_RECURSIVELY(selectSet, 'maxEdit'));				
+					if opValue ~= '' and optionSet[opName] == nil then
+						optionName[#optionName + 1] = opName;
+						optionValue[#optionValue + 1] = opValue;
+						optionSet[opName] = true;
+					end
+				end
+			end
+		end
+	end
+
+	-- option group
+	local optionGroupSet = GET_CHILD_RECURSIVELY(frame, 'optionGroupSet');
+	if optionGroupSet ~= nil and optionGroupSet:IsVisible() == 1 then
+		local curCnt = optionGroupSet:GetUserIValue('ADD_SELECT_COUNT');		
+		for i = 0, curCnt do
+			local selectSet = GET_CHILD_RECURSIVELY(optionGroupSet, 'SELECT_'..i);
+			if selectSet ~= nil then
+				local nameList = GET_CHILD(selectSet, 'nameList');
+				local opName = nameList:GetSelItemKey();
+				if opName ~= '' then
+					local opValue = MARKETSHOWLEVEL_GET_MINMAX_QUERY_VALUE_STRING(GET_CHILD_RECURSIVELY(selectSet, 'minEdit'), GET_CHILD_RECURSIVELY(selectSet, 'maxEdit'));
+					if opValue ~= '' and optionSet[opName] == nil then
+						optionName[#optionName + 1] = opName;
+						optionValue[#optionValue + 1] = opValue;
+						optionSet[opName] = true;
+					end
+				end
+			end
+		end
+	end
+
+	-- gem option
+	local gemOptionSet = GET_CHILD_RECURSIVELY(frame, 'gemOptionSet');
+	if gemOptionSet ~= nil and gemOptionSet:IsVisible() == 1 then
+		local levelMinEdit = GET_CHILD_RECURSIVELY(gemOptionSet, 'levelMinEdit');
+		local levelMaxEdit = GET_CHILD_RECURSIVELY(gemOptionSet, 'levelMaxEdit');
+		local roastingMinEdit = GET_CHILD_RECURSIVELY(gemOptionSet, 'roastingMinEdit');
+		local roastingMaxEdit = GET_CHILD_RECURSIVELY(gemOptionSet, 'roastingMaxEdit');
+		if category == 'Gem' then
+			local opValue = MARKETSHOWLEVEL_GET_MINMAX_QUERY_VALUE_STRING(levelMinEdit, levelMaxEdit);
+			if opValue ~= '' then
+				optionName[#optionName + 1] = 'GemLevel';
+				optionValue[#optionValue + 1] = opValue;
+				optionSet['GemLevel'] = true;
+			end
+
+			local roastOpValue = MARKETSHOWLEVEL_GET_MINMAX_QUERY_VALUE_STRING(roastingMinEdit, roastingMaxEdit);			
+			if roastOpValue ~= '' then
+				optionName[#optionName + 1] = 'GemRoastingLv';
+				optionValue[#optionValue + 1] = roastOpValue;
+				optionSet['GemRoastingLv'] = true;
+			end
+		elseif category == 'Card' then
+			local opValue = MARKETSHOWLEVEL_GET_MINMAX_QUERY_VALUE_STRING(levelMinEdit, levelMaxEdit);
+			if opValue ~= '' then
+				optionName[#optionName + 1] = 'CardLevel';
+				optionValue[#optionValue + 1] = opValue;
+				optionSet['CardLevel'] = true;
+			end
+		end
+	end
+
+	return optionName, optionValue;
+end
+
+-- OLD関数内で呼ばれているlocal fanctionを移行 (addon.ipf/market/market.lua)
+function MARKETSHOWLEVEL_GET_MINMAX_QUERY_VALUE_STRING(minEdit, maxEdit)
+	local queryValue = '';
+	local minValue = -1000000;
+	local maxValue = 1000000;
+	local valid = false;
+	if minEdit:GetText() ~= nil and minEdit:GetText() ~= '' then
+		minValue = tonumber(minEdit:GetText());
+		valid = true;
+	end
+	if maxEdit:GetText() ~= nil and maxEdit:GetText() ~= '' then
+		maxValue = tonumber(maxEdit:GetText());
+		valid = true;
+	end
+	
+	if valid == false then
+		return queryValue;
+	end
+
+	queryValue = minValue..';'..maxValue;	
+	return queryValue;
 end
 
 function MARKETSHOWLEVEL_MARKET_DRAW_CTRLSET_DEFAULT_HOOKED(frame, isShowLevel)
