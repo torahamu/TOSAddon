@@ -316,11 +316,11 @@ function INDUNPLUS_GET_SORT_RECORDS()
 
   -- バラック順
   local accountInfo = _G.session.barrack.GetMyAccount();
-  local cnt = accountInfo:GetPCCount();
+  local cnt = accountInfo:GetBuySlotCount(); -- 綴ミスではない！
   for i = 0 , cnt - 1 do
-    local pcInfo = accountInfo:GetPCByIndex(i);
-    if pcInfo ~= nil then
-      local cid = tostring(pcInfo:GetCID());
+    local slot = accountInfo:GetBySlot(i);
+    if slot ~= nil then
+      local cid = tostring(slot:GetCID());
       if g.records[cid] ~= nil then
         table.insert(result, g.records[cid]);
       end
