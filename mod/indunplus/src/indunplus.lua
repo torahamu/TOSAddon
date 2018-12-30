@@ -314,10 +314,16 @@ function INDUNPLUS_GET_SORT_RECORDS()
   --配列を複製し、ソート可能な形に変換する
   local result = {}
 
-  for cid, record in pairs(g.records) do
-    local pcPCInfo = session.barrack.GetMyAccount():GetByStrCID(cid);
-    if pcPCInfo ~= nil then
-      table.insert(result, record);
+  -- バラック順
+  local accountInfo = _G.session.barrack.GetMyAccount();
+  local cnt = accountInfo:GetPCCount();
+  for i = 0 , cnt - 1 do
+    local pcInfo = accountInfo:GetPCByIndex(i);
+    if pcInfo ~= nil then
+      local cid = tostring(pcInfo:GetCID());
+      if g.records[cid] ~= nil then
+        table.insert(result, g.records[cid]);
+      end
     end
   end
 
