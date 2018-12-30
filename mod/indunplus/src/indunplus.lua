@@ -447,7 +447,10 @@ function INDUNPLUS_SHOW_PLAYCOUNT()
       job:SetGravity(ui.LEFT, ui.TOP);
       job:SetEnableStretch(1);
       job:SetColorTone("AAFFFFFF");
-      if record.job ~= nil then
+      if record.jobIcon ~= nil then
+        job:SetImage(record.jobIcon);
+      elseif record.job ~= nil then
+        -- 旧バージョンの設定があれば表示
         job:SetImage(GET_JOB_ICON(record.job));
       end
 
@@ -652,7 +655,10 @@ function INDUNPLUS_SAVE_TIME()
   local charName = info.GetName(session.GetMyHandle());
   local time = os.time();
   local level = info.GetLevel(session.GetMyHandle());
+  -- 最後に履修したJobID取得
   local job = info.GetJob(session.GetMyHandle());
+  -- プレイヤーがゲーム内で設定したJobIconを取得
+  local jobIcon = GET_CHILD_RECURSIVELY(ui.GetFrame("headsupdisplay"), "jobPic"):GetImageName()
 
   g.records[cid] = {
     ["version"] = currentVersion,
@@ -661,6 +667,7 @@ function INDUNPLUS_SAVE_TIME()
     ["name"] = charName,
     ["time"] = time,
     ["job"] = job,
+    ["jobIcon"] = jobIcon,
     ["money"] = GET_TOTAL_MONEY_STR();
     ["counts"] = {},
   };
