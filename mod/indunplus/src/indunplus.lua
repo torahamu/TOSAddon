@@ -774,30 +774,33 @@ function INDUNPLUS_UPDATE_TOTAL_MONEY()
   --ツールチップ
   local depositstr = tostring(g.settings.deposit) or "0";
   local outDeposit = "";
+  local other10 = 0;
   local other = 0;
   local outOther = "";
   if #depositstr >= g.moneysplitlength then
     local deposit10 = math.floor(tonumber(depositstr) / g.moneysplit);
     local deposit = string.sub(depositstr,#tostring(deposit10)+1);
+    other10 = money10 - deposit10;
     other = money - deposit;
     while other < 0 do
-      money10 = money10 - 1;
+      other10 = other10 - 1;
       other = other + g.moneysplit;
     end
-    if money10 > 0 then
-      outOther = GetCommaedText(money10)..","..INDUNPLUS_GETCOMMA(other);
+    if other10 > 0 then
+      outOther = GetCommaedText(other10)..","..INDUNPLUS_GETCOMMA(other);
     else
       outOther = GetCommaedText(other)
     end
     outDeposit = GetCommaedText(deposit10)..","..INDUNPLUS_GETCOMMA(deposit);
   else
+    other10 = money10;
     other = money - tonumber(depositstr);
     while other < 0 do
-      money10 = money10 - 1;
+      other10 = other10 - 1;
       other = other + g.moneysplit;
     end
-    if money10 > 0 then
-      outOther = GetCommaedText(money10)..","..INDUNPLUS_GETCOMMA(other);
+    if other10 > 0 then
+      outOther = GetCommaedText(other10)..","..INDUNPLUS_GETCOMMA(other);
     else
       outOther = GetCommaedText(other)
     end
@@ -808,7 +811,7 @@ function INDUNPLUS_UPDATE_TOTAL_MONEY()
 
   local outMoney = "";
   if money10 > 0 then
-    outMoney = GetCommaedText(money10)..","..GetCommaedText(money);
+    outMoney = GetCommaedText(money10)..","..INDUNPLUS_GETCOMMA(other);
   else
     outMoney = GetCommaedText(money)
   end
