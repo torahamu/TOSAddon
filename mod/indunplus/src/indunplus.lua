@@ -316,7 +316,9 @@ function INDUNPLUS_GET_SORT_RECORDS()
 
   -- バラック順
   local accountInfo = _G.session.barrack.GetMyAccount();
-  local cnt = accountInfo:GetBuySlotCount(); -- 綴ミスではない！
+  local cnt = accountInfo:GetBuySlotCount();
+  local barrackCls = GetClass("BarrackMap", accountInfo:GetThemaName());
+  cnt = cnt + barrackCls.BaseSlot;
   for i = 0 , cnt - 1 do
     local slot = accountInfo:GetBySlot(i);
     if slot ~= nil then
