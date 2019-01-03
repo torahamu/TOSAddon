@@ -785,11 +785,11 @@ function INDUNPLUS_UPDATE_TOTAL_MONEY()
       other = other + g.moneysplit;
     end
     if money10 > 0 then
-      outOther = GetCommaedText(money10)..","..GetCommaedText(other);
+      outOther = GetCommaedText(money10)..","..INDUNPLUS_GETCOMMA(other);
     else
       outOther = GetCommaedText(other)
     end
-    outDeposit = GetCommaedText(deposit10)..","..GetCommaedText(deposit);
+    outDeposit = GetCommaedText(deposit10)..","..INDUNPLUS_GETCOMMA(deposit);
   else
     other = money - tonumber(depositstr);
     while other < 0 do
@@ -797,7 +797,7 @@ function INDUNPLUS_UPDATE_TOTAL_MONEY()
       other = other + g.moneysplit;
     end
     if money10 > 0 then
-      outOther = GetCommaedText(money10)..","..GetCommaedText(other);
+      outOther = GetCommaedText(money10)..","..INDUNPLUS_GETCOMMA(other);
     else
       outOther = GetCommaedText(other)
     end
@@ -817,4 +817,17 @@ function INDUNPLUS_UPDATE_TOTAL_MONEY()
   else
     title:SetText(string.format("{@st48}Total{img silver 20 20}%s{/}", outMoney));
   end
+end
+
+function INDUNPLUS_GETCOMMA(num)
+  local tempStr = string.format("%09d",num);
+  local retStr = "";
+  for i = 1, 8 do
+    retStr = retStr .. string.sub(tempStr, i, i)
+    if i%3 == 0 then
+      retStr = retStr .. ","
+    end
+  end
+  retStr = retStr .. string.sub(tempStr, 9, 9)
+  return retStr
 end
