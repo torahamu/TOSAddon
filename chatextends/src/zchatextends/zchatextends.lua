@@ -233,7 +233,7 @@ function CHATEXTENDS_UPDATE_CHAT_FRAME()
 	local titleCtrl = GET_CHILD(chat_frame,'edit_to_bg');
 	titleCtrl:SetGravity(ui.LEFT, ui.TOP);
 	local btn_ChatType = GET_CHILD(chat_frame,'button_type');
-	local offsetX = btn_ChatType:GetOriginalWidth();
+	local offsetX = btn_ChatType:GetWidth();
 	mainchat:SetGravity(ui.LEFT, ui.TOP);
 	mainchat:Resize(600 - titleCtrl:GetWidth() - offsetX + 10, mainchat:GetOriginalHeight())
 	mainchat:SetOffset(titleCtrl:GetWidth() + offsetX, mainchat:GetOriginalY());
@@ -404,7 +404,7 @@ function CHATEXTENDS_CHAT_OPEN_INIT()
 	local mainchat=GET_CHILD(chat_frame,"mainchat");
 	local titleCtrl = GET_CHILD(chat_frame,'edit_to_bg');
 	local btn_ChatType = GET_CHILD(chat_frame,'button_type');
-	local offsetX = btn_ChatType:GetOriginalWidth();
+	local offsetX = btn_ChatType:GetWidth();
 	mainchat:SetGravity(ui.LEFT, ui.TOP);
 	mainchat:Resize(600 - titleCtrl:GetWidth() - offsetX + 10, mainchat:GetOriginalHeight())
 	mainchat:SetOffset(titleCtrl:GetWidth() + offsetX, mainchat:GetOriginalY());
@@ -510,7 +510,7 @@ function CHATEXTENDS_CHAT_CHAT_SET_TO_TITLENAME(chatType, targetName, count)
 	local mainchat = GET_CHILD(chat_frame, 'mainchat');
 	local titleCtrl = GET_CHILD(chat_frame,'edit_to_bg');
 	local btn_ChatType = GET_CHILD(chat_frame,'button_type');
-	local offsetX = btn_ChatType:GetOriginalWidth();
+	local offsetX = btn_ChatType:GetWidth();
 
 	mainchat:Resize(600 - titleCtrl:GetWidth() - offsetX + 10, mainchat:GetOriginalHeight())
 	mainchat:SetOffset(titleCtrl:GetWidth() + offsetX, mainchat:GetOriginalY());
@@ -925,7 +925,7 @@ function CHATEXTENDS_NICO_CHAT_DRAW(frame, msg)
 	local msgType = clusterinfo:GetMsgType();
 
 	-- 発言はシステムメッセージではない
-	if (msgType ~= "Notice") and (msgType ~= "System") then
+	if (msgType ~= "Notice") and (msgType ~= "System") and (msgType ~= "Battle") then
 		-- 内容
 		local nicoMsg = string.gsub(clusterinfo:GetMsg(), "({/}{/})", "%1{@st64}");
 		CHATEXTENDS_NICO_CHAT(string.format("[%s] : %s", clusterinfo:GetCommanderName(), nicoMsg));
