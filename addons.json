@@ -123,19 +123,6 @@
 		]
 	},
 	{
-		"name" : "altarget",
-		"file" : "altarget",
-		"extension" : "ipf",
-		"fileVersion" : "v1.0.2",
-		"releaseTag" : "altarget",
-		"unicode" : "⛄",
-		"description" : "Display targeted enemy information.  ターゲットした敵の情報を表示する。",
-		"tags" : [
-			"ui",
-			"target"
-		]
-	},
-	{
 		"name" : "Turi of Savior",
 		"file" : "turiofsavior",
 		"extension" : "ipf",
@@ -190,13 +177,13 @@
 		]
 	},
 	{
-		"name" : "IndunPlus V2",
+		"name" : "IndunPlus V3",
 		"file" : "indunplus",
 		"extension" : "ipf",
-		"fileVersion" : "v2.3.7",
+		"fileVersion" : "v3.0.0",
 		"releaseTag" : "indunplus",
 		"unicode" : "⛄",
-		"description" : "Added challenge mode to IndanPlus.Please login with each character.[v2.3.0 Fix Weekly Reset. Fix Sum Silver > Max int32(2,147,483,647)]  IndunPlusにチャレンジモードを追加したものです。設定ファイル書き換わったので、もう一度各キャラでログインし直してください。[v2.3.0 週次リセットのやつも毎日リセットされてたのを修正. はいじん対応(シルバー合計2,147,483,647以上での表示修正)]",
+		"description" : "Added challenge mode to IndanPlus.Please login with each character.[v3.0.0 ReBuild Patch]  IndunPlusにチャレンジモードを追加したものです。設定ファイル書き換わったので、もう一度各キャラでログインし直してください。[v3.0.0 リビルドパッチ]",
 		"tags" : [
 			"ui",
 			"instance dungeon",

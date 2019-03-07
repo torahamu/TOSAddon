@@ -1,6 +1,6 @@
 local addonName = "INDUNPLUS";
 local addonNameLower = string.lower(addonName);
-local currentVersion = 2.0;
+local currentVersion = 3.0;
 
 _G['ADDONS'] = _G['ADDONS'] or {};
 _G['ADDONS']['MONOGUSA'] = _G['ADDONS']['MONOGUSA'] or {};
@@ -22,7 +22,7 @@ if not g.loaded then
   };
 
   g.settings = {
-    version = 2.0;
+    version = 3.0;
     --ソート指定
     sortType = "level";
     --ソート指定（昇順 or 降順)
@@ -75,11 +75,16 @@ function INDUNPLUS_GET_INDUNS()
     local idx = temp[tostring(cls.PlayPerResetType)];
 
     if idx == nil and cls.Category ~= 'None' then
+      local categoryName = dictionary.ReplaceDicIDInCompStr(cls.Category);
+      local findRegend = string.find(categoryName," : ");
+      if findRegend ~= nil then
+        categoryName = string.sub(categoryName,findRegend+3);
+      end
       table.insert(result,
         categoryCount,
         {
           ["type"] = tostring(cls.PlayPerResetType),
-          ["label"] = cls.Category,
+          ["label"] = categoryName,
           ["id"] = cls.ClassID,
           ["level"] = cls.Level,
           ["WeeklyEnterableCount"] = cls.WeeklyEnterableCount or 0
@@ -751,11 +756,12 @@ end
 
 function INDUNPLUS_SAVE_DEPOSIT()
   local itemList = session.GetEtcItemList(IT_ACCOUNT_WAREHOUSE);
-  local index = itemList:Head();
-  local itemCnt = itemList:Count();
+  local guidList = itemList:GetGuidList();
+  local cnt = guidList:Count();
 
-  while itemList:InvalidIndex() ~= index do
-    local invItem = itemList:Element(index);
+  for i = 0, cnt - 1 do
+    local guid = guidList:Get(i);
+    local invItem = itemList:GetItemByGuid(guid);
     local obj = GetIES(invItem:GetObject());
     if obj.ClassName == MONEY_NAME then
       g.settings.deposit = invItem:GetAmountStr();
@@ -763,7 +769,6 @@ function INDUNPLUS_SAVE_DEPOSIT()
       INDUNPLUS_SHOW_PLAYCOUNT();
       return;
     end
-    index = itemList:Next(index);
   end
 end
 
