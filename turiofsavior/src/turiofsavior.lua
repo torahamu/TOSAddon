@@ -146,7 +146,7 @@ end
 function TURIOFSAVIOR_FISHING_ITEM_BAG_CREATE_UI()
 	local fishframe = ui.GetFrame('fishing');
 	local frame = ui.GetFrame('fishing_item_bag');
-	frame:Resize(frame:GetOriginalWidth(),frame:GetOriginalHeight()+100)
+	frame:Resize(frame:GetOriginalWidth(),frame:GetOriginalHeight()+200)
 
 	-- インベントリアイテムの検索
 	local rodItem = nil;
@@ -154,34 +154,28 @@ function TURIOFSAVIOR_FISHING_ITEM_BAG_CREATE_UI()
 	local spread_baitItem = nil;
 	local fireItem = nil;
 	local i = 1;
-	local list = session.GetInvItemList();
-	local listIndex = list:Head();
-	while 1 do
-		if listIndex == list:InvalidIndex() then
-			break;
+	local invItemList = session.GetInvItemList();
+	FOR_EACH_INVENTORY(invItemList, function(invItemList, invItem)
+		if invItem.type == tonumber(fishframe:GetUserValue('FISHING_ROD_ID')) then
+			rodItem = invItem;
+		elseif invItem.type == tonumber(fishframe:GetUserValue('PASTE_BAIT_ID')) then
+			baitItem = invItem;
+		elseif invItem.type == 730400 then
+			spread_baitItem = invItem;
+		elseif invItem.type == 730600 then
+			fireItem = invItem;
 		end
-		local item = list:Element(listIndex);
-		if item.type == tonumber(fishframe:GetUserValue('FISHING_ROD_ID')) then
-			rodItem = item;
-		elseif item.type == tonumber(fishframe:GetUserValue('PASTE_BAIT_ID')) then
-			baitItem = item;
-		elseif item.type == 730400 then
-			spread_baitItem = item;
-		elseif item.type == 730600 then
-			fireItem = item;
-		end
-		listIndex = list:Next(listIndex);
-	end
+	end,false)
 
 	-- 以前作成したアイコンとかをいったん削除
 	TURIOFSAVIOR_FISHING_ITEM_BAG_UI_REMOVE_CHILD();
 
-	local rodtext = frame:CreateOrGetControl("richtext", "rodtext", 30, 250, 120, 34);
+	local rodtext = frame:CreateOrGetControl("richtext", "rodtext", 30, 320, 120, 34);
 	tolua.cast(rodtext, 'ui::CRichText');
 	rodtext:SetFontName("white_16_ol");
 	rodtext:SetText("{@st42}"..rodtextbody.."{/}");
 
-	local rodslot = frame:CreateOrGetControl("slot", "rodslot", 83, 250, 65, 65);
+	local rodslot = frame:CreateOrGetControl("slot", "rodslot", 83, 320, 65, 65);
 	tolua.cast(rodslot, "ui::CSlot");
 	rodslot:SetSkinName("invenslot2");
 	rodslot:EnableDrop(0);
@@ -189,12 +183,12 @@ function TURIOFSAVIOR_FISHING_ITEM_BAG_CREATE_UI()
 		SET_SLOT_INVITEM(rodslot,rodItem);
 	end
 
-	local baittext = frame:CreateOrGetControl("richtext", "baittext", 170, 250, 120, 34);
+	local baittext = frame:CreateOrGetControl("richtext", "baittext", 170, 320, 120, 34);
 	tolua.cast(baittext, 'ui::CRichText');
 	baittext:SetFontName("white_16_ol");
 	baittext:SetText("{@st42}"..baittextbody.."{/}");
 
-	local baitslot = frame:CreateOrGetControl("slot", "baitslot", 217, 250, 65, 65);
+	local baitslot = frame:CreateOrGetControl("slot", "baitslot", 217, 320, 65, 65);
 	tolua.cast(baitslot, "ui::CSlot");
 	baitslot:SetSkinName("invenslot2");
 	baitslot:EnableDrop(0);
@@ -202,12 +196,12 @@ function TURIOFSAVIOR_FISHING_ITEM_BAG_CREATE_UI()
 		SET_SLOT_INVITEM(baitslot, baitItem);
 	end
 
-	local spread_baittext = frame:CreateOrGetControl("richtext", "spread_baittext", 310, 250, 120, 34);
+	local spread_baittext = frame:CreateOrGetControl("richtext", "spread_baittext", 310, 320, 120, 34);
 	tolua.cast(spread_baittext, 'ui::CRichText');
 	spread_baittext:SetFontName("white_16_ol");
 	spread_baittext:SetText("{@st42}"..spread_baittextbody.."{/}");
 
-	local spread_baitslot = frame:CreateOrGetControl("slot", "spread_baitslot", 418, 250, 65, 65);
+	local spread_baitslot = frame:CreateOrGetControl("slot", "spread_baitslot", 418, 320, 65, 65);
 	tolua.cast(spread_baitslot, "ui::CSlot");
 	spread_baitslot:SetSkinName("invenslot2");
 	spread_baitslot:EnableDrop(0);
@@ -218,12 +212,12 @@ function TURIOFSAVIOR_FISHING_ITEM_BAG_CREATE_UI()
 		spread_baitslot:SetEventScriptArgNumber(ui.RBUTTONDOWN, spread_baitItemIES.ClassID);
 	end
 
-	local firetext = frame:CreateOrGetControl("richtext", "firetext", 500, 250, 120, 34);
+	local firetext = frame:CreateOrGetControl("richtext", "firetext", 500, 320, 120, 34);
 	tolua.cast(firetext, 'ui::CRichText');
 	firetext:SetFontName("white_16_ol");
 	firetext:SetText("{@st42}"..firetextbody.."{/}");
 
-	local fireslot = frame:CreateOrGetControl("slot", "fireslot", 552, 250, 65, 65);
+	local fireslot = frame:CreateOrGetControl("slot", "fireslot", 552, 320, 65, 65);
 	tolua.cast(fireslot, "ui::CSlot");
 	fireslot:SetSkinName("invenslot2");
 	fireslot:EnableDrop(0);

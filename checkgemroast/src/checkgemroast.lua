@@ -19,7 +19,6 @@ function CHECKGEMROAST_ON_INIT(addon, frame)
 end
 
 function SCR_GEM_ITEM_SELECT_HOOKED(argNum, luminItem, frameName)
-
 	-- get inventory item
 	local invitem = nil;
 	if frameName == 'inventory' then
@@ -28,24 +27,28 @@ function SCR_GEM_ITEM_SELECT_HOOKED(argNum, luminItem, frameName)
 		invitem = session.GetEquipItemBySpot(argNum);
 	end
 	if invitem == nil then
+		RELEASE_ITEMTARGET_ICON_GEM();
 		return;
 	end
 
 	-- get item object
 	local itemobj = GetIES(invitem:GetObject());
 	if itemobj == nil then
-		return
+		RELEASE_ITEMTARGET_ICON_GEM();
+		return;
 	end
 
 	-- get total / empty socket count
-	local socketCnt = GET_SOCKET_CNT(itemobj);
+	local socketCnt = GET_NEXT_SOCKET_SLOT_INDEX(itemobj);
 	if socketCnt == 0 then
-		ui.SysMsg(ScpArgMsg("NOT_HAVE_SOCKET_SPACE"))
+		ui.SysMsg(ScpArgMsg("NOT_HAVE_SOCKET_SPACE"));
+		RELEASE_ITEMTARGET_ICON_GEM();
 		return;
 	end
-	local emptyCnt = GET_EMPTY_SOCKET_CNT(socketCnt, itemobj)
+	local emptyCnt = GET_EMPTY_SOCKET_CNT(socketCnt, invitem);
 	if emptyCnt < 1 then
-		ui.SysMsg(ScpArgMsg("Auto_SoKaeseopKeoNa_JeonBu_SayongJungiDa"))
+		ui.SysMsg(ScpArgMsg("Auto_SoKaeseopKeoNa_JeonBu_SayongJungiDa"));		
+		RELEASE_ITEMTARGET_ICON_GEM();
 		return
 	end
 
@@ -53,35 +56,35 @@ function SCR_GEM_ITEM_SELECT_HOOKED(argNum, luminItem, frameName)
 	if gemClass ~= nil then
 		local gemEquipGroup = TryGetProp(gemClass, "EquipXpGroup")
 		if gemEquipGroup == 'Gem_Skill' then
-			if IS_SAME_TYPE_GEM_IN_ITEM(itemobj, luminItem.type, socketCnt) then
+			if IS_SAME_TYPE_GEM_IN_ITEM(invitem, luminItem.type, socketCnt, itemobj) then
 				local ret = true
 				local invFrame = ui.GetFrame(frameName)
 				invFrame:SetUserValue("GEM_EQUIP_ITEM_ID", luminItem:GetIESID())
 				invFrame:SetUserValue("GEM_EQUIP_TARGET_ID", invitem:GetIESID())
 
 				if frameName == 'inventory' then
-					ui.MsgBox(ScpArgMsg("GEM_EQUIP_SAME_TYPE"), "GEM_EQUIP_TRY", "None")
+					ui.MsgBox(ScpArgMsg("GEM_EQUIP_SAME_TYPE"), "GEM_EQUIP_TRY", "None");
 				elseif frameName == 'status' then
-					ui.MsgBox(ScpArgMsg("GEM_EQUIP_SAME_TYPE"), "GEM_EQUIP_TRY_STATUS", "None")
+					ui.MsgBox(ScpArgMsg("GEM_EQUIP_SAME_TYPE"), "GEM_EQUIP_TRY_STATUS", "None");
 				end
 				return
 			end
 		end
 	end
 
-	local cnt = 0;
-	for i = 0 , socketCnt - 1 do
-		local socketName = "SOCKET_" .. i;
-		local skttype = itemobj["Socket_" .. i];
-		local socketCls = GetClassByType('Socket', skttype);
-
-		if socketCls ~= nil then
-			break;
-		else
-			cnt = cnt + 1;
-		end
+	if IS_ENABLE_EQUIP_GEM(itemobj, gemClass.ClassID, invitem) == false then
+		ui.SysMsg(ScpArgMsg("ValidDupEquipGemBy{VALID_CNT}", "VALID_CNT", VALID_DUP_GEM_CNT));
+		RELEASE_ITEMTARGET_ICON_GEM();
+		return;
 	end
 
+	local cnt = 0;
+	for i = 0 , socketCnt - 1 do
+		if invitem:IsAvailableSocket(i) == false then
+			break;
+		end
+		cnt = cnt + 1;
+	end
 	local gemobj = GetIES(luminItem:GetObject());
 	local lv = GET_ITEM_LEVEL(gemobj);
 	if lv > gemobj.GemRoastingLv then
@@ -94,4 +97,5 @@ end
 
 function GEM_EQUIP_EXECUTE(luminItemIESID, invitemIESID, cnt)
 	item.UseItemToItem(luminItemIESID, invitemIESID, cnt);
+	RELEASE_ITEMTARGET_ICON_GEM();
 end

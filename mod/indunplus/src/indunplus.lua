@@ -517,6 +517,7 @@ function INDUNPLUS_ON_INIT(addon, frame)
   g.records = {};
   frame:ShowWindow(0);
   frame:EnableHitTest(1);
+  frame:EnableMove(1);
   frame:SetEventScript(ui.RBUTTONDOWN, "INDUNPLUS_CONTEXT_MENU");
   frame:SetEventScript(ui.LBUTTONDOWN, "INDUNPLUS_START_DRAG");
   frame:SetEventScript(ui.LBUTTONUP, "INDUNPLUS_END_DRAG");
@@ -816,7 +817,7 @@ function INDUNPLUS_UPDATE_TOTAL_MONEY()
 
   local outMoney = "";
   if money10 > 0 then
-    outMoney = GetCommaedText(money10)..","..INDUNPLUS_GETCOMMA(other);
+    outMoney = GetCommaedText(money10)..","..INDUNPLUS_GETCOMMA(money);
   else
     outMoney = GetCommaedText(money)
   end
