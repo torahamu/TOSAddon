@@ -98,10 +98,10 @@ function STATVIEWERSETTING_CREATE_UI()
 		[1]  = {name="物理攻撃"   ;ename="PATK"     };
 		[2]  = {name="補助攻撃"   ;ename="PATK_SUB" };
 		[3]  = {name="魔法攻撃"   ;ename="MATK"     };
-		[4]  = {name="魔法増幅"   ;ename="MHR"      };
-		[5]  = {name="属性攻撃"   ;ename="EATK"     };
-		[6]  = {name="クリ発　"   ;ename="CRTHR"    };
-		[7]  = {name="クリ攻撃"   ;ename="CRTATK"   };
+		[4]  = {name="属性攻撃"   ;ename="EATK"     };
+		[5]  = {name="クリ発　"   ;ename="CRTHR"    };
+		[6]  = {name="物理クリ"   ;ename="CRTATK"   };
+		[7]  = {name="魔法クリ"   ;ename="CRTMATK"  };
 		[8]  = {name="治癒力　"   ;ename="HEAL_PWR" };
 		[9]  = {name="命中　　"   ;ename="HR"       };
 		[10] = {name="ブロ貫通"   ;ename="BLK_BREAK"};

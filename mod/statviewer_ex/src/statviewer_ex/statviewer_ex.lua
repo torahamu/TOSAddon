@@ -4,10 +4,10 @@ local label = {
 	["PATK"]      = {name="物理攻撃: "   ;ename="PATK: "     ;kname="　　　물리 공격력 : " ;};
 	["PATK_SUB"]  = {name="補助攻撃: "   ;ename="PATK_SUB: " ;kname="  보조 물리 공격력 : ";};
 	["MATK"]      = {name="魔法攻撃: "   ;ename="MATK: "     ;kname="　　　마법 공격력 : " ;};
-	["MHR"]       = {name="魔法増幅: "   ;ename="MHR: "      ;kname="　　　　마법 증폭 : " ;};
 	["EATK"]      = {name="属性攻撃: "   ;ename="EATK: "     ;kname="　　　속성 공격력 : " ;};
 	["CRTHR"]     = {name="クリ発　: "   ;ename="CRTHR: "    ;kname="　　　치명타 발생 : " ;};
-	["CRTATK"]    = {name="クリ攻撃: "   ;ename="CRTATK: "   ;kname="　   치명타 공격력 : ";};
+	["CRTATK"]    = {name="物理クリ: "   ;ename="CRTATK: "   ;kname="　   치명타 공격력 : ";};
+	["CRTMATK"]   = {name="魔法クリ: "   ;ename="CRTMATK: "  ;kname="　   치명타 공격력 : ";};
 	["HEAL_PWR"]  = {name="治癒力　: "   ;ename="HEAL_PWR: " ;kname="　　　　　　  치유 : ";};
 	["HR"]        = {name="命中　　: "   ;ename="HR: "       ;kname="　　　　　　  명중 : ";};
 	["BLK_BREAK"] = {name="ブロ貫通: "   ;ename="BLK_BREAK: ";kname="　　　　블럭 관통 : " ;};
@@ -126,10 +126,10 @@ function STATVIEWER_EX_SAVE_STATSETTINGS_INIT(filename, statval)
 		PATK = true;
 		PATK_SUB = true;
 		MATK = true;
-		MHR = true;
 		CRTHR = true;
 		EATK = true;
 		CRTATK = true;
+		CRTMATK = true;
 		HEAL_PWR = true;
 		HR = true;
 		BLK_BREAK = true;
@@ -154,10 +154,10 @@ function STATVIEWER_EX_SAVE_STATSETTINGS_INIT(filename, statval)
 		PATK_COLOR = "FFFFFF";
 		PATK_SUB_COLOR = "FFFFFF";
 		MATK_COLOR = "FFFFFF";
-		MHR_COLOR = "FFFFFF";
 		EATK_COLOR = "FFFFFF";
 		CRTHR_COLOR = "FFFFFF";
 		CRTATK_COLOR = "FFFFFF";
+		CRTMATK_COLOR = "FFFFFF";
 		HEAL_PWR_COLOR = "FFFFFF";
 		HR_COLOR = "FFFFFF";
 		BLK_BREAK_COLOR = "FFFFFF";
@@ -222,9 +222,6 @@ function STATVIEWER_EX_UPDATE(frame)
 	if _G["STATVIEWER_EX"]["statsettings"].MATK then
 		STATVIEWER_EX_UPDATE_STAT(frame, "MATK"     , pc["MINMATK"] .. "~" .. pc["MAXMATK"], dimensions, _G["STATVIEWER_EX"]["statsettings"].MATK_COLOR);
 	end
-	if _G["STATVIEWER_EX"]["statsettings"].MHR then
-		STATVIEWER_EX_UPDATE_STAT(frame, "MHR"      , pc["MHR"], dimensions, _G["STATVIEWER_EX"]["statsettings"].MHR_COLOR);
-	end
 	if _G["STATVIEWER_EX"]["statsettings"].EATK then
 		local elementalAttack = STATVIEWER_EX_CALCULATE_ELEMENTAL_ATTACK(pc);
 		STATVIEWER_EX_UPDATE_STAT(frame, "EATK"     , elementalAttack, dimensions, _G["STATVIEWER_EX"]["statsettings"].EATK_COLOR);
@@ -234,6 +231,9 @@ function STATVIEWER_EX_UPDATE(frame)
 	end
 	if _G["STATVIEWER_EX"]["statsettings"].CRTATK then
 		STATVIEWER_EX_UPDATE_STAT(frame, "CRTATK"   , pc["CRTATK"], dimensions, _G["STATVIEWER_EX"]["statsettings"].CRTATK_COLOR);
+	end
+	if _G["STATVIEWER_EX"]["statsettings"].CRTMATK then
+		STATVIEWER_EX_UPDATE_STAT(frame, "CRTMATK"   , pc["CRTMATK"], dimensions, _G["STATVIEWER_EX"]["statsettings"].CRTMATK_COLOR);
 	end
 	if _G["STATVIEWER_EX"]["statsettings"].HEAL_PWR then
 		STATVIEWER_EX_UPDATE_STAT(frame, "HEAL_PWR" , pc["HEAL_PWR"], dimensions, _G["STATVIEWER_EX"]["statsettings"].HEAL_PWR_COLOR);
@@ -577,10 +577,10 @@ function STATVIEWER_EX_CALL_MENU(frame)
 	table.insert( labelIndex, "PATK");
 	table.insert( labelIndex, "PATK_SUB");
 	table.insert( labelIndex, "MATK");
-	table.insert( labelIndex, "MHR");
 	table.insert( labelIndex, "EATK");
 	table.insert( labelIndex, "CRTHR");
 	table.insert( labelIndex, "CRTATK");
+	table.insert( labelIndex, "CRTMATK");
 	table.insert( labelIndex, "HEAL_PWR");
 	table.insert( labelIndex, "HR");
 	table.insert( labelIndex, "BLK_BREAK");
