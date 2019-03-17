@@ -1,5 +1,5 @@
 local acutil = require("acutil");
-CHAT_SYSTEM("TREASUREMAP 1.1.0 loaded!");
+CHAT_SYSTEM("TREASUREMAP 1.2.0 loaded!");
 
 function TREASUREMAP_ON_INIT(addon, frame)
 	acutil.setupEvent(addon, "UI_TOGGLE_MAP", "DRAW_TREASUREMAP")
@@ -12,7 +12,6 @@ function DRAW_TREASUREMAP()
 	if mapframe:IsVisible() == 0 then
 		return;
 	end
-
 	local mapClassName = session.GetMapName();
 	local mapprop = geMapTable.GetMapProp(mapClassName);
 	local idspace = 'GenType_'..mapClassName;
@@ -22,9 +21,13 @@ function DRAW_TREASUREMAP()
 
 	DESTROY_CHILD_BYNAME(mapframe, "_TOREASURE_GEN_");
 	DESTROY_CHILD_BYNAME(mapframe, "_QUESTINFOMAP_");
-	local npcState = session.GetMapNPCState(mapClassName);
 
-	local idcount = GetClassCount(idspace)
+	local mongens = mapprop.mongens;
+	if mongens == nil then
+		return;
+	end
+
+	local idcount = mongens:Count();
 	local treasureCnt = 0;
 	local hideTreasureCnt = 0;
 
@@ -50,7 +53,6 @@ function DRAW_TREASUREMAP()
 					local treasureXpos = anchorClassIES.PosX;
 					local treasureZpos = anchorClassIES.PosZ;
 
-
 					local MapPos = mapprop:WorldPosToMinimapPos(treasureXpos, treasureZpos, m_mapWidth, m_mapHeight);
 					local XC = m_offsetX + MapPos.x - 50 / 2;
 					local YC = m_offsetY + MapPos.y - 50 / 2;
@@ -65,7 +67,8 @@ function DRAW_TREASUREMAP()
 					textC:SetTextAlign("left", "bottom");
 					textC:ShowWindow(1);
 					textC:SetUserValue("EXTERN", "YES");
-					if npcState:FindAndGet(classIES.GenType) ~= -1 then
+
+					if IsGetTreasureBox(mapClassName, classIES.GenType) then
 						PictureC:SetColorTone("FF00FF00");
 						textC:SetText("{@st42b}" .. treasureName .. "{nl}" .. treasureContents);
 					else
@@ -95,3 +98,23 @@ function DRAW_TREASUREMAP()
 	treasureText:SetUserValue("EXTERN", "YES");
 
 end
+
+function IsGetTreasureBox(mapClassName, GenType)
+	local result, value = pcall(session.GetMapNPCState, mapClassName)
+	if result then
+		local state = value:FindAndGet(GenType);
+		if state == 0 or state == nil then
+			return true
+		else
+			return false
+		end
+	else
+		local state = GetNPCState(mapClassName, GenType);
+		if state == 0 or state == nil then
+			return true
+		else
+			return false
+		end
+	end
+end
+

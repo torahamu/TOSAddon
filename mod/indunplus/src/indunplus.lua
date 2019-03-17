@@ -80,6 +80,10 @@ function INDUNPLUS_GET_INDUNS()
       if findRegend ~= nil then
         categoryName = string.sub(categoryName,findRegend+3);
       end
+      findRegend = string.find(categoryName,"：");
+      if findRegend ~= nil then
+        categoryName = string.sub(categoryName,0,findRegend);
+      end
       table.insert(result,
         categoryCount,
         {
@@ -159,7 +163,7 @@ function INDUNPLUS_GET_RESETTIME(targetwday)
     resetDate.day = resetDate.day + addwday;
     resetTime = os.time(resetDate);
     -- 月曜かつ6時前なら、来週の月曜6時じゃなくて今日の6時リセットにする
-    if addwday == 0 and currentDate.hour < g.settings.resetHour then
+    if addwday == 7 and currentDate.hour < g.settings.resetHour then
       resetTime = resetTime - 24*3600*7;
     end
   end

@@ -5,5 +5,22 @@
 	<layer layerlevel="10"/>
 	<draw drawframe="false" drawtitlebarframe="false" drawtitlebar="false"/>
 	<option closebutton="false" hideable="false"/>
-	<controls/>
+	<controlset name="chatu" toggle="false" hittest="true" width="400" height="100" skin="">
+		<controls>
+			<labelbox name="bg" layout_gravity="left top" visible="true" rect="0 0 380 40" skin="textballoon_reflect" margin="0 18 0 0"/>
+			<richtext name="name" layout_gravity="left top" useorifacerect="true" visible="true" rect="0 0 319 22" margin="10 0 0 0" resizebytext="true" maxwidth="200" fixwidth="false" fixheight="true" textalign="left top" format="{@st42b}%s" param1="name" param1_def="AAAAAAABBBBBBBCCCCCC"/>
+			<richtext name="text" layout_gravity="center center" useorifacerect="true" visible="true" rect="0 0 350 20" margin="0 0 0 0" resizebytext="true" maxwidth="330" fixwidth="false" textalign="left top" splitbyspace="false" format="%s{s%s}%s" param1="font" param1_def="{#050505}{b}" param2="size" param2_def="16" param3="text" param3_def="AAA" parent="bg"/>
+			<groupbox name="timebox" margin="50 25 0 0" rect="0 0 70 18" hittestbox="false" skin="chat_time_bg2" layout_gravity="left top" scroll="false"/>
+			<richtext name="time" layout_gravity="center center" useorifacerect="true" rect="0 0 70 18" margin="0 0 0 0" resizebytext="true" maxwidth="0" fixwidth="false" textalign="center center" param1="time" param1_def="PM 16:16" spacey="0" fontname="white_14_ol" updateparent="false" drawbackground="false" slideshow="false" parent="timebox"/>
+			<picture name="iconPicture" margin="5 7 0 0" rect="0 0 48 48" hittest="false" image="mainpc_crown" stretch="true" changecursor="false" layout_gravity="left top"/>
+		</controls>
+	</controlset>
+	<controlset name="chati" toggle="false" hittest="true" width="400" height="100" skin="">
+		<controls>
+			<labelbox name="bg" layout_gravity="right top" visible="true" rect="0 0 380 40" skin="textballoon" margin="0 0 2 0"/>
+			<richtext name="text" layout_gravity="center center" visible="true" rect="0 0 360 20" margin="0 0 0 0" maxwidth="320" fixwidth="false" textalign="left top" splitbyspace="false" format="%s{s%s}%s" useorifacerect="true" resizebytext="true" param1="font" param1_def="{#050505}" param2="size" param2_def="16" param3="text" param3_def="AAA" parent="bg"/>
+			<groupbox name="timebox" margin="0 7 0 0" rect="0 0 70 18" hittestbox="false" skin="chat_time_bg2" layout_gravity="left top" scroll="false"/>
+			<richtext name="time" layout_gravity="center center" rect="0 0 70 18" margin="0 0 0 0" maxwidth="0" fixwidth="false" textalign="center center" useorifacerect="true" resizebytext="true" param1="time" param1_def="PM 16:16" spacey="0" fontname="white_14_ol" updateparent="false" drawbackground="false" slideshow="false" parent="timebox"/>
+		</controls>
+	</controlset>
 </uiframe>
