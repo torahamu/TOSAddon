@@ -8,14 +8,13 @@ function SHOWHIDEBUFF_ON_INIT(addon, frame)
 end
 
 function SHOW_HIDE_BUFF_COMMON_BUFF_MSG(frame, msg, buffType, handle, buff_ui, buffIndex)
-
 	if msg == "SET" then
+		local buffCount = info.GetBuffCount(handle);
 
-			local buffCount = info.GetBuffCount(handle);
-			for i = 0, buffCount - 1 do
-				local buff = info.GetBuffIndexed(handle, i);
-				COMMON_BUFF_MSG(frame, "ADD", buff.buffID, handle, buff_ui, buff.index);
-			end
+		for i = 0, buffCount - 1 do
+			local buff = info.GetBuffIndexed(handle, i);
+			COMMON_BUFF_MSG(frame, "ADD", buff.buffID, handle, buff_ui, buff.index);
+		end
 
 		return;
 	elseif msg == "CLEAR" then
@@ -42,11 +41,15 @@ function SHOW_HIDE_BUFF_COMMON_BUFF_MSG(frame, msg, buffType, handle, buff_ui, b
 	if "None" == buffIndex or nil == buffIndex then
 		buffIndex = 0;
 	end
+    buffIndex = tonumber(buffIndex);
 
 	local class = GetClassByType('Buff', buffType);
 --	if class.ShowIcon == "FALSE" then
 --		return;
 --	end
+	if class.Icon == nli or class.Icon == "" then
+		class.Icon == "expup";
+	end
 
 	local slotlist;
 	local slotcount;
@@ -63,7 +66,6 @@ function SHOW_HIDE_BUFF_COMMON_BUFF_MSG(frame, msg, buffType, handle, buff_ui, b
 			slotlist = buff_ui["slotlist"][0];
 			slotcount = buff_ui["slotcount"][0];
 			captionlist = buff_ui["captionlist"][0];
-
 			if nil ~= buff_ui["slotsets"][0] then
 				colcnt = buff_ui["slotsets"][0]:GetCol();
 			end
@@ -77,6 +79,7 @@ function SHOW_HIDE_BUFF_COMMON_BUFF_MSG(frame, msg, buffType, handle, buff_ui, b
 	end
 
 	if msg == 'ADD' then
+
 		for j = 0, slotcount - 1 do
 			local i = GET_BUFF_SLOT_INDEX(j, colcnt);
 			local slot				= slotlist[i];
@@ -88,7 +91,6 @@ function SHOW_HIDE_BUFF_COMMON_BUFF_MSG(frame, msg, buffType, handle, buff_ui, b
 		end
 
 	elseif msg == 'REMOVE' then
-
 		for i = 0, slotcount - 1 do
 
 			local slot		= slotlist[i];
@@ -100,6 +102,7 @@ function SHOW_HIDE_BUFF_COMMON_BUFF_MSG(frame, msg, buffType, handle, buff_ui, b
                 local isBuffIndexSame = oldBuffIndex - buffIndex;
 				if iconInfo.type == buffType and isBuffIndexSame == 0 then
 					CLEAR_BUFF_SLOT(slot, text);
+				
 					local j = GET_BUFF_ARRAY_INDEX(i, colcnt);
 					PULL_BUFF_SLOT_LIST(slotlist, captionlist, j, slotcount, colcnt, ApplyLimitCountBuff);
 					frame:Invalidate();
@@ -108,24 +111,23 @@ function SHOW_HIDE_BUFF_COMMON_BUFF_MSG(frame, msg, buffType, handle, buff_ui, b
 			end
 		end
 
-	elseif msg == "UPDATE" then
-
-			for i = 0, slotcount - 1 do
-
-			local slot		= slotlist[i];
-			local text		= captionlist[i];
-			local oldIcon 		= slot:GetIcon();
+	elseif msg == "UPDATE" then    
+		for i = 0, slotcount - 1 do
+			local slot = slotlist[i];
+			local text = captionlist[i];
+			local oldIcon = slot:GetIcon();
 
 			if slot:IsVisible() == 1 then
 				local iconInfo = oldIcon:GetInfo();
-				if iconInfo.type == buffType and oldIcon:GetUserIValue("BuffIndex") == buffIndex then
+				if iconInfo.type == buffType and oldIcon:GetUserIValue("BuffIndex") == buffIndex then                
 					SET_BUFF_SLOT(slot, captionlist[i], class, buffType, handle, slotlist, buffIndex);
 					break;
 				end
 			end
 		end
 	end
-
     ARRANGE_DEBUFF_SLOT(frame, buff_ui);
+
+    COLONY_POINT_INFO_DRAW_BUFF_ICON()
 end
 

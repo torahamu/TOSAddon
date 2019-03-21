@@ -20,7 +20,7 @@
 		"fileVersion" : "v3.1.0",
 		"releaseTag" : "marketshowlevel",
 		"unicode" : "⛄",
-		"description" : "Make Market Equipment a Simple List.  マーケットの装備をシンプルなリストにします。",
+		"description" : "Make Market Equipment a Simple List.[v3.1.0 ReBuild Patch.]  マーケットの装備をシンプルなリストにします。[v3.1.0 ReBuild Patch.]",
 		"tags" : [
 			"ui",
 			"market"
@@ -30,10 +30,10 @@
 		"name" : "Show Hide Buff",
 		"file" : "showhidebuff",
 		"extension" : "ipf",
-		"fileVersion" : "v1.0.1",
+		"fileVersion" : "v1.1.0",
 		"releaseTag" : "showhidebuff",
 		"unicode" : "⛄",
-		"description" : "An add-on that displays a buff icon that is not normally displayed for targeted enemies.  隠しバフを表示する。",
+		"description" : "An add-on that displays a buff icon that is not normally displayed for targeted enemies.[v1.1.0 ReBuild Patch.]  隠しバフを表示する。[v1.1.0 ReBuild Patch.]",
 		"tags" : [
 			"ui",
 			"icon",
