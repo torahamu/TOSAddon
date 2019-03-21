@@ -17,7 +17,7 @@
 		"name" : "Market Show Level",
 		"file" : "marketshowlevel",
 		"extension" : "ipf",
-		"fileVersion" : "v3.1.0",
+		"fileVersion" : "v3.1.1",
 		"releaseTag" : "marketshowlevel",
 		"unicode" : "⛄",
 		"description" : "Make Market Equipment a Simple List.[v3.1.0 ReBuild Patch.]  マーケットの装備をシンプルなリストにします。[v3.1.0 ReBuild Patch.]",

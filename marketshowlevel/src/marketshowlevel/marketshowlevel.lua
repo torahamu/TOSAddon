@@ -26,7 +26,7 @@ if not g.loaded then
 		filter = {
 			PATK=false;
 			ADD_MATK=false;
-			ADD_MHR=false;
+			CRTMATK=false;
 			ADD_FIRE=false;
 			ADD_ICE=false;
 			ADD_SOUL=false;
@@ -94,7 +94,7 @@ if not g.loaded then
 			ADD_MATK=false;
 			ADD_DEF=false;
 			ADD_MDEF=false;
-			ADD_MHR=false;
+			CRTMATK=false;
 			CRTATK=false;
 			CRTHR=false;
 			CRTDR=false;
@@ -181,7 +181,7 @@ propList.PATK          = {name = "物攻";ename =  "P.Atk"   ;max = 126;};
 propList.ADD_MATK      = {name = "魔攻";ename =  "M.Atk"   ;max = 126;};
 propList.ADD_DEF       = {name = "物防";ename =  "P.Def"   ;max = 110;};
 propList.ADD_MDEF      = {name = "魔防";ename =  "M.Def"   ;max = 110;};
-propList.ADD_MHR       = {name = "増幅";ename =  "M.Amp"   ;max = 126;};
+propList.CRTMATK       = {name = "ｸﾘ魔";ename =  "CritMatk";max = 126;};
 propList.CRTATK        = {name = "ｸﾘ攻";ename =  "CritAtk" ;max = 189;};
 propList.CRTHR         = {name = "ｸﾘ発";ename =  "CritRate";max = 14;};
 propList.CRTDR         = {name = "ｸﾘ抵";ename =  "CritDef" ;max = 14;};
@@ -213,7 +213,7 @@ propList.LootingChance = {name = "ﾙｰﾄ%";ename =  "Loot%"   ;};
 local randomList = {};
 randomList.PATK           = {name = "物攻"          ;ename = "P.Atk"        ;default = ClMsg(PATK)          ;};
 randomList.ADD_MATK       = {name = "魔攻"          ;ename = "M.Atk"        ;default = ClMsg(MATK)          ;};
-randomList.ADD_MHR        = {name = "増幅"          ;ename = "M.Amp"        ;default = ClMsg(ADD_MHR)       ;};
+randomList.CRTMATK        = {name = "クリ魔"        ;ename = "M.Amp"        ;default = ClMsg(CRTMATK)       ;};
 randomList.ADD_FIRE       = {name = "炎攻"          ;ename = "FireAtk"      ;default = ClMsg(ADD_FIRE)      ;};
 randomList.ADD_ICE        = {name = "氷攻"          ;ename = "IceAtk"       ;default = ClMsg(ADD_ICE)       ;};
 randomList.ADD_SOUL       = {name = "霊攻"          ;ename = "GhostAtk"     ;default = ClMsg(ADD_SOUL)      ;};
