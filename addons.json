@@ -17,10 +17,10 @@
 		"name" : "Market Show Level",
 		"file" : "marketshowlevel",
 		"extension" : "ipf",
-		"fileVersion" : "v3.0.0",
+		"fileVersion" : "v3.1.0",
 		"releaseTag" : "marketshowlevel",
 		"unicode" : "⛄",
-		"description" : "Simple Market List.  マーケットをシンプルなリストにします。",
+		"description" : "Make Market Equipment a Simple List.  マーケットの装備をシンプルなリストにします。",
 		"tags" : [
 			"ui",
 			"market"

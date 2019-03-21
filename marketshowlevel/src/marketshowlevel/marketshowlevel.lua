@@ -1,4 +1,4 @@
-CHAT_SYSTEM("MARKET SHOW LEVEL v3.0.0 loaded!");
+CHAT_SYSTEM("MARKET SHOW LEVEL v3.1.0 loaded!");
 
 local addonName = "MARKETSHOWLEVEL";
 local addonNameLower = string.lower(addonName);
@@ -376,8 +376,8 @@ function MARKETSHOWLEVEL_CREATE_DETAIL_BOX()
 	local ypos = 0;
 	ypos = MARKETSHOWLEVEL_ADD_ITEM_PRICEORDER(detailBox, ypos);
 	--ypos = MARKETSHOWLEVEL_ADD_OPTION_BUTTON(detailBox, ypos);
-	--ypos = MARKETSHOWLEVEL_ADD_LEVEL_RANGE(detailBox, ypos);
-	--ypos = MARKETSHOWLEVEL_ADD_ITEM_GRADE(detailBox, ypos);
+	ypos = MARKETSHOWLEVEL_ADD_LEVEL_RANGE(detailBox, ypos);
+	ypos = MARKETSHOWLEVEL_ADD_ITEM_GRADE(detailBox, ypos);
 	ypos = MARKETSHOWLEVEL_ADD_ITEM_SEARCH(detailBox, ypos);
 	ypos = MARKETSHOWLEVEL_ADD_SEARCH_COMMIT(detailBox, ypos)
 
@@ -657,7 +657,7 @@ function MARKETSHOWLEVEL_MARKET_FIND_PAGE_HOOKED(frame, page)
 
 	local optionKey, optionValue = MARKETSHOWLEVEL_GET_SEARCH_OPTION(frame);
 	local itemCntPerPage = GET_MARKET_SEARCH_ITEM_COUNT(_category);		
-	MarketSearch(page + 1, orderByDesc, searchText, category, optionKey, optionValue, itemCntPerPage);	
+	MarketSearch(page + 1, orderByDesc, searchText, category, optionKey, optionValue, itemCntPerPage);
 	DISABLE_BUTTON_DOUBLECLICK_WITH_CHILD(frame:GetName(), 'commitSet', 'searchBtn', 1);
 	MARKET_OPTION_BOX_CLOSE_CLICK(frame);
 end
@@ -1103,6 +1103,12 @@ function MARKETSHOWLEVEL_GET_SEARCH_OPTION(frame)
 		end
 	end
 
+	-- 検索何もなしの時はデフォルトで全グレード
+	if #optionName == 0 and #optionValue == 0 then
+		optionName[#optionName + 1] = "CT_ItemGrade";
+		optionValue[#optionValue + 1] = "1;2;3;4;5;";
+	end
+
 	return optionName, optionValue;
 end
 
@@ -1127,6 +1133,22 @@ function MARKETSHOWLEVEL_GET_MINMAX_QUERY_VALUE_STRING(minEdit, maxEdit)
 
 	queryValue = minValue..';'..maxValue;	
 	return queryValue;
+end
+
+-- OLD関数内で呼ばれているlocal fanctionを移行 (addon.ipf/market/market.lua)
+function MARKETSHOWLEVEL_CREATE_SEAL_OPTION(ctrlSet, itemObj)
+	if TryGetProp(itemObj, 'GroupName') ~= 'Seal' then
+		return;
+	end
+
+	for i = 1, itemObj.MaxReinforceCount do
+		local option = TryGetProp(itemObj, 'SealOption_'..i, 'None');
+		if option == 'None' then
+			break;
+		end		
+		local strInfo = GET_OPTION_VALUE_OR_PERCECNT_STRING(option, itemObj['SealOptionValue_'..i]);
+		SET_MARKET_EQUIP_CTRLSET_OPTION_TEXT(ctrlSet, strInfo);
+	end
 end
 
 function MARKETSHOWLEVEL_MARKET_DRAW_CTRLSET_DEFAULT_HOOKED(frame, isShowLevel)
@@ -1488,9 +1510,9 @@ function MARKETSHOWLEVEL_MARKET_ITEM_OLDLIST(frame)
 			local socketText = ""
 			local tempStr = ""
 			for i = 0, maxSocketCount - 1 do
-				if itemObj['Socket_' .. i] > 0 then
+				if marketItem:IsAvailableSocket(i) == true then
 					
-					local isEquip = itemObj['Socket_Equip_' .. i]
+					local isEquip = marketItem:GetEquipGemID(i);
 					if isEquip == 0 then
 						tempStr = ctrlSet:GetUserConfig("SOCKET_IMAGE_EMPTY")
 						if drawFlag == 1 and curCount % 2 == 1 then
@@ -1514,7 +1536,7 @@ function MARKETSHOWLEVEL_MARKET_ITEM_OLDLIST(frame)
 							tempStr = ctrlSet:GetUserConfig("SOCKET_IMAGE_MONSTER")
 						end
 						
-						local gemLv = GET_ITEM_LEVEL_EXP(gemClass, itemObj['SocketItemExp_' .. i])
+						local gemLv = GET_ITEM_LEVEL_EXP(gemClass, marketItem:GetEquipGemExp(i));
 						tempStr = tempStr .. "Lv" .. gemLv
 
 						if drawFlag == 1 and curCount % 2 == 1 then
@@ -1544,6 +1566,8 @@ function MARKETSHOWLEVEL_MARKET_ITEM_OLDLIST(frame)
 			GET_SOCKET_POTENSIAL_AWAKEN_PROP(ctrlSet, itemObj, i);
 		end
 		GET_EQUIP_PROP(ctrlSet, itemObj, i);
+
+		MARKETSHOWLEVEL_CREATE_SEAL_OPTION(ctrlSet, itemObj);
 
 		-- 내 판매리스트 처리
 
