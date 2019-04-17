@@ -375,18 +375,13 @@ function STATUSPOINTCHECK_ZEMINACHECK(zemina)
 end
 
 function STATUSPOINTCHECK_ZEMINACLEARCHECK(mapClassName)
-	local mapprop = geMapTable.GetMapProp(mapClassName);
 	local idspace = 'GenType_'..mapClassName;
-	local npcState = session.GetMapNPCState(mapClassName);
-	if nil == npcState then
-		return false;
-	end
 	local idcount = GetClassCount(idspace)
 	local flg = true;
 	for i = 0, idcount -1 do
 		local classIES = GetClassByIndex(idspace, i);
 		if classIES.ClassType == "statue_zemina" then
-			if npcState:FindAndGet(classIES.GenType) == 20 then
+			if GetNPCState(mapClassName, classIES.GenType) == 20 then
 				return true;
 			else
 				return false;

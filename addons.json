@@ -195,10 +195,10 @@
 		"name" : "Status Point Check",
 		"file" : "statuspointcheck",
 		"extension" : "ipf",
-		"fileVersion" : "v1.4.0",
+		"fileVersion" : "v1.5.0",
 		"releaseTag" : "statuspointcheck",
 		"unicode" : "⛄",
-		"description" : "From the status screen (F1 button), you can check whether you have cleared the quest to acquire the status point.[v1.4.0 Fixed R10 patch.]  ステータス画面(F1ボタン)より、ステータスポイントを取得するクエストをクリアしているかどうかを確認することができます。[v1.4.0 R10パッチ用に修正。]",
+		"description" : "From the status screen (F1 button), you can check whether you have cleared the quest to acquire the status point.[v1.5.0 Fixed patch.]  ステータス画面(F1ボタン)より、ステータスポイントを取得するクエストをクリアしているかどうかを確認することができます。[v1.5.0 パッチ修正。]",
 		"tags" : [
 			"status",
 			"point"
