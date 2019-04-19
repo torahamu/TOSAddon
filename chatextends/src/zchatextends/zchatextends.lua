@@ -722,6 +722,9 @@ function CHATEXTENDS_DRAW_CHAT_MSG(groupboxname, startindex, chatframe, removeCh
 				elseif msgType == "Battle" then
 					fontStyle = '';			
 				elseif msgType ~= "System" then
+					label:SetEventScript(ui.RBUTTONDOWN, 'CHAT_RBTN_POPUP');
+					label:SetUserValue("TARGET_NAME", commnderName);
+
 					chatCtrl:SetEventScript(ui.RBUTTONDOWN, 'CHAT_RBTN_POPUP');
 					chatCtrl:SetUserValue("TARGET_NAME", commnderName);
 
@@ -1132,6 +1135,10 @@ function CHATEXTENDS_BALLON_DRAW(groupboxname, groupbox, clustername, clusterinf
 			nameText:SetText('{@st61}'..commnderName..'{/}');
 			nameText:SetEventScript(ui.RBUTTONDOWN, 'CHAT_RBTN_POPUP');
 			nameText:SetUserValue("TARGET_NAME", commnderName);
+			txt:SetEventScript(ui.RBUTTONDOWN, 'CHAT_RBTN_POPUP');
+			txt:SetUserValue("TARGET_NAME", commnderName);
+			label:SetEventScript(ui.RBUTTONDOWN, 'CHAT_RBTN_POPUP');
+			label:SetUserValue("TARGET_NAME", commnderName);
 		end
 	end
 
