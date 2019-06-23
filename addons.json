@@ -87,7 +87,7 @@
 		"name" : "chatextends",
 		"file" : "chatextends",
 		"extension" : "ipf",
-		"fileVersion" : "v3.1.0",
+		"fileVersion" : "v3.1.2",
 		"releaseTag" : "chatextends",
 		"unicode" : "⛄",
 		"description" : "Modify chat.Please look at github for details.[v3.1.0 ReBuild Patch]  チャットを色々改造します。詳細はGithubやReadmeを見てください。[v3.1.0 ReBuild Patch]",
