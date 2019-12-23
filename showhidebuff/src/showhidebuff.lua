@@ -87,7 +87,7 @@ function SHOW_HIDE_BUFF_COMMON_BUFF_MSG(frame, msg, buffType, handle, buff_ui, b
 					if exist_slot:IsVisible() == 0 then
 						SET_BUFF_SLOT(exist_slot, captionlist[i], class, buffType, handle, slotlist, buffIndex);
 					end
-					skip = true				  
+					skip = true
 				end
 			end
 		end
@@ -110,7 +110,7 @@ function SHOW_HIDE_BUFF_COMMON_BUFF_MSG(frame, msg, buffType, handle, buff_ui, b
 			local text = captionlist[i];
 			local oldIcon = slot:GetIcon();
 			if slot:IsVisible() == 1 then
-				local oldBuffIndex = oldIcon:GetUserIValue("BuffIndex");			
+				local oldBuffIndex = oldIcon:GetUserIValue("BuffIndex");
 				local iconInfo = oldIcon:GetInfo();
 				local isBuffIndexSame = oldBuffIndex - buffIndex;
 				if iconInfo.type == buffType and isBuffIndexSame == 0 then
@@ -132,7 +132,7 @@ function SHOW_HIDE_BUFF_COMMON_BUFF_MSG(frame, msg, buffType, handle, buff_ui, b
 
 			if slot:IsVisible() == 1 then
 				local iconInfo = oldIcon:GetInfo();
-				if iconInfo.type == buffType and oldIcon:GetUserIValue("BuffIndex") == buffIndex then				
+				if iconInfo.type == buffType and oldIcon:GetUserIValue("BuffIndex") == buffIndex then
 					SET_BUFF_SLOT(slot, captionlist[i], class, buffType, handle, slotlist, buffIndex);
 					break;
 				end
