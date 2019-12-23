@@ -23,15 +23,15 @@ function SHOW_HIDE_BUFF_COMMON_BUFF_MSG(frame, msg, buffType, handle, buff_ui, b
 			local slotlist = buff_ui["slotlist"][i];
 			local slotcount = buff_ui["slotcount"][i];
 			local captionlist = buff_ui["captionlist"][i];
-            if slotcount ~= nil and slotcount >= 0 then
-    			for i = 0, slotcount - 1 do
-    				local slot		= slotlist[i];
-    				local text		= captionlist[i];
-    				slot:ShowWindow(0);
-    				slot:ReleaseBlink();
-    				text:SetText("");
-    			end
-    		end
+			if slotcount ~= nil and slotcount >= 0 then
+				for i = 0, slotcount - 1 do
+					local slot = slotlist[i];
+					local text = captionlist[i];
+					slot:ShowWindow(0);
+					slot:ReleaseBlink();
+					text:SetText("");
+				end
+			end
 		end
 
 		frame:Invalidate();
@@ -41,14 +41,14 @@ function SHOW_HIDE_BUFF_COMMON_BUFF_MSG(frame, msg, buffType, handle, buff_ui, b
 	if "None" == buffIndex or nil == buffIndex then
 		buffIndex = 0;
 	end
-    buffIndex = tonumber(buffIndex);
+	buffIndex = tonumber(buffIndex);
 
 	local class = GetClassByType('Buff', buffType);
 --	if class.ShowIcon == "FALSE" then
 --		return;
 --	end
-	if class.Icon == nli or class.Icon == "" then
-		class.Icon == "expup";
+	if class.Icon == nil or class.Icon == "" then
+		class.Icon = "expup";
 	end
 
 	local slotlist;
@@ -79,27 +79,40 @@ function SHOW_HIDE_BUFF_COMMON_BUFF_MSG(frame, msg, buffType, handle, buff_ui, b
 	end
 
 	if msg == 'ADD' then
+		local skip = false
+		if class ~= nil then
+			if TryGetProp(class, 'OnlyOneBuff', 'None') == 'YES' and TryGetProp(class, 'Duplicate', 1) == 0 then
+				local exist_slot, i = get_exist_debuff_in_slotlist(slotlist, buffType)
+				if exist_slot ~= nil then
+					if exist_slot:IsVisible() == 0 then
+						SET_BUFF_SLOT(exist_slot, captionlist[i], class, buffType, handle, slotlist, buffIndex);
+					end
+					skip = true				  
+				end
+			end
+		end
 
+	if skip == false then
 		for j = 0, slotcount - 1 do
 			local i = GET_BUFF_SLOT_INDEX(j, colcnt);
-			local slot				= slotlist[i];
-           
+			local slot = slotlist[i];
+			
 			if slot:IsVisible() == 0 then
 				SET_BUFF_SLOT(slot, captionlist[i], class, buffType, handle, slotlist, buffIndex);
 				break;
 			end
 		end
-
+	end
 	elseif msg == 'REMOVE' then
 		for i = 0, slotcount - 1 do
 
-			local slot		= slotlist[i];
-			local text		= captionlist[i];
-			local oldIcon 		= slot:GetIcon();
+			local slot = slotlist[i];
+			local text = captionlist[i];
+			local oldIcon = slot:GetIcon();
 			if slot:IsVisible() == 1 then
 				local oldBuffIndex = oldIcon:GetUserIValue("BuffIndex");			
 				local iconInfo = oldIcon:GetInfo();
-                local isBuffIndexSame = oldBuffIndex - buffIndex;
+				local isBuffIndexSame = oldBuffIndex - buffIndex;
 				if iconInfo.type == buffType and isBuffIndexSame == 0 then
 					CLEAR_BUFF_SLOT(slot, text);
 				
@@ -111,7 +124,7 @@ function SHOW_HIDE_BUFF_COMMON_BUFF_MSG(frame, msg, buffType, handle, buff_ui, b
 			end
 		end
 
-	elseif msg == "UPDATE" then    
+	elseif msg == "UPDATE" then	
 		for i = 0, slotcount - 1 do
 			local slot = slotlist[i];
 			local text = captionlist[i];
@@ -119,15 +132,15 @@ function SHOW_HIDE_BUFF_COMMON_BUFF_MSG(frame, msg, buffType, handle, buff_ui, b
 
 			if slot:IsVisible() == 1 then
 				local iconInfo = oldIcon:GetInfo();
-				if iconInfo.type == buffType and oldIcon:GetUserIValue("BuffIndex") == buffIndex then                
+				if iconInfo.type == buffType and oldIcon:GetUserIValue("BuffIndex") == buffIndex then				
 					SET_BUFF_SLOT(slot, captionlist[i], class, buffType, handle, slotlist, buffIndex);
 					break;
 				end
 			end
 		end
 	end
-    ARRANGE_DEBUFF_SLOT(frame, buff_ui);
+	ARRANGE_DEBUFF_SLOT(frame, buff_ui);
 
-    COLONY_POINT_INFO_DRAW_BUFF_ICON()
+	COLONY_POINT_INFO_DRAW_BUFF_ICON()
 end
 
