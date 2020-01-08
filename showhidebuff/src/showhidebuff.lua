@@ -47,8 +47,8 @@ function SHOW_HIDE_BUFF_COMMON_BUFF_MSG(frame, msg, buffType, handle, buff_ui, b
 --	if class.ShowIcon == "FALSE" then
 --		return;
 --	end
-	if class.Icon == nli or class.Icon == "" then
-		class.Icon == "expup";
+	if class.Icon == nil or class.Icon == "" then
+		class.Icon = "expup";
 	end
 
 	local slotlist;
