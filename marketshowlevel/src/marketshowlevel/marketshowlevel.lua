@@ -145,10 +145,7 @@ local MARKETSHOWLEVEL_MARKET_ITEM_COUNT_PER_PAGE_OLDLIST = {
 };
 
 -- Equip Jem And Hat prop align
-local propAlign = "center";
-if option.GetCurrentCountry()=="Japanese" then
-	propAlign = "left";
-end
+local propAlign = "left";
 
 -- Hat prop color
 local itemColor = {
@@ -159,15 +156,17 @@ local itemColor = {
 };
 
 -- Prop Text
-local AwakenText="Awaken Option"
+local AwakenText="Awaken"
 local SocketText="Socket"
 local PotentialText="Potential"
+local EnchantText="Enchant"
 local newoldText="Simple Equipment List"
 local OptionFilterButtonText = "OPTION FILTER"
 if option.GetCurrentCountry()=="Japanese" then
 	AwakenText="覚醒オプション"
 	SocketText="ソケット"
 	PotentialText="ポテンシャル"
+	EnchantText="エンチャント"
 	newoldText="装備を簡易リストにする"
 end
 
@@ -208,6 +207,23 @@ propList.MSPD          = {name = "移動";ename =  "Mspd"    ;max = 1;};
 propList.SR            = {name = "広攻";ename =  "AoEAtk"  ;max = 1;};
 propList.SDR           = {name = "広防";ename =  "AoEDef"  ;max = 4;};
 propList.LootingChance = {name = "ﾙｰﾄ%";ename =  "Loot%"   ;};
+
+propList.RareOption_MainWeaponDamageRate  = {name = "主攻";ename =  "MainDmg"   ;};
+propList.RareOption_SubWeaponDamageRate  = {name = "サブ攻";ename =  "SubDmg"   ;};
+propList.RareOption_BossDamageRate        = {name = "ボス攻";ename =  "BossDmg"   ;};
+propList.RareOption_MeleeReducedRate       = {name = "-物攻";ename =  "-P.Dmg"   ;};
+propList.RareOption_MagicReducedRate      = {name = "-魔攻";ename =  "-M.Dmg"   ;};
+propList.RareOption_PVPDamageRate        = {name = "+PK攻";ename =  "+PVPDmg"   ;};
+propList.RareOption_PVPReducedRate       = {name = "-PK攻";ename =  "-PVPDmg"   ;};
+propList.RareOption_CriticalDamage_Rate     = {name = "クリ攻";ename =  "CritDmg"   ;};
+propList.RareOption_CriticalHitRate          = {name = "クリ発";ename =  "CritRate"   ;};
+propList.RareOption_CriticalDodgeRate       = {name = "クリ抵";ename =  "CritDef"   ;};
+propList.RareOption_HitRate               = {name = "命中";ename =  "Acc"   ;};
+propList.RareOption_DodgeRate            = {name = "回避";ename =  "Eva"   ;};
+propList.RareOption_BlockBreakRate         = {name = "ブロック";ename =  "Blk"   ;};
+propList.RareOption_BlockRate             = {name = "ブロ貫通";ename =  "Blk BR"   ;};
+propList.RareOption_MSPD                = {name = "移動";ename =  "MSPD"   ;};
+propList.RareOption_SR                  = {name = "広攻";ename =  "AoEAtk"   ;};
 
 -- Random Option Name
 local randomList = {};
@@ -307,6 +323,10 @@ function MARKETSHOWLEVEL_ON_INIT(addon, frame)
 		MARKETSHOWLEVEL_MARKET_DRAW_CTRLSET_EXPORB_OLD = MARKET_DRAW_CTRLSET_EXPORB;
 		MARKET_DRAW_CTRLSET_EXPORB = MARKETSHOWLEVEL_MARKET_DRAW_CTRLSET_EXPORB_HOOKED;
 	end
+	if nil == MARKETSHOWLEVEL_MARKET_DRAW_CTRLSET_OPTMISC_OLD then
+		MARKETSHOWLEVEL_MARKET_DRAW_CTRLSET_OPTMISC_OLD = MARKET_DRAW_CTRLSET_OPTMISC;
+		MARKET_DRAW_CTRLSET_OPTMISC = MARKETSHOWLEVEL_MARKET_DRAW_CTRLSET_OPTMISC_HOOKED;
+	end	
 
 	if nil == MARKETSHOWLEVEL_GET_MARKET_SEARCH_ITEM_COUNT_OLD then
 		MARKETSHOWLEVEL_GET_MARKET_SEARCH_ITEM_COUNT_OLD = GET_MARKET_SEARCH_ITEM_COUNT;
@@ -866,6 +886,17 @@ function GET_SOCKET_POTENSIAL_AWAKEN_PROP(ctrlSet, itemObj, row)
 			awakenOp = propList[itemObj.HiddenProp].name
 		end
 		awakenProp = awakenProp .. "{#3300FF}{b}"..AwakenText.."[".. awakenOp .. " "..itemObj.HiddenPropValue.."]{/}{/} ";
+	end
+	if TryGetProp(itemObj, 'RandomOptionRare', 'None') ~= 'None' then
+		local enchantOp = propList[itemObj.RandomOptionRare].ename
+		if option.GetCurrentCountry == "Japanese" then
+			enchantOp = propList[itemObj.RandomOptionRare].name
+		end
+		local enchantValue = string.format("%.1f%%", math.abs(itemObj.RandomOptionRareValue / 10))
+		if itemObj.RandomOptionRare == "RareOption_MSPD" or itemObj.RandomOptionRare == "RareOption_SR" then
+			enchantValue = string.format("%d", math.abs(itemObj.RandomOptionRareValue))
+		end
+		awakenProp = awakenProp .. "{#ff0033}{b}"..EnchantText.."[".. enchantOp .. " "..enchantValue.."]{/}{/}";
 	end
 
 	local socketDetail = ctrlSet:CreateControl("richtext", "SOCKTE_ITEM_" .. row, 70, 7, 0, 0);
