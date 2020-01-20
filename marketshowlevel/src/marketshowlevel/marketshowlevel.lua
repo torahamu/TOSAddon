@@ -861,7 +861,11 @@ function GET_SOCKET_POTENSIAL_AWAKEN_PROP(ctrlSet, itemObj, row)
 	local awakenProp = "";
 
 	if itemObj.IsAwaken == 1 then
-		awakenProp = "{#3300FF}{b}"..AwakenText.."["..propList[itemObj.HiddenProp].name.. " "..itemObj.HiddenPropValue.."]{/}{/}";
+		local awakenOp = propList[itemObj.HiddenProp].ename
+		if option.GetCurrentCountry == "Japanese" then
+			awakenOp = propList[itemObj.HiddenProp].name
+		end
+		awakenProp = awakenProp .. "{#3300FF}{b}"..AwakenText.."[".. awakenOp .. " "..itemObj.HiddenPropValue.."]{/}{/} ";
 	end
 
 	local socketDetail = ctrlSet:CreateControl("richtext", "SOCKTE_ITEM_" .. row, 70, 7, 0, 0);
