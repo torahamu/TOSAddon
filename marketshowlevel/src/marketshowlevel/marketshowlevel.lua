@@ -1397,7 +1397,7 @@ function MARKETSHOWLEVEL_MARKET_DRAW_CTRLSET_GEM_NEWFRAME(frame)
 end
 
 
-function MARKETSHOWLEVEL_MARKET_ITEM_OLDLIST(frame)
+function MARKETSHOWLEVEL_MARKET_ITEM_OLDLIST(frame, isShowSocket)
 	local itemlist = GET_CHILD_RECURSIVELY(frame, "itemListGbox");
 	itemlist:RemoveAllChild();
 	local mySession = session.GetMySession();
@@ -1428,6 +1428,9 @@ function MARKETSHOWLEVEL_MARKET_ITEM_OLDLIST(frame)
 		ctrlSet:Resize(ctrlSet:GetWidth(), 66)
 
 		local inheritanceItem = GetClass('Item', itemObj.InheritanceItemName)
+		if inheritanceItem == nil then
+			inheritanceItem = GetClass('Item', itemObj.InheritanceRandomItemName)
+		end
 		MARKETSHOWLEVEL_MARKET_CTRLSET_SET_ICON(ctrlSet, itemObj, marketItem);
 
 		local name = GET_CHILD_RECURSIVELY(ctrlSet, "name");
