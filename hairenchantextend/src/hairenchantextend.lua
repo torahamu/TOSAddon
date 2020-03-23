@@ -68,6 +68,8 @@ propList.RES_DARK      = {max = 84;};
 propList.MSPD          = {max = 1;};
 propList.SR            = {max = 1;};
 propList.SDR           = {max = 4;};
+propList.Add_Damage_Atk = {max = 999;};
+propList.ResAdd_Damage  = {max = 999;};
 
 local itemColor = {
 	[0] = "FFFFFF",    -- Normal
