@@ -79,6 +79,12 @@ if not g.loaded then
 			INT=false;
 			MNA=false;
 			DEX=false;
+			Add_Damage_Atk=false;
+			ResAdd_Damage=false;
+			Cloth_Def=false;
+			Leather_Def=false;
+			Iron_Def=false;
+			MiddleSize_Def=false;
 		};
 		hairTypeFilter = {
 			HAT=false;
@@ -120,6 +126,8 @@ if not g.loaded then
 			MSPD=false;
 			SR=false;
 			SDR=false;
+			Add_Damage_Atk=false;
+			ResAdd_Damage=false;
 		};
 	};
 end
@@ -207,23 +215,25 @@ propList.MSPD          = {name = "移動";ename =  "Mspd"    ;max = 1;};
 propList.SR            = {name = "広攻";ename =  "AoEAtk"  ;max = 1;};
 propList.SDR           = {name = "広防";ename =  "AoEDef"  ;max = 4;};
 propList.LootingChance = {name = "ﾙｰﾄ%";ename =  "Loot%"   ;};
+propList.Add_Damage_Atk= {name = "追攻";ename =  "AddAtk"  ;max = 198};
+propList.ResAdd_Damage = {name = "追防";ename =  "AddRes"  ;max = 198};
 
-propList.RareOption_MainWeaponDamageRate  = {name = "主攻";ename =  "MainDmg"   ;};
-propList.RareOption_SubWeaponDamageRate  = {name = "サブ攻";ename =  "SubDmg"   ;};
-propList.RareOption_BossDamageRate        = {name = "ボス攻";ename =  "BossDmg"   ;};
-propList.RareOption_MeleeReducedRate       = {name = "-物攻";ename =  "-P.Dmg"   ;};
-propList.RareOption_MagicReducedRate      = {name = "-魔攻";ename =  "-M.Dmg"   ;};
-propList.RareOption_PVPDamageRate        = {name = "+PK攻";ename =  "+PVPDmg"   ;};
-propList.RareOption_PVPReducedRate       = {name = "-PK攻";ename =  "-PVPDmg"   ;};
-propList.RareOption_CriticalDamage_Rate     = {name = "クリ攻";ename =  "CritDmg"   ;};
-propList.RareOption_CriticalHitRate          = {name = "クリ発";ename =  "CritRate"   ;};
-propList.RareOption_CriticalDodgeRate       = {name = "クリ抵";ename =  "CritDef"   ;};
-propList.RareOption_HitRate               = {name = "命中";ename =  "Acc"   ;};
-propList.RareOption_DodgeRate            = {name = "回避";ename =  "Eva"   ;};
-propList.RareOption_BlockBreakRate         = {name = "ブロック";ename =  "Blk"   ;};
-propList.RareOption_BlockRate             = {name = "ブロ貫通";ename =  "Blk BR"   ;};
-propList.RareOption_MSPD                = {name = "移動";ename =  "MSPD"   ;};
-propList.RareOption_SR                  = {name = "広攻";ename =  "AoEAtk"   ;};
+propList.RareOption_MainWeaponDamageRate = {name = "主攻"    ;ename =  "MainDmg"  ;};
+propList.RareOption_SubWeaponDamageRate  = {name = "サブ攻"  ;ename =  "SubDmg"   ;};
+propList.RareOption_BossDamageRate       = {name = "ボス攻"  ;ename =  "BossDmg"  ;};
+propList.RareOption_MeleeReducedRate     = {name = "-物攻"   ;ename =  "-P.Dmg"   ;};
+propList.RareOption_MagicReducedRate     = {name = "-魔攻"   ;ename =  "-M.Dmg"   ;};
+propList.RareOption_PVPDamageRate        = {name = "+PK攻"   ;ename =  "+PVPDmg"  ;};
+propList.RareOption_PVPReducedRate       = {name = "-PK攻"   ;ename =  "-PVPDmg"  ;};
+propList.RareOption_CriticalDamage_Rate  = {name = "クリ攻"  ;ename =  "CritDmg"  ;};
+propList.RareOption_CriticalHitRate      = {name = "クリ発"  ;ename =  "CritRate" ;};
+propList.RareOption_CriticalDodgeRate    = {name = "クリ抵"  ;ename =  "CritDef"  ;};
+propList.RareOption_HitRate              = {name = "命中"    ;ename =  "Acc"      ;};
+propList.RareOption_DodgeRate            = {name = "回避"    ;ename =  "Eva"      ;};
+propList.RareOption_BlockBreakRate       = {name = "ブロック";ename =  "Blk"      ;};
+propList.RareOption_BlockRate            = {name = "ブロ貫通";ename =  "Blk BR"   ;};
+propList.RareOption_MSPD                 = {name = "移動"    ;ename =  "MSPD"     ;};
+propList.RareOption_SR                   = {name = "広攻"    ;ename =  "AoEAtk"   ;};
 
 -- Random Option Name
 local randomList = {};
@@ -281,6 +291,12 @@ randomList.CON            = {name = "体力"          ;ename = "CON"          ;d
 randomList.INT            = {name = "知能"          ;ename = "INT"          ;default = ClMsg(INT)           ;};
 randomList.MNA            = {name = "精神"          ;ename = "SPR"          ;default = ClMsg(MNA)           ;};
 randomList.DEX            = {name = "敏捷"          ;ename = "DEX"          ;default = ClMsg(DEX)           ;};
+randomList.Add_Damage_Atk = {name = "追攻"          ;ename = "AddAtk"       ;default = ClMsg(Add_Damage_Atk);};
+randomList.ResAdd_Damage  = {name = "追防"          ;ename = "AddRes"       ;default = ClMsg(ResAdd_Damage) ;};
+randomList.Cloth_Def      = {name = "クロース防"    ;ename = "ClothDef"     ;default = ClMsg(Cloth_Def)     ;};
+randomList.Leather_Def    = {name = "レザー防"      ;ename = "LeatherDef"   ;default = ClMsg(Leather_Def)   ;};
+randomList.Iron_Def       = {name = "プレート防"    ;ename = "PlateDef"     ;default = ClMsg(Iron_Def)      ;};
+randomList.MiddleSize_Def = {name = "中型防"        ;ename = "MiddleSizeDef";default = ClMsg(MiddleSize_Def);};
 
 function MARKETSHOWLEVEL_ON_INIT(addon, frame)
 	frame:ShowWindow(0);

@@ -14,6 +14,19 @@
 		]
 	},
 	{
+		"name" : "Market Show Level",
+		"file" : "marketshowlevel",
+		"extension" : "ipf",
+		"fileVersion" : "v3.2.0",
+		"releaseTag" : "marketshowlevel",
+		"unicode" : "⛄",
+		"description" : "Make Market Equipment a Simple List.(Thanks for itos and jtos and all addon developers.I used fixed source code.)[v3.2.0 Patch fix.]  マーケットの装備をシンプルなリストにします。(itosとjtosとすべてのアドオン開発者に感謝します。修正されたソースコードを使用しました。)[v3.2.0 Patch fix.]",
+		"tags" : [
+			"ui",
+			"market"
+		]
+	},
+	{
 		"name" : "Show Hide Buff",
 		"file" : "showhidebuff",
 		"extension" : "ipf",
