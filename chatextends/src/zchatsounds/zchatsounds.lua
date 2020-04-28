@@ -295,10 +295,10 @@ function CHATEXTENDS_SOUND_GET_MSGBODY(msgbody)
 
 	-- stinrg.gsub内で直接dictionary.ReplaceDicIDInCompStr("%1")とやったが使えなかった
 	-- ので、一時変数に入れる
-	tempstr=string.match(logbody, "(@dicID.+\*\^)");
+	tempstr=string.match(logbody, "(@dicID.+%*%^)");
 	if tempstr ~= nil then
 		tempstr = dictionary.ReplaceDicIDInCompStr(tempstr);
-		logbody=string.gsub(logbody,"(@dicID.+\*\^)", tempstr);
+		logbody=string.gsub(logbody,"(@dicID.+%*%^)", tempstr);
 	end
 	return logbody;
 end

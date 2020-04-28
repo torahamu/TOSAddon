@@ -1,7 +1,8 @@
 local addonName = "INDUNPLUS";
 local addonNameLower = string.lower(addonName);
-local currentVersion = 3.0;
+local currentVersion = 4.0;
 
+-- this version of IDP is maintained by member from ToSAC, find us here: https://discord.gg/hgxRFwy
 _G['ADDONS'] = _G['ADDONS'] or {};
 _G['ADDONS']['MONOGUSA'] = _G['ADDONS']['MONOGUSA'] or {};
 _G['ADDONS']['MONOGUSA'][addonName] = _G['ADDONS']['MONOGUSA'][addonName] or {};
@@ -22,7 +23,7 @@ if not g.loaded then
   };
 
   g.settings = {
-    version = 3.0;
+    version = currentVersion;
     --ソート指定
     sortType = "level";
     --ソート指定（昇順 or 降順)
@@ -46,16 +47,13 @@ if not g.loaded then
     {label="create date", attribute="cid"},
   };
 
-  g.challengeDebuffId = 100102;
-  g.moneysplit = 1000000000;
-  g.moneysplitlength = 10;
   g.weekResetWday = 2;
 end
 
 function INDUNPLUS_RELOAD()
   local t, err = acutil.loadJSON(g.settingsFileLoc, g.settings);
   if err then
-    CHAT_SYSTEM('no save file');
+    CHAT_SYSTEM('no indunplus save file');
   else
     CHAT_SYSTEM('indunplus savedata is loaded');
     g.settings = t;
@@ -64,6 +62,35 @@ function INDUNPLUS_RELOAD()
   INDUNPLUS_SHOW_PLAYCOUNT();
 end
 
+function INDUNPLUS_GET_OTHER_DUNS()
+  local temp = {}
+  local result = {};
+  local clslist, cnt = GetClassList('contents_info');
+  local categoryCount = 1;
+  for i = 0, cnt -1 do
+    local cls = GetClassByIndexFromList(clslist, i);
+    local idx = temp[tostring(cls.ResetGroupID)];
+    if idx == nil and cls.Category ~= 'None' then
+    local categoryName = dictionary.ReplaceDicIDInCompStr(cls.Category);
+    categoryName = string.gsub(categoryName, "^%s*(.-)%s*$", "%1")
+    table.insert(result,
+    categoryCount,
+      {
+      ["type"] = tostring(cls.ResetGroupID),
+      ["label"] = categoryName,
+      ["id"] = cls.ClassID,
+      ["level"] = cls.Level,
+      ["WeeklyEnterableCount"] = (cls.ResetPer == 'WEEK' and cls.EnterableCount) or 0,
+      ["isCharaBased"] = cls.UnitPerReset == 'PC'
+      });
+      temp[tostring(cls.ResetGroupID)] = categoryCount;
+      categoryCount = categoryCount + 1;
+    elseif cls.Category ~= 'None' and result[idx]["level"] > cls.Level then
+      result[idx]["level"] = cls.Level;
+    end
+  end
+  return result
+end
 function INDUNPLUS_GET_INDUNS()
   local clslist, cnt = GetClassList("Indun");
   local temp = {};
@@ -76,14 +103,15 @@ function INDUNPLUS_GET_INDUNS()
 
     if idx == nil and cls.Category ~= 'None' then
       local categoryName = dictionary.ReplaceDicIDInCompStr(cls.Category);
-      local findRegend = string.find(categoryName," : ");
-      if findRegend ~= nil then
-        categoryName = string.sub(categoryName,findRegend+3);
-      end
-      findRegend = string.find(categoryName,"：");
-      if findRegend ~= nil then
-        categoryName = string.sub(categoryName,0,findRegend);
-      end
+        if string.find(cls.ClassName, "Casual_") == nil then
+          local findLegend = string.find(categoryName,":") or string.find(categoryName,"：")
+          if findLegend ~= nil then
+            categoryName = string.sub(categoryName,findLegend + 1);
+          end
+        end
+        --trim spaces; well, not fastest, but IMC won't even have their dungeon names like 100+ chars with dozen of spaces, should be fine.....
+        categoryName = string.gsub(categoryName, "^%s*(.-)%s*$", "%1")
+    
       table.insert(result,
         categoryCount,
         {
@@ -91,7 +119,8 @@ function INDUNPLUS_GET_INDUNS()
           ["label"] = categoryName,
           ["id"] = cls.ClassID,
           ["level"] = cls.Level,
-          ["WeeklyEnterableCount"] = cls.WeeklyEnterableCount or 0
+          ["WeeklyEnterableCount"] = cls.WeeklyEnterableCount or 0,
+          ["isCharaBased"] = cls.UnitPerReset == 'PC'
         });
       temp[tostring(cls.PlayPerResetType)] = categoryCount;
       categoryCount = categoryCount + 1;
@@ -100,40 +129,32 @@ function INDUNPLUS_GET_INDUNS()
     end
   end
 
+  local otherInduns = INDUNPLUS_GET_OTHER_DUNS()
+  for i=1,#otherInduns do
+    result[#result+1] = otherInduns[i]
+  end
   return result;
 end
 
-function INDUNPLUS_GET_PLAY_COUNT(indun)
-  local etcObj = GetMyEtcObject();
-  local etcType = "";
-  if indun.WeeklyEnterableCount == 0 then
-    etcType = "InDunCountType_"..indun.type;
-  else
-    etcType = "IndunWeeklyEnteredCount_"..indun.type;
+function INDUNPLUS_GET_COUNT(indun, resettype)
+  local count = 0
+  for  i = 1 , #indun do
+    if resettype == 'day' and indun[i].WeeklyEnterableCount == 0 then
+      count = count + 1
+    end
+    if resettype == 'week' and indun[i].WeeklyEnterableCount > 0 then
+      count = count + 1
+    end
   end
-  local count = etcObj[etcType];
-
   return count;
+end
+function INDUNPLUS_GET_PLAY_COUNT(indun)
+  return GET_CURRENT_ENTERANCE_COUNT(tonumber(indun.type))
 end
 
 function INDUNPLUS_GET_MAX_PLAY_COUNT(indun)
-  if indun.id == 33 then
-    return 99;
-  end
-  local cls = GetClassByType("Indun", indun.id);
-
-  local bonusCount = 0;
-  if true == session.loginInfo.IsPremiumState(ITEM_TOKEN) then 
-    bonusCount = cls.PlayPerReset_Token
-  end
-  local maxPlayCnt = 0;
-  if indun.WeeklyEnterableCount == 0 then
-    maxPlayCnt = cls.PlayPerReset + bonusCount;
-  else
-    maxPlayCnt = cls.WeeklyEnterableCount + bonusCount;
-  end
-
-  return maxPlayCnt;
+  local _rt = GET_MAX_ENTERANCE_COUNT(tonumber(indun.type))
+  return _rt == "{img infinity_text 20 10}" and tonumber(99) or tonumber(_rt)
 end
 
 function INDUNPLUS_GET_RESETTIME(targetwday)
@@ -192,45 +213,11 @@ function INDUNPLUS_CREATE_CHARALABEL(parent, cid, record, fontSize, x, y, width,
   if record.money ~= nil then
     local silverText = parent:CreateOrGetControl("richtext", "silver_"..cid, x, y, width, height)
     tolua.cast(silverText, "ui::CRichText");
-    local moneyStr = tostring(record.money);
-    local outMoney = "";
-    if #moneyStr >= g.moneysplitlength then
-      local money10 = math.floor(tonumber(moneyStr) / g.moneysplit);
-      local money = string.sub(moneyStr,#tostring(money10)+1);
-      outMoney = GetCommaedText(money10)..","..GetCommaedText(money);
-    else
-      outMoney = GetCommaedText(tonumber(moneyStr));
-    end
-    silverText:SetText("{@st48}{#AAAAAA}"..outMoney.."s{/}{/}");
+    silverText:SetText("{@st48}{#FFFFFF}{img silver 14 14}"..GET_COMMAED_STRING(record.money).."{/}{/}");
     silverText:SetGravity(ui.RIGHT, ui.TOP);
+    silverText:Move((0 - x), 0);
   end
 
-end
-
-function INDUNPLUS_CREATE_CHALLENGETIME(parent, cid, record, fontSize, x, y, width, height)
-  local challengeLabelText = parent:CreateOrGetControl("richtext", "challengeLabel"..cid, x, y, width, height)
-  local challengeText = parent:CreateOrGetControl("richtext", "challengeDebuff"..cid, x, y, width, height)
-
-  local color = "00FF00";
-  local playCount = 1;
-  if nil == record.challengeDebuffTime or record.challengeDebuffTime == 0 or record.challengeDebuffTime <= os.time() then
-    color = "FFFFFF";
-    playCount = 0;
-  end
-  challengeLabelText:ShowWindow(1);
-  challengeText:ShowWindow(1);
-
-  local text = string.format("{@st48}{#%s}{s%d}%s{/}{/}{/}", color, fontSize, "Challenge");
-  tolua.cast(challengeLabelText, "ui::CRichText");
-  challengeLabelText:SetText(text);
-
-  local challengeDate = os.date("*t", record.challengeDebuffTime);
-  tolua.cast(challengeText, "ui::CRichText");
-
-  challengeText:SetText(string.format("{@st48}{#%s}{s%d}%d/%d{/}{/}{/}",color, fontSize, playCount, 1));
-  challengeText:SetGravity(ui.RIGHT, ui.TOP);
-
-  return true;
 end
 
 function INDUNPLUS_LOAD()
@@ -238,7 +225,7 @@ function INDUNPLUS_LOAD()
   if not g.loaded then
     local t, err = acutil.loadJSON(g.settingsFileLoc);
     if err then
-      CHAT_SYSTEM('no save file');
+      CHAT_SYSTEM('no indunplus save file');
     else
       if t.version ~= nil and t.version >= currentVersion then
         CHAT_SYSTEM('[indunplus] savedata is loaded');
@@ -269,12 +256,11 @@ end
 
 
 function INDUNPLUS_CREATE_INDUNLINE(parent, cid, record, indun, fontSize, x, y, width, height)
+  local counts = record.counts and record.counts[indun.type];
 
-  local counts = record.counts[indun.type];
-
-  if counts == nil then
+  if counts == nil or cid == session.GetMySession():GetCID() then
     counts = {
-      playCount = 0,
+      playCount = INDUNPLUS_GET_PLAY_COUNT(indun),
       maxPlayCount = INDUNPLUS_GET_MAX_PLAY_COUNT(indun),
     };
   end
@@ -282,22 +268,26 @@ function INDUNPLUS_CREATE_INDUNLINE(parent, cid, record, indun, fontSize, x, y, 
   local label = indun.label;
   local type = indun.type;
   local color = "FFFFFF";
-
+  
   if record.level ~= nil and indun.level > record.level then
     color = "444444";
-  elseif counts.playCount >= counts.maxPlayCount then
+  elseif counts.maxPlayCount > 0 and counts.playCount >= counts.maxPlayCount then
     color = "00FF00";
   elseif counts.playCount > 0 then
     color = "FFFF00";
   end
 
+  if string.len(label) > 30 then
+    label = string.sub(label, 1, 30) .. "..."
+  end
+  local maxCountTxt = (counts.maxPlayCount == 99 or counts.maxPlayCount == 0) and "INF" or counts.maxPlayCount
   local labelText = parent:CreateOrGetControl("richtext", "label"..cid.."_"..type, 20, y, width / 2, 15);
   tolua.cast(labelText, "ui::CRichText");
   labelText:SetText(string.format("{@st48}{#%s}{s%d}%s{/}{/}{/}", color, fontSize ,label));
 
   local countText = parent:CreateOrGetControl("richtext", "count"..cid.."_"..type, 0, y, width / 2, 15);
   tolua.cast(countText, "ui::CRichText");
-  countText:SetText(string.format("{@st48}{#%s}{s%d}%d/%s{/}{/}{/}", color, fontSize, counts.playCount, counts.maxPlayCount));
+  countText:SetText(string.format("{@st48}{#%s}{s%d}%d/%s{/}{/}{/}", color, fontSize, counts.playCount, maxCountTxt));
   countText:SetGravity(ui.RIGHT, ui.TOP);
 end
 
@@ -370,37 +360,13 @@ end
 
 
 function INDUNPLUS_GET_TOTAL_MONEY()
-  --10桁以上用格納
-  local sum10 = 0;
-  --9桁以下格納
-  local sum = 0;
-  local depositstr = tostring(g.settings.deposit) or "0";
-  --10桁以上なら、10桁以上用変数に10桁目以降を入れる
-  if #depositstr >= g.moneysplitlength then
-    sum10 = math.floor(tonumber(depositstr) / g.moneysplit);
-    local tempSum = string.sub(depositstr,#tostring(sum10)+1);
-    sum = tonumber(tempSum);
-  else
-    sum = tonumber(depositstr);
-  end
+  local sum = tonumber(tostring(g.settings.deposit) or "0");
+
   for i, record in pairs(g.records) do
-    local moneyStr = tostring(record.money);
-    if #moneyStr >= g.moneysplitlength then
-      local money10 = math.floor(tonumber(moneyStr) / g.moneysplit);
-      local money = string.sub(moneyStr,#tostring(money10)+1);
-      sum10 = sum10 + money10;
-      sum = sum + tonumber(money)
-    else
       sum = sum + record.money
-    end
-
-    if sum > g.moneysplit then
-      sum10 = sum10 + 1;
-      sum = sum - g.moneysplit;
-    end
   end
 
-  return sum10, sum
+  return sum
 end
 
 function INDUNPLUS_SHOW_PLAYCOUNT()
@@ -444,7 +410,7 @@ function INDUNPLUS_SHOW_PLAYCOUNT()
 
   for i, record in ipairs(records) do
     local cid = record.cid;
-    --tooltip = tooltip.. string.format("{@st48}%s{img silver 20 20}%s{/}{nl}", record.name ,GetCommaedText(record.money));
+    --tooltip = tooltip.. string.format("{@st48}%s{img silver 20 20}%s{/}{nl}", record.name ,GET_COMMAED_STRING(record.money));
     local pcPCInfo = session.barrack.GetMyAccount():GetByStrCID(cid);
     if pcPCInfo ~= nil then
       if cnt > 0 and cnt % rowMax == 0 then
@@ -475,14 +441,18 @@ function INDUNPLUS_SHOW_PLAYCOUNT()
       INDUNPLUS_CREATE_CHARALABEL(page, cid, record, fontSize, 12, y, pageWidth, lineHeight);
       y = y + 2;
 
-      y = y + fontSize;
-      if not INDUNPLUS_CREATE_CHALLENGETIME(page, cid, record, fontSize, 20, y, pageWidth, lineHeight) then
-        y = y - fontSize;
+      for i, indun in ipairs(induns) do
+        if indun.isCharaBased then
+          y = y + fontSize;
+          INDUNPLUS_CREATE_INDUNLINE(page, cid, record, indun, fontSize, 20, y, pageWidth, lineHeight)
+        end
       end
 
       for i, indun in ipairs(induns) do
-        y = y + fontSize;
-        INDUNPLUS_CREATE_INDUNLINE(page, cid, record, indun, fontSize, 20, y, pageWidth, lineHeight)
+        if not indun.isCharaBased then
+          y = y + fontSize;
+          INDUNPLUS_CREATE_INDUNLINE(page, cid, record, indun, fontSize, 20, y, pageWidth, lineHeight)
+        end
       end
 
       page:Resize(pageWidth, pageHeight);
@@ -527,10 +497,7 @@ function INDUNPLUS_ON_INIT(addon, frame)
   frame:SetEventScript(ui.LBUTTONUP, "INDUNPLUS_END_DRAG");
 
   addon:RegisterMsg("GAME_START_3SEC", "INDUNPLUS_3SEC");
-  --バフ
-  addon:RegisterMsg('BUFF_ADD', 'INDUNPLUS_UPDATE_BUFF');
-  addon:RegisterMsg('BUFF_REMOVE', 'INDUNPLUS_UPDATE_BUFF');
-
+  
   local title = frame:CreateOrGetControl("richtext", "title", 10, 12, 200, 16);
   title:EnableHitTest(0);
 
@@ -582,46 +549,6 @@ function INDUNPLUS_CHANGE_ROWNUM(num)
   INDUNPLUS_SHOW_PLAYCOUNT();
 end
 
-function INDUNPLUS_UPDATE_BUFF(frame, msg, argStr, argNum)
-  if argNum == g.challengeDebuffId then
-    if msg == "BUFF_ADD" then
-      INDUNPLUS_CHECK_BUFF();
-      INDUNPLUS_SHOW_PLAYCOUNT();
-    elseif msg == "BUFF_REMOVE" then
-      INDUNPLUS_SAVE_CHALLENGEDEBUFF(0);
-      INDUNPLUS_SHOW_PLAYCOUNT();
-    end
-  end
-end
-
-function INDUNPLUS_SAVE_CHALLENGEDEBUFF(challengeTime)
-  local mySession = session.GetMySession();
-  local cid = mySession:GetCID();
-
-  g.records[cid]["challengeDebuffTime"] = challengeTime;
-  local fileName = string.format("../addons/indunplus/%s.json", cid);
-  acutil.saveJSON(fileName, g.records[cid]);
-end
-
-function INDUNPLUS_CHECK_BUFF()
-  local challengeDebuff = false;
-  local challengeTime = 0;
-
-  local handle = session.GetMyHandle();
-  local buffCount = info.GetBuffCount(handle);
-
-  for i = 0, buffCount - 1 do
-    local buff = info.GetBuffIndexed(handle, i);
-
-    if buff.buffID == g.challengeDebuffId then
-      challengeDebuff = true;
-      challengeTime = os.time() + math.floor(buff.time / 1000);
-    end
-  end
-
-  INDUNPLUS_SAVE_CHALLENGEDEBUFF(challengeTime);
-end
-
 function INDUNPLUS_START_DRAG(addon, frame)
   g.isDragging = true;
 end
@@ -641,12 +568,21 @@ function INDUNPLUS_3SEC()
   g.addon:RegisterMsg('INV_ITEM_ADD', 'INDUNPLUS_ON_ITEM_CHANGE_COUNT');
   g.addon:RegisterMsg('INV_ITEM_REMOVE', 'INDUNPLUS_ON_ITEM_CHANGE_COUNT');
   g.addon:RegisterMsg('INV_ITEM_CHANGE_COUNT', 'INDUNPLUS_ON_ITEM_CHANGE_COUNT');
+
   --銀行
  	g.addon:RegisterMsg("ACCOUNT_WAREHOUSE_ITEM_LIST", "INDUNPLUS_SAVE_DEPOSIT");
 	g.addon:RegisterMsg("ACCOUNT_WAREHOUSE_ITEM_ADD", "INDUNPLUS_SAVE_DEPOSIT");
 	g.addon:RegisterMsg("ACCOUNT_WAREHOUSE_ITEM_REMOVE", "INDUNPLUS_SAVE_DEPOSIT");
 	g.addon:RegisterMsg("ACCOUNT_WAREHOUSE_ITEM_CHANGE_COUNT", "INDUNPLUS_SAVE_DEPOSIT");
 	g.addon:RegisterMsg("ACCOUNT_WAREHOUSE_ITEM_IN", "INDUNPLUS_SAVE_DEPOSIT");
+  g.addon:RegisterMsg("ACCOUNT_WAREHOUSE_WITHDRAW", "INDUNPLUS_SAVE_DEPOSIT");
+
+  acutil.setupEvent(g.addon, "ACCEPT_STOP_LEVEL_CHALLENGE_MODE", "INDUNPLUS_REFRESH_AFTER_CHALLENGE_END")
+  g.addon:RegisterMsg("INDUN_REWARD_RESULT", "INDUNPLUS_REFRESH_AND_SHOW_COUNT");
+
+  g.addon:RegisterMsg("NOTICE_Dm_Clear", "INDUNPLUS_REFRESH_AND_SHOW_COUNT");
+  g.addon:RegisterMsg("NOTICE_Dm_scroll", "INDUNPLUS_REFRESH_AND_SHOW_COUNT");
+  g.addon:RegisterMsg("NOTICE_Dm_raid_clear", "INDUNPLUS_REFRESH_AND_SHOW_COUNT");
 
   INDUNPLUS_LOAD();
   local frame = g.frame;
@@ -664,9 +600,16 @@ function INDUNPLUS_3SEC()
     frame:SetOffset(g.settings.xPosition, g.settings.yPosition);
   end
 end
+function INDUNPLUS_REFRESH_AFTER_CHALLENGE_END()
+  ReserveScript("INDUNPLUS_REFRESH_AND_SHOW_COUNT()", 5)
+end
 
+function INDUNPLUS_REFRESH_AND_SHOW_COUNT()
+  ReserveScript("INDUNPLUS_REFRESH_COUNTS()", 0.5)
+  ReserveScript("INDUNPLUS_SHOW_PLAYCOUNT()", 1)
+end
 function INDUNPLUS_SAVE_TIME()
-  INDUNPLUS_REFLESH_COUNTS();
+  INDUNPLUS_REFRESH_COUNTS();
 
   local mySession = session.GetMySession();
   local cid = mySession:GetCID();
@@ -690,24 +633,26 @@ function INDUNPLUS_SAVE_TIME()
     ["counts"] = {},
   };
 
-  INDUNPLUS_CHECK_BUFF();
-
   local counts = g.records[cid]["counts"];
 
   local induns = INDUNPLUS_GET_INDUNS();
 
   for i, indun in ipairs(induns) do
+    if indun.isCharaBased then
     counts[indun.type] = {
       ["playCount"] = INDUNPLUS_GET_PLAY_COUNT(indun),
       ["maxPlayCount"] = INDUNPLUS_GET_MAX_PLAY_COUNT(indun),
     };
+    end
   end
 
   local fileName = string.format("../addons/indunplus/%s.json", cid);
   acutil.saveJSON(fileName, g.records[cid]);
 end
 
-function INDUNPLUS_REFLESH_COUNTS()
+function INDUNPLUS_REFRESH_COUNTS()
+  local mySession = session.GetMySession();
+  local mycid = mySession:GetCID();
   local resetTime = INDUNPLUS_GET_RESETTIME();
   for cid, record in pairs(g.records) do
     if record.time < resetTime then
@@ -720,13 +665,13 @@ function INDUNPLUS_REFLESH_COUNTS()
           counts[indun.type] = {};
         end
         if indun.WeeklyEnterableCount == 0 then
-          counts[indun.type]["playCount"] = 0;
+          counts[indun.type]["playCount"] = (cid == mycid and INDUNPLUS_GET_PLAY_COUNT(indun)) or 0;
           counts[indun.type]["maxPlayCount"] = INDUNPLUS_GET_MAX_PLAY_COUNT(indun);
         else
           if os.date("*t").wday == g.weekResetWday then
             local resetWeekTime = INDUNPLUS_GET_RESETTIME(g.weekResetWday);
             if record.time < resetWeekTime then
-              counts[indun.type]["playCount"] = 0;
+              counts[indun.type]["playCount"] = (cid == mycid and INDUNPLUS_GET_PLAY_COUNT(indun)) or 0;
               counts[indun.type]["maxPlayCount"] = INDUNPLUS_GET_MAX_PLAY_COUNT(indun);
             end
           end
@@ -753,7 +698,7 @@ function INDUNPLUS_ON_ITEM_CHANGE_COUNT(frame, msg, argStr, argNum)
     acutil.saveJSON(fileName, g.records[cid]);
     INDUNPLUS_UPDATE_TOTAL_MONEY();
     local silverText = GET_CHILD_RECURSIVELY(g.frame, "silver_"..cid, "ui::CRichText");
-    silverText:SetText("{@st48}{#AAAAAA}"..GetCommaedText(invItem.count).."s{/}{/}");
+    silverText:SetText("{@st48}{#AAAAAA}"..GET_COMMAED_STRING(invItem.count).."s{/}{/}");
     return;
   end
 
@@ -778,57 +723,23 @@ function INDUNPLUS_SAVE_DEPOSIT()
 end
 
 function INDUNPLUS_UPDATE_TOTAL_MONEY()
-  local money10, money = INDUNPLUS_GET_TOTAL_MONEY();
-  local title = GET_CHILD(g.frame, "title", "ui::CRichText");
 
   --ツールチップ
+  local money = INDUNPLUS_GET_TOTAL_MONEY();
   local depositstr = tostring(g.settings.deposit) or "0";
-  local outDeposit = "";
-  local other10 = 0;
-  local other = 0;
-  local outOther = "";
-  if #depositstr >= g.moneysplitlength then
-    local deposit10 = math.floor(tonumber(depositstr) / g.moneysplit);
-    local deposit = string.sub(depositstr,#tostring(deposit10)+1);
-    other10 = money10 - deposit10;
-    other = money - deposit;
-    while other < 0 do
-      other10 = other10 - 1;
-      other = other + g.moneysplit;
-    end
-    if other10 > 0 then
-      outOther = GetCommaedText(other10)..","..INDUNPLUS_GETCOMMA(other);
-    else
-      outOther = GetCommaedText(other)
-    end
-    outDeposit = GetCommaedText(deposit10)..","..INDUNPLUS_GETCOMMA(deposit);
-  else
-    other10 = money10;
-    other = money - tonumber(depositstr);
-    while other < 0 do
-      other10 = other10 - 1;
-      other = other + g.moneysplit;
-    end
-    if other10 > 0 then
-      outOther = GetCommaedText(other10)..","..INDUNPLUS_GETCOMMA(other);
-    else
-      outOther = GetCommaedText(other)
-    end
-    outDeposit = GetCommaedText(depositstr)
-  end
-  local tooltip = string.format("{@st48}Deposit {img silver 20 20}%s{nl}Other   {img silver 20 20}%s{/}", outDeposit, outOther);
+  local other = money - tonumber(depositstr);
+  local outDeposit = GET_COMMAED_STRING(depositstr);
+  local outOther = GET_COMMAED_STRING(other);
+  local title = GET_CHILD(g.frame, "title", "ui::CRichText");
+  local tooltip = string.format("{@st48}Deposit: {img silver 20 20}%s{nl}   Chars: {img silver 20 20}%s{/}", outDeposit, outOther);
   title:SetTextTooltip(tooltip);
-
-  local outMoney = "";
-  if money10 > 0 then
-    outMoney = GetCommaedText(money10)..","..INDUNPLUS_GETCOMMA(money);
-  else
-    outMoney = GetCommaedText(money)
-  end
+  title:EnableHitTest(0)
+  local outMoney = GET_COMMAED_STRING(money)
   if g.settings.minimize then
     title:SetText(string.format("{@st48}/idp {img silver 20 20}%s{/}", outMoney));
   else
     title:SetText(string.format("{@st48}Total{img silver 20 20}%s{/}", outMoney));
+    title:EnableHitTest(1);
   end
 end
 
