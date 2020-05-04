@@ -1393,7 +1393,7 @@ function MARKETSHOWLEVEL_MARKET_DRAW_CTRLSET_GEM_NEWFRAME(frame)
 					equipPos = equipPos .. ClMsg(equipList[equipIndex]).. sep;
 				end
 			end
-			tempText1 = "Skill:{#FFFFFF}{ol}"..skillClass.Name.."{/}{/}  Equip:{#FFFFFF}{ol}["..equipPos.."]{/}{/}";
+			tempText1 = "Skill:{#FFFFFF}{ol}"..(skillClass ~= nil and skillClass.Name or gemSkill).."{/}{/}  Equip:{#FFFFFF}{ol}["..equipPos.."]{/}{/}";
 		end
 
 		local textDesc = string.format("%s", tempText1)	
