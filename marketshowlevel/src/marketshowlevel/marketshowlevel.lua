@@ -894,14 +894,14 @@ function GET_SOCKET_POTENSIAL_AWAKEN_PROP(ctrlSet, itemObj, row)
 
 	if itemObj.IsAwaken == 1 then
 		local awakenOp = propList[itemObj.HiddenProp].ename
-		if option.GetCurrentCountry == "Japanese" then
+		if option.GetCurrentCountry() == "Japanese" then
 			awakenOp = propList[itemObj.HiddenProp].name
 		end
 		awakenProp = awakenProp .. "{#3300FF}{b}"..AwakenText.."[".. awakenOp .. " "..itemObj.HiddenPropValue.."]{/}{/} ";
 	end
 	if TryGetProp(itemObj, 'RandomOptionRare', 'None') ~= 'None' then
 		local enchantOp = propList[itemObj.RandomOptionRare].ename
-		if option.GetCurrentCountry == "Japanese" then
+		if option.GetCurrentCountry() == "Japanese" then
 			enchantOp = propList[itemObj.RandomOptionRare].name
 		end
 		local enchantValue = string.format("%.1f%%", math.abs(itemObj.RandomOptionRareValue / 10))
