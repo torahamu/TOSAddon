@@ -1373,7 +1373,7 @@ function MARKETSHOWLEVEL_MARKET_DRAW_CTRLSET_GEM_NEWFRAME(frame)
 		local tempText1 = "";
 		if itemObj["EquipXpGroup"] == "Gem_Skill" then
 			local gemSkill = string.sub(itemObj["ClassName"],5);
-			local skillClass = GetClass("Skill", gemSkill);
+			-- local skillClass = GetClass("Skill", gemSkill);
 
 			local equipList = StringSplit(itemObj["EnableEquipParts"], "/");
 			local equipPos = "";
@@ -1393,7 +1393,7 @@ function MARKETSHOWLEVEL_MARKET_DRAW_CTRLSET_GEM_NEWFRAME(frame)
 					equipPos = equipPos .. ClMsg(equipList[equipIndex]).. sep;
 				end
 			end
-			tempText1 = "Skill:{#FFFFFF}{ol}"..(skillClass ~= nil and skillClass.Name or gemSkill).."{/}{/}  Equip:{#FFFFFF}{ol}["..equipPos.."]{/}{/}";
+			tempText1 = "Equip:{#FFFFFF}{ol}["..equipPos.."]{/}{/}";
 		end
 
 		local textDesc = string.format("%s", tempText1)	
