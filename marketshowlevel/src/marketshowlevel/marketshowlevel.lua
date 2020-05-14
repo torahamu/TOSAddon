@@ -894,14 +894,14 @@ function GET_SOCKET_POTENSIAL_AWAKEN_PROP(ctrlSet, itemObj, row)
 
 	if itemObj.IsAwaken == 1 then
 		local awakenOp = propList[itemObj.HiddenProp].ename
-		if option.GetCurrentCountry == "Japanese" then
+		if option.GetCurrentCountry() == "Japanese" then
 			awakenOp = propList[itemObj.HiddenProp].name
 		end
 		awakenProp = awakenProp .. "{#3300FF}{b}"..AwakenText.."[".. awakenOp .. " "..itemObj.HiddenPropValue.."]{/}{/} ";
 	end
 	if TryGetProp(itemObj, 'RandomOptionRare', 'None') ~= 'None' then
 		local enchantOp = propList[itemObj.RandomOptionRare].ename
-		if option.GetCurrentCountry == "Japanese" then
+		if option.GetCurrentCountry() == "Japanese" then
 			enchantOp = propList[itemObj.RandomOptionRare].name
 		end
 		local enchantValue = string.format("%.1f%%", math.abs(itemObj.RandomOptionRareValue / 10))
@@ -1373,7 +1373,7 @@ function MARKETSHOWLEVEL_MARKET_DRAW_CTRLSET_GEM_NEWFRAME(frame)
 		local tempText1 = "";
 		if itemObj["EquipXpGroup"] == "Gem_Skill" then
 			local gemSkill = string.sub(itemObj["ClassName"],5);
-			local skillClass = GetClass("Skill", gemSkill);
+			-- local skillClass = GetClass("Skill", gemSkill);
 
 			local equipList = StringSplit(itemObj["EnableEquipParts"], "/");
 			local equipPos = "";
@@ -1393,7 +1393,7 @@ function MARKETSHOWLEVEL_MARKET_DRAW_CTRLSET_GEM_NEWFRAME(frame)
 					equipPos = equipPos .. ClMsg(equipList[equipIndex]).. sep;
 				end
 			end
-			tempText1 = "Skill:{#FFFFFF}{ol}"..skillClass.Name.."{/}{/}  Equip:{#FFFFFF}{ol}["..equipPos.."]{/}{/}";
+			tempText1 = "Equip:{#FFFFFF}{ol}["..equipPos.."]{/}{/}";
 		end
 
 		local textDesc = string.format("%s", tempText1)	
