@@ -318,7 +318,7 @@ function INDUNPLUS_GET_SORT_RECORDS()
   local cnt = accountInfo:GetBuySlotCount();
   local barrackCls = GetClass("BarrackMap", accountInfo:GetThemaName());
   cnt = cnt + barrackCls.BaseSlot;
-  for i = 0 , cnt - 1 do
+  for i = 0 , cnt do
     local slot = accountInfo:GetBySlot(i);
     if slot ~= nil then
       local cid = tostring(slot:GetCID());
