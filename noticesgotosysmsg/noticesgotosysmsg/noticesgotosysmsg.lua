@@ -15,37 +15,35 @@ g.settingsFileLoc = string.format("%s/settings.json", g.settingsDirLoc);
 --ライブラリ読み込み
 local acutil = require('acutil');
 
-if not g.loaded then
-	g.settings = {
-		mode=0;
-	};
-	g.langText = {
-		["jp"] = {
-			label = {
-				title   = "通知設定",
-				body    = "指定した通知内容を{nl}システムメッセージに表示します",
-				default = "デフォルト",
-				gacha   = "ガチャ系とバイボラ",
-				all     = "全ての通知"
-			},
-			message = {
-				initwarning = "fucking global shoutと競合するので動作を停止します"
-			}
+g.settings = {
+	mode=0;
+};
+g.langText = {
+	["jp"] = {
+		label = {
+			title   = "通知設定",
+			body    = "指定した通知内容を{nl}システムメッセージに表示します",
+			default = "デフォルト",
+			gacha   = "ガチャ系とバイボラ",
+			all     = "全ての通知"
 		},
-		["en"] = {
-			label = {
-				title   = "Notice",
-				body    = "display selected notifications{nl}in system messages",
-				default = "default",
-				gacha   = "Gacha and Vibora",
-				all     = "All Notice"
-			},
-			message = {
-				initwarning = "Stops working as it conflicts with fucking global shout."
-			}
+		message = {
+			initwarning = "fucking global shoutと競合するので動作を停止します"
+		}
+	},
+	["en"] = {
+		label = {
+			title   = "Notice",
+			body    = "display selected notifications{nl}in system messages",
+			default = "default",
+			gacha   = "Gacha and Vibora",
+			all     = "All Notice"
+		},
+		message = {
+			initwarning = "Stops working as it conflicts with fucking global shout."
 		}
 	}
-end
+}
 
 function g.NOTICESGOTOSYSMSG_SAVE_JSON()
 	acutil.saveJSON(g.settingsFileLoc, g.settings);
@@ -59,27 +57,26 @@ function NOTICESGOTOSYSMSG_ON_INIT(addon, frame)
 		return;
 	end
 
-	if not g.loaded then
-		g.addon = addon;
-		g.frame = frame;
+	g.addon = addon;
+	g.frame = frame;
 
-		--hook
-		acutil.setupHook(NOTICESGOTOSYSMSG_ON_MSG, 'NOTICE_ON_MSG')
+	--hook
+	acutil.setupHook(NOTICESGOTOSYSMSG_ON_MSG, 'NOTICE_ON_MSG')
 
-		local t, err = acutil.loadJSON(g.settingsFileLoc, g.settings);
-		-- 読み込めない = ファイルがない
-		if err then
-			-- ファイル作る
-			g.NOTICESGOTOSYSMSG_SAVE_JSON();
-		else
-			-- 読み込めたら読み込んだ値使う
-			g.settings = t;
-			g.NOTICESGOTOSYSMSG_SAVE_JSON();
-		end
-		g.NOTICESGOTOSYSMSG_FRAME_CREATE();
-
-		g.loaded = true;
+	local t, err = acutil.loadJSON(g.settingsFileLoc, g.settings);
+	-- 読み込めない = ファイルがない
+	if err then
+		-- ファイル作る
+		g.NOTICESGOTOSYSMSG_SAVE_JSON();
+	else
+		-- 読み込めたら読み込んだ値使う
+		g.settings = t;
+		g.NOTICESGOTOSYSMSG_SAVE_JSON();
 	end
+
+	g.loaded = true;
+
+	g.NOTICESGOTOSYSMSG_FRAME_CREATE();
 
 end
 
