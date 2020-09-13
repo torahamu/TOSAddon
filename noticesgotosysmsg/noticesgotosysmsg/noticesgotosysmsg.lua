@@ -110,7 +110,9 @@ end
 
 -- All Notice is SystemMsg
 function g.NOTICESGOTOSYSMSG_MODE_2(frame, msg, argStr, argNum)
-	CHAT_SYSTEM(argStr)
+	if string.find(argStr, "FieldBossWillAppear") ~= nil then
+		CHAT_SYSTEM(argStr)
+	end
 end
 
 function g.GET_LANG_MESSAGE()
