@@ -208,7 +208,7 @@
 		"name" : "Notices Goto Sys Msg",
 		"file" : "noticesgotosysmsg",
 		"extension" : "ipf",
-		"fileVersion" : "v1.0.1",
+		"fileVersion" : "v1.0.2",
 		"releaseTag" : "noticesgotosysmsg",
 		"unicode" : "⛄",
 		"description" : "Causes the specified notification to appear in system messages and not normally.  指定した通知をシステムメッセージに表示させ、通常表示しないようにします",
