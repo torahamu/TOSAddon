@@ -222,7 +222,7 @@
 		"name" : "Simple Challenge Gauge",
 		"file" : "simplechallengegauge",
 		"extension" : "ipf",
-		"fileVersion" : "v1.0.0",
+		"fileVersion" : "v1.0.1",
 		"releaseTag" : "simplechallengegauge",
 		"unicode" : "⛄",
 		"description" : "Change the gauge in challenge mode.  チャレンジモードのゲージを変更します。",

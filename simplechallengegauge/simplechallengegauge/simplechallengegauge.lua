@@ -71,11 +71,19 @@ function g.GET_LANG_MESSAGE()
 	end
 end
 
+function g.JPTitle(langText)
+	if option.GetCurrentCountry()~="Japanese" then
+		return langText.label.title
+	end
+	return math.random(5) > 4 and "茶練痔猛怒 Lv%d" or langText.label.title
+end
+
 function SIMPLECHALLENGEGAUGE_END_DRAG(addon, frame)
 	g.settings.xPos = g.frame:GetX();
 	g.settings.yPos = g.frame:GetY();
 	g.SAVE_JSON();
 end
+
 -- Notice Hook
 function SIMPLECHALLENGEGAUGE_CHALLENGE_MODE_TOTAL_KILL_COUNT(frame, msg, str, arg)
 	local msgList = StringSplit(str, '#');
@@ -96,7 +104,7 @@ function SIMPLECHALLENGEGAUGE_CHALLENGE_MODE_TOTAL_KILL_COUNT(frame, msg, str, a
 		frame:ShowWindow(1);
 		frame:SetOffset(g.settings.xPos, g.settings.yPos);
 
-		title:SetText(string.format(langText.label.title,1));
+		title:SetText(string.format(g.JPTitle(langText),1));
 		kill_count:SetText(string.format(langText.label.kill_count,0,0,0));
 		rest_count:SetText(string.format(langText.label.rest_count,0));
 		challenge_timer:SetTextByKey('time', "00:00");
@@ -110,7 +118,7 @@ function SIMPLECHALLENGEGAUGE_CHALLENGE_MODE_TOTAL_KILL_COUNT(frame, msg, str, a
 
 		local level = tonumber(msgList[2]);
 
-		title:SetText(string.format(langText.label.title,level));
+		title:SetText(string.format(g.JPTitle(langText),level));
 		kill_count:SetText(string.format(langText.label.kill_count,0,0,0));
 		rest_count:SetText(string.format(langText.label.rest_count,0));
 		kill_gauge:SetMaxPointWithTime(0, 1, 0.1, 0.5);
