@@ -182,7 +182,7 @@
 		"name" : "Status Point Check",
 		"file" : "statuspointcheck",
 		"extension" : "ipf",
-		"fileVersion" : "v1.5.1",
+		"fileVersion" : "v1.5.2",
 		"releaseTag" : "statuspointcheck",
 		"unicode" : "⛄",
 		"description" : "From the status screen (F1 button), you can check whether you have cleared the quest to acquire the status point.(Thanks for itos and jtos and all addon developers.I used fixed source code.)[v1.5.1 Patch fix]  ステータス画面(F1ボタン)より、ステータスポイントを取得するクエストをクリアしているかどうかを確認することができます。(itosとjtosとすべてのアドオン開発者に感謝します。修正されたソースコードを使用しました。)[v1.5.1 Patch fix]",

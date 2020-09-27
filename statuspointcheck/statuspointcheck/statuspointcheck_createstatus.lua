@@ -381,7 +381,8 @@ function STATUSPOINTCHECK_ZEMINACLEARCHECK(mapClassName)
 	for i = 0, idcount -1 do
 		local classIES = GetClassByIndex(idspace, i);
 		if classIES.ClassType == "statue_zemina" then
-			if GetNPCState(mapClassName, classIES.GenType) == 20 then
+			local state = GetNPCState(mapClassName, classIES.GenType)
+			if state == 20 or state == 1 then
 				return true;
 			else
 				return false;
