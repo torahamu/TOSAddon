@@ -153,7 +153,8 @@ function INDUNPLUS_GET_PLAY_COUNT(indun)
 end
 
 function INDUNPLUS_GET_MAX_PLAY_COUNT(indun)
-  local _rt = GET_MAX_ENTERANCE_COUNT(tonumber(indun.type))
+  local _getmaxentrance = GET_INDUN_MAX_ENTERANCE_COUNT or GET_MAX_ENTERANCE_COUNT
+  local _rt = _getmaxentrance(tonumber(indun.type)) 
   return _rt == "{img infinity_text 20 10}" and tonumber(99) or tonumber(_rt)
 end
 
