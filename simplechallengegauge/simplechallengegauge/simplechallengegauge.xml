@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<uiframe name="simplechallengegauge" x="0" y="0" width="200" height="100" create="open" >
+	<skin frameskin="none" draw="false"/>
+	<frame title="" snapclient="true" snapframe="true" layout_gravity="center center" margin="0 0 0 0" piptype="top"/>
+	<input hittest="true" moveable="true" moveintitlebar="false" hittestframe="true"/>
+	<option visible="false" hideable="false" closebutton="false" alwaysVisible="true" autoopen="false"/>
+	<layer layerlevel="99"/>
+	<draw drawnotitlebar="false" drawtitlebar="false"/>
+	<controls>
+		<groupbox name="simplegbox" margin="0 0 0 0" rect="0 0 200 100" hittest="false" hittestbox="false" skin="black_box_op20" layout_gravity="left top" scrollbar="false"/>
+		<picture name="titlebg" margin="0 7 0 0" parent="simplegbox" rect="0 0 190 30" hittest="false" hittestbox="false" draw="false" stretch="true" image="test_com_namebg" layout_gravity="center top" scrollbar="false"/>
+		<richtext name="title" parent="simplegbox" margin="5 10 0 0" rect="0 0 90 30" caption="茶練痔猛怒" format="None" textalign="left center" resizebytext="true" fontname="white_18_b_ol_ds" fixwidth="false" layout_gravity="left top" hittest="false"/>
+		<gauge name="kill_gauge" parent="simplegbox" margin="20 30 0 0" rect="0 0 170 50" skin="gauge_itemtooltip_poten" inverse="false" point="50" layout_gravity="left top" text1="" textoffset1="0 1" textfont1="white_14_ol" textalign1="center center" hittest="false"/>
+		<richtext name="kill_count" parent="simplegbox" margin="20 40 0 0" rect="0 0 170 30" caption="None" textalign="center center" resizebytext="false" fontname="white_16_ol" fixwidth="false" layout_gravity="left top" hittest="false"/>
+		<richtext name="rest_count" parent="simplegbox" margin="20 70 0 0" rect="0 0 170 30" caption="None" textalign="center center" resizebytext="true" fontname="white_16_ol" fixwidth="true" layout_gravity="left top" hittest="false"/>
+		<richtext name="challenge_timer" parent="simplegbox" margin="0 10 5 0" rect="0 0 100 30" layout_gravity="right top" textalign="left center" resizebytext="true" fontname="white_18_b_ol_ds" fixwidth="false" format="%s" param1="time" param1_def="00:00" hittest="false"/>
+	</controls>
+</uiframe>

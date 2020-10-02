@@ -1,4 +1,4 @@
-CHAT_SYSTEM("MARKET SHOW LEVEL v3.1.0 loaded!");
+CHAT_SYSTEM("MARKET SHOW LEVEL v3.3.0 loaded!");
 
 local addonName = "MARKETSHOWLEVEL";
 local addonNameLower = string.lower(addonName);
@@ -79,6 +79,12 @@ if not g.loaded then
 			INT=false;
 			MNA=false;
 			DEX=false;
+			Add_Damage_Atk=false;
+			ResAdd_Damage=false;
+			Cloth_Def=false;
+			Leather_Def=false;
+			Iron_Def=false;
+			MiddleSize_Def=false;
 		};
 		hairTypeFilter = {
 			HAT=false;
@@ -120,6 +126,8 @@ if not g.loaded then
 			MSPD=false;
 			SR=false;
 			SDR=false;
+			Add_Damage_Atk=false;
+			ResAdd_Damage=false;
 		};
 	};
 end
@@ -130,7 +138,8 @@ local MARKETSHOWLEVEL_MARKET_ITEM_COUNT_PER_PAGE = {
 	Accessory = 7,	
 	HairAcc = 7,
 	RecipeMaterial = 7,
-	Recipe_Detail = 3,
+	Recipe_Detail = 3,    
+    OPTMisc = 7,    
 	Default = 11
 };
 
@@ -141,14 +150,12 @@ local MARKETSHOWLEVEL_MARKET_ITEM_COUNT_PER_PAGE_OLDLIST = {
 	HairAcc = 11,
 	RecipeMaterial = 7,
 	Recipe_Detail = 3,
+    OPTMisc = 11,
 	Default = 11
 };
 
 -- Equip Jem And Hat prop align
-local propAlign = "center";
-if option.GetCurrentCountry()=="Japanese" then
-	propAlign = "left";
-end
+local propAlign = "left";
 
 -- Hat prop color
 local itemColor = {
@@ -159,15 +166,17 @@ local itemColor = {
 };
 
 -- Prop Text
-local AwakenText="Awaken Option"
+local AwakenText="Awaken"
 local SocketText="Socket"
 local PotentialText="Potential"
+local EnchantText="Enchant"
 local newoldText="Simple Equipment List"
 local OptionFilterButtonText = "OPTION FILTER"
 if option.GetCurrentCountry()=="Japanese" then
 	AwakenText="覚醒オプション"
 	SocketText="ソケット"
 	PotentialText="ポテンシャル"
+	EnchantText="エンチャント"
 	newoldText="装備を簡易リストにする"
 end
 
@@ -208,6 +217,25 @@ propList.MSPD          = {name = "移動";ename =  "Mspd"    ;max = 1;};
 propList.SR            = {name = "広攻";ename =  "AoEAtk"  ;max = 1;};
 propList.SDR           = {name = "広防";ename =  "AoEDef"  ;max = 4;};
 propList.LootingChance = {name = "ﾙｰﾄ%";ename =  "Loot%"   ;};
+propList.Add_Damage_Atk= {name = "追攻";ename =  "AddAtk"  ;max = 198};
+propList.ResAdd_Damage = {name = "追防";ename =  "AddRes"  ;max = 198};
+
+propList.RareOption_MainWeaponDamageRate = {name = "主攻"    ;ename =  "MainDmg"  ;};
+propList.RareOption_SubWeaponDamageRate  = {name = "サブ攻"  ;ename =  "SubDmg"   ;};
+propList.RareOption_BossDamageRate       = {name = "ボス攻"  ;ename =  "BossDmg"  ;};
+propList.RareOption_MeleeReducedRate     = {name = "-物攻"   ;ename =  "-P.Dmg"   ;};
+propList.RareOption_MagicReducedRate     = {name = "-魔攻"   ;ename =  "-M.Dmg"   ;};
+propList.RareOption_PVPDamageRate        = {name = "+PK攻"   ;ename =  "+PVPDmg"  ;};
+propList.RareOption_PVPReducedRate       = {name = "-PK攻"   ;ename =  "-PVPDmg"  ;};
+propList.RareOption_CriticalDamage_Rate  = {name = "クリ攻"  ;ename =  "CritDmg"  ;};
+propList.RareOption_CriticalHitRate      = {name = "クリ発"  ;ename =  "CritRate" ;};
+propList.RareOption_CriticalDodgeRate    = {name = "クリ抵"  ;ename =  "CritDef"  ;};
+propList.RareOption_HitRate              = {name = "命中"    ;ename =  "Acc"      ;};
+propList.RareOption_DodgeRate            = {name = "回避"    ;ename =  "Eva"      ;};
+propList.RareOption_BlockBreakRate       = {name = "ブロック";ename =  "Blk"      ;};
+propList.RareOption_BlockRate            = {name = "ブロ貫通";ename =  "Blk BR"   ;};
+propList.RareOption_MSPD                 = {name = "移動"    ;ename =  "MSPD"     ;};
+propList.RareOption_SR                   = {name = "広攻"    ;ename =  "AoEAtk"   ;};
 
 -- Random Option Name
 local randomList = {};
@@ -265,6 +293,12 @@ randomList.CON            = {name = "体力"          ;ename = "CON"          ;d
 randomList.INT            = {name = "知能"          ;ename = "INT"          ;default = ClMsg(INT)           ;};
 randomList.MNA            = {name = "精神"          ;ename = "SPR"          ;default = ClMsg(MNA)           ;};
 randomList.DEX            = {name = "敏捷"          ;ename = "DEX"          ;default = ClMsg(DEX)           ;};
+randomList.Add_Damage_Atk = {name = "追攻"          ;ename = "AddAtk"       ;default = ClMsg(Add_Damage_Atk);};
+randomList.ResAdd_Damage  = {name = "追防"          ;ename = "AddRes"       ;default = ClMsg(ResAdd_Damage) ;};
+randomList.Cloth_Def      = {name = "クロース防"    ;ename = "ClothDef"     ;default = ClMsg(Cloth_Def)     ;};
+randomList.Leather_Def    = {name = "レザー防"      ;ename = "LeatherDef"   ;default = ClMsg(Leather_Def)   ;};
+randomList.Iron_Def       = {name = "プレート防"    ;ename = "PlateDef"     ;default = ClMsg(Iron_Def)      ;};
+randomList.MiddleSize_Def = {name = "中型防"        ;ename = "MiddleSizeDef";default = ClMsg(MiddleSize_Def);};
 
 function MARKETSHOWLEVEL_ON_INIT(addon, frame)
 	frame:ShowWindow(0);
@@ -307,6 +341,12 @@ function MARKETSHOWLEVEL_ON_INIT(addon, frame)
 		MARKETSHOWLEVEL_MARKET_DRAW_CTRLSET_EXPORB_OLD = MARKET_DRAW_CTRLSET_EXPORB;
 		MARKET_DRAW_CTRLSET_EXPORB = MARKETSHOWLEVEL_MARKET_DRAW_CTRLSET_EXPORB_HOOKED;
 	end
+
+	if nil == MARKETSHOWLEVEL_MARKET_DRAW_CTRLSET_OPTMISC_OLD then
+		MARKETSHOWLEVEL_MARKET_DRAW_CTRLSET_OPTMISC_OLD = MARKET_DRAW_CTRLSET_OPTMISC;
+		MARKET_DRAW_CTRLSET_OPTMISC = MARKETSHOWLEVEL_MARKET_MARKET_DRAW_CTRLSET_OPTMISC_HOOKED;
+	end
+	
 
 	if nil == MARKETSHOWLEVEL_GET_MARKET_SEARCH_ITEM_COUNT_OLD then
 		MARKETSHOWLEVEL_GET_MARKET_SEARCH_ITEM_COUNT_OLD = GET_MARKET_SEARCH_ITEM_COUNT;
@@ -733,7 +773,7 @@ function MARKETSHOWLEVEL_DRAW_DETAIL_CATEGORY_HOOKED(frame, selectedCtrlset, sub
 	return detailBox;
 end
 
-function GET_HAT_PROP(itemObj,ctrlSet)
+function GET_HAT_PROP(itemObj)
 	if itemObj.ClassType ~= "Hat" then
 		return ""
 	end
@@ -765,7 +805,7 @@ function GET_HAT_PROP(itemObj,ctrlSet)
 	return prop;
 end
 
-function GET_INFO_RANDOM(obj,ctrlSet)
+function GET_INFO_RANDOM(obj)
 	if obj.ClassType == "Hat" then
 		return ""
 	end
@@ -815,6 +855,81 @@ function GET_INFO_RANDOM(obj,ctrlSet)
 	return randomInfo
 end
 
+function GET_INFO_BASIC(itemObj)
+	local basicInfo = "";
+	local basicList = GET_EQUIP_TOOLTIP_PROP_LIST(itemObj);
+	local list = {};
+	local list2 = GET_EUQIPITEM_PROP_LIST();
+	if TryGetProp(itemObj, "BasicTooltipProp", 0) ~= 0 then
+		local basicTooltipPropList = StringSplit(itemObj.BasicTooltipProp, ';');
+		for i = 1, #basicTooltipPropList do
+			local basicTooltipProp = basicTooltipPropList[i];
+			list = GET_CHECK_OVERLAP_EQUIPPROP_LIST(basicList, basicTooltipProp, list);
+		end
+		local class = GetClassByType("Item", itemObj.ClassID);
+
+		for i = 1 , #list do
+			if #basicInfo > 0 then
+				basicInfo = basicInfo.." ";
+			end
+			local propName = list[i];
+			local propValue = TryGetProp(class, propName, 0);
+
+			local needToShow = true;
+			for j = 1, #basicTooltipPropList do
+				if basicTooltipPropList[j] == propName then
+					needToShow = false;
+				end
+			end
+			
+			if needToShow == true and propValue ~= 0 then
+				if  itemObj.GroupName == 'Weapon' then
+					if propName ~= "MINATK" and propName ~= 'MAXATK' then
+						local strInfo = ABILITY_DESC_PLUS(ScpArgMsg(propName), propValue);
+						basicInfo = basicInfo..strInfo;
+					end
+				elseif  itemObj.GroupName == 'Armor' then
+					if itemObj.ClassType == 'Gloves' then
+						if propName ~= "HR" then
+							local strInfo = ABILITY_DESC_PLUS(ScpArgMsg(propName), propValue);
+							basicInfo = basicInfo..strInfo;
+						end
+					elseif itemObj.ClassType == 'Boots' then
+						if propName ~= "DR" then
+							local strInfo = ABILITY_DESC_PLUS(ScpArgMsg(propName), propValue);
+							basicInfo = basicInfo..strInfo;
+						end
+					else
+						if propName ~= "DEF" then
+							local strInfo = ABILITY_DESC_PLUS(ScpArgMsg(propName), propValue);
+							basicInfo = basicInfo..strInfo;
+						end
+					end
+				else
+					local strInfo = ABILITY_DESC_PLUS(ScpArgMsg(propName), propValue);
+					basicInfo = basicInfo..strInfo;
+				end
+			end
+		end
+	end
+
+	for i = 1 , #list2 do
+		if #basicInfo > 0 then
+			basicInfo = basicInfo.." ";
+		end
+		local propName = list2[i];
+		local propValue = TryGetProp(itemObj, propName, 0);
+		if propValue ~= 0 then
+			local strInfo = ABILITY_DESC_PLUS(ScpArgMsg(propName), propValue);
+			basicInfo = basicInfo..strInfo;
+		end
+	end
+	if #basicInfo > 0 then
+		basicInfo = string.gsub(TrimString(basicInfo),"-"," ")
+	end
+	return basicInfo
+end
+
 function GET_ITEM_VALUE_COLOR(propname,value, max)
 	if propname == "MSPD" or propname == "SR" or propname == "SDR" then
 		return itemColor[0];
@@ -832,8 +947,8 @@ function GET_ITEM_VALUE_COLOR(propname,value, max)
 end
 
 function GET_EQUIP_PROP(ctrlSet, itemObj, row)
-	local prop = GET_HAT_PROP(itemObj,ctrlSet);
-	local randomInfo = GET_INFO_RANDOM(itemObj,ctrlSet)
+	local prop = GET_HAT_PROP(itemObj);
+	local randomInfo = GET_INFO_RANDOM(itemObj)
 
 	local propDetail = ctrlSet:CreateControl("richtext", "PROP_ITEM_" .. row, 70, 42, 0, 0);
 	tolua.cast(propDetail, 'ui::CRichText');
@@ -857,11 +972,48 @@ function GET_EQUIP_PROP(ctrlSet, itemObj, row)
 	propDetail:SetTextAlign(propAlign, "top");
 end
 
+function GET_EQUIP_BASIC_PROP(ctrlSet, inheritanceItem, row)
+	local basicInfo = GET_INFO_BASIC(inheritanceItem)
+
+	local propDetail = ctrlSet:CreateControl("richtext", "PROP_ITEM_" .. row, 70, 42, 0, 0);
+	tolua.cast(propDetail, 'ui::CRichText');
+	propDetail:SetFontName("brown_16_b");
+	if #basicInfo > 0 then
+		basicInfo = basicInfo.." ";
+	end
+
+	local charScale = "{s12}";
+	if option.GetCurrentCountry()=="Japanese" then
+		charScale = "{s14}";
+	end
+
+	-- Hat don't have random options.
+	propDetail:SetText(charScale..basicInfo.."{/}");
+	propDetail:Resize(100, propDetail:GetY()-12)
+	propDetail:SetTextAlign(propAlign, "top");
+	--propDetail:SetCompareTextWidthBySlideShow(false);
+	--propDetail:EnableSlideShow(1);
+end
 function GET_SOCKET_POTENSIAL_AWAKEN_PROP(ctrlSet, itemObj, row)
 	local awakenProp = "";
 
 	if itemObj.IsAwaken == 1 then
-		awakenProp = "{#3300FF}{b}"..AwakenText.."["..propList[itemObj.HiddenProp].name.. " "..itemObj.HiddenPropValue.."]{/}{/}";
+		local awakenOp = propList[itemObj.HiddenProp].ename
+		if option.GetCurrentCountry() == "Japanese" then
+			awakenOp = propList[itemObj.HiddenProp].name
+		end
+		awakenProp = awakenProp .. "{#3300FF}{b}"..AwakenText.."[".. awakenOp .. " "..itemObj.HiddenPropValue.."]{/}{/} ";
+	end
+	if TryGetProp(itemObj, 'RandomOptionRare', 'None') ~= 'None' then
+		local enchantOp = propList[itemObj.RandomOptionRare].ename
+		if option.GetCurrentCountry() == "Japanese" then
+			enchantOp = propList[itemObj.RandomOptionRare].name
+		end
+		local enchantValue = string.format("%.1f%%", math.abs(itemObj.RandomOptionRareValue / 10))
+		if itemObj.RandomOptionRare == "RareOption_MSPD" or itemObj.RandomOptionRare == "RareOption_SR" then
+			enchantValue = string.format("%d", math.abs(itemObj.RandomOptionRareValue))
+		end
+		awakenProp = awakenProp .. "{#ff0033}{b}"..EnchantText.."[".. enchantOp .. " "..enchantValue.."]{/}{/}";
 	end
 
 	local socketDetail = ctrlSet:CreateControl("richtext", "SOCKTE_ITEM_" .. row, 70, 7, 0, 0);
@@ -1187,6 +1339,14 @@ function MARKETSHOWLEVEL_MARKET_DRAW_CTRLSET_EXPORB_HOOKED(frame)
 	MARKETSHOWLEVEL_MARKET_DRAW_CTRLSET_EXPORB_OLD(frame);
 end
 
+function MARKETSHOWLEVEL_MARKET_MARKET_DRAW_CTRLSET_OPTMISC_HOOKED(frame)
+	if g.settings.oldflg then
+		MARKETSHOWLEVEL_MARKET_ITEM_OLDLIST_OPTMISC(frame)
+	else
+		MARKETSHOWLEVEL_MARKET_DRAW_CTRLSET_OPTMISC_OLD(frame);
+	end
+end
+
 function MARKETSHOWLEVEL_MARKET_DRAW_CTRLSET_CARD_NEWFRAME(frame)
 	local itemlist = GET_CHILD_RECURSIVELY(frame, "itemListGbox");
 	itemlist:RemoveAllChild();
@@ -1326,7 +1486,7 @@ function MARKETSHOWLEVEL_MARKET_DRAW_CTRLSET_GEM_NEWFRAME(frame)
 		local tempText1 = "";
 		if itemObj["EquipXpGroup"] == "Gem_Skill" then
 			local gemSkill = string.sub(itemObj["ClassName"],5);
-			local skillClass = GetClass("Skill", gemSkill);
+			-- local skillClass = GetClass("Skill", gemSkill);
 
 			local equipList = StringSplit(itemObj["EnableEquipParts"], "/");
 			local equipPos = "";
@@ -1346,7 +1506,7 @@ function MARKETSHOWLEVEL_MARKET_DRAW_CTRLSET_GEM_NEWFRAME(frame)
 					equipPos = equipPos .. ClMsg(equipList[equipIndex]).. sep;
 				end
 			end
-			tempText1 = "Skill:{#FFFFFF}{ol}"..skillClass.Name.."{/}{/}  Equip:{#FFFFFF}{ol}["..equipPos.."]{/}{/}";
+			tempText1 = "Equip:{#FFFFFF}{ol}["..equipPos.."]{/}{/}";
 		end
 
 		local textDesc = string.format("%s", tempText1)	
@@ -1393,7 +1553,7 @@ function MARKETSHOWLEVEL_MARKET_DRAW_CTRLSET_GEM_NEWFRAME(frame)
 end
 
 
-function MARKETSHOWLEVEL_MARKET_ITEM_OLDLIST(frame)
+function MARKETSHOWLEVEL_MARKET_ITEM_OLDLIST(frame, isShowSocket)
 	local itemlist = GET_CHILD_RECURSIVELY(frame, "itemListGbox");
 	itemlist:RemoveAllChild();
 	local mySession = session.GetMySession();
@@ -1424,6 +1584,9 @@ function MARKETSHOWLEVEL_MARKET_ITEM_OLDLIST(frame)
 		ctrlSet:Resize(ctrlSet:GetWidth(), 66)
 
 		local inheritanceItem = GetClass('Item', itemObj.InheritanceItemName)
+		if inheritanceItem == nil then
+			inheritanceItem = GetClass('Item', itemObj.InheritanceRandomItemName)
+		end
 		MARKETSHOWLEVEL_MARKET_CTRLSET_SET_ICON(ctrlSet, itemObj, marketItem);
 
 		local name = GET_CHILD_RECURSIVELY(ctrlSet, "name");
@@ -1599,6 +1762,95 @@ function MARKETSHOWLEVEL_MARKET_ITEM_OLDLIST(frame)
 
 			MARKET_CTRLSET_SET_TOTAL_PRICE(ctrlSet, marketItem);
 			
+		end		
+
+		ctrlSet:SetUserValue("sellPrice", marketItem:GetSellPrice());
+	end
+
+	local ITEM_CTRLSET_INTERVAL_Y_MARGIN = tonumber(frame:GetUserConfig('ITEM_CTRLSET_INTERVAL_Y_MARGIN'));
+	GBOX_AUTO_ALIGN(itemlist, 4, ITEM_CTRLSET_INTERVAL_Y_MARGIN, 0, true, false);
+
+	MARKETSHOWLEVEL_MARKET_SET_PAGE_CONTROL(frame, "pagecontrol")
+end
+
+function MARKETSHOWLEVEL_MARKET_ITEM_OLDLIST_OPTMISC(frame)
+	local itemlist = GET_CHILD_RECURSIVELY(frame, "itemListGbox");
+	itemlist:RemoveAllChild();
+	local mySession = session.GetMySession();
+	local cid = mySession:GetCID();
+	local count = session.market.GetItemCount();
+
+	MARKET_SELECT_SHOW_TITLE(frame, "OPTMiscTitle")
+
+	local yPos = 0
+	for i = 0 , count - 1 do
+		local marketItem = session.market.GetItemByIndex(i);
+		local itemObj = GetIES(marketItem:GetObject());
+		local refreshScp = itemObj.RefreshScp;
+		if refreshScp ~= "None" then
+			refreshScp = _G[refreshScp];
+			refreshScp(itemObj);
+		end
+
+		local ctrlSet = itemlist:CreateOrGetControlSet("market_item_detail_OPTMisc", "ITEM_EQUIP_" .. i, ui.LEFT, ui.TOP, 0, 0, 0, yPos);
+		AUTO_CAST(ctrlSet)
+		ctrlSet:SetUserValue("DETAIL_ROW", i);
+		ctrlSet:SetUserValue("optionIndex", 0)
+		ctrlSet:Resize(ctrlSet:GetWidth(), 66)
+
+		local type = GET_CHILD_RECURSIVELY(ctrlSet, "type");
+		type:ShowWindow(0);
+
+		MARKETSHOWLEVEL_MARKET_CTRLSET_SET_ICON(ctrlSet, itemObj, marketItem);
+
+		local name = GET_CHILD_RECURSIVELY(ctrlSet, "name");
+		name:EnableTextOmitByWidth(1);
+		name:SetMaxWidth(440);
+		name:Resize(440, name:GetHeight());
+		name:SetCompareTextWidthBySlideShow(true);
+		name:EnableSlideShow(0);
+		name:SetTextByKey("value", GET_FULL_NAME(itemObj));
+
+		-- OPTION (아이커)
+		local inheritanceItem = GetClass('Item', itemObj.InheritanceItemName)
+		type:SetTextByKey("value", ClMsg(itemObj.ClassType) or "ないよ");
+		type:ShowWindow(1);
+		if inheritanceItem ~= nil then
+			--実装したが見にくいので見せてない
+			--GET_EQUIP_BASIC_PROP(ctrlSet, inheritanceItem, i);
+		else
+			GET_EQUIP_PROP(ctrlSet, itemObj, i);
+		end
+		MARKETSHOWLEVEL_CREATE_SEAL_OPTION(ctrlSet, itemObj);
+
+		-- 내 판매리스트 처리
+		if cid == marketItem:GetSellerCID() then
+			local buyBtn = GET_CHILD_RECURSIVELY(ctrlSet, "buyBtn");
+			buyBtn:ShowWindow(0)
+			buyBtn:SetEnable(0);
+			local cancelBtn = GET_CHILD_RECURSIVELY(ctrlSet, "cancelBtn");
+			cancelBtn:ShowWindow(1)
+			cancelBtn:SetEnable(1)
+
+			if USE_MARKET_REPORT == 1 then
+				local reportBtn = GET_CHILD_RECURSIVELY(ctrlSet, "reportBtn");
+				reportBtn:SetEnable(0);
+			end
+
+			local totalPrice_num = GET_CHILD_RECURSIVELY(ctrlSet, "totalPrice_num");
+			totalPrice_num:SetTextByKey("value", 0);
+			local totalPrice_text = GET_CHILD_RECURSIVELY(ctrlSet, "totalPrice_text");
+			totalPrice_text:SetTextByKey("value", 0);
+		else
+
+			local buyBtn = GET_CHILD_RECURSIVELY(ctrlSet, "buyBtn");
+			buyBtn:ShowWindow(1)
+			buyBtn:SetEnable(1);
+			local cancelBtn = GET_CHILD_RECURSIVELY(ctrlSet, "cancelBtn");
+			cancelBtn:ShowWindow(0)
+			cancelBtn:SetEnable(0)
+
+			MARKET_CTRLSET_SET_TOTAL_PRICE(ctrlSet, marketItem);			
 		end		
 
 		ctrlSet:SetUserValue("sellPrice", marketItem:GetSellPrice());

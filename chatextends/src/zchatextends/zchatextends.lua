@@ -76,6 +76,8 @@ g.usefontsettings = {
 
 --ライブラリ読み込み
 local acutil = require('acutil');
+--Lua 5.2+ migration
+if not _G['unpack'] and (table and table.unpack) then _G['unpack'] = table.unpack end
 
 -- 読み込みフラグ
 g.loaded=false
@@ -679,7 +681,37 @@ function CHATEXTENDS_DRAW_CHAT_MSG(groupboxname, startindex, chatframe, removeCh
 			if g.settings.BALLON_FLG then
 				CHATEXTENDS_BALLON_DRAW(groupboxname, groupbox, clustername, clusterinfo, commnderName, msgType, marginRight, marginLeft, ypos, fontSize, beforeclusterinfo)
 			else
-				chatCtrl = groupbox:CreateOrGetControlSet('chatTextVer', clustername, ui.LEFT, ui.TOP, marginLeft, ypos , marginRight, 1);
+				local spinePic = nil;
+				
+				local tempMsg = clusterinfo:GetMsg()
+				if config.GetXMLConfig("EnableChatFrameMotionEmoticon") == 1 and string.find(tempMsg, "{spine motion_") ~= nil then
+					chatCtrl = groupbox:CreateOrGetControlSet('chatSpineVer', clustername, ui.LEFT, ui.TOP, marginLeft, ypos , marginRight, 1);
+					
+					local strlist = StringSplit(tempMsg, ' ');
+					local emoCls = GetClass('chat_emoticons', strlist[2]);
+					if emoCls == nil then
+						return;
+					end
+					
+					local spineToolTip = emoCls.IconSpine;
+					local spineInfo = geSpine.GetSpineInfo(spineToolTip);
+					
+					spinePic = GET_CHILD(chatCtrl, "spinePic");
+					spinePic:SetIsDurationTime(true);
+					spinePic:SetDurationTime(emoCls.IconSpineDurationTime);
+					spinePic:SetScaleFactor(emoCls.IconSpineScale);
+					spinePic:SetOffsetX(spineInfo:GetOffsetX());
+					spinePic:SetOffsetY(spineInfo:GetOffsetY());
+					spinePic:CreateSpineActor(spineInfo:GetRoot(), spineInfo:GetAtlas(), spineInfo:GetJson(), "", spineInfo:GetAnimation());
+					spinePic:SetUserValue("EMOTICON_CLASSNAME", strlist[2]);
+					if startindex == 0 and size ~= 0 then
+						spinePic:SetIsStopAnim(true);	-- 존 이동 시 이전 모션 이모티콘 들은 정지 상태로 변경		
+					end
+									
+					chatframe:RunUpdateScript("CHAT_FRAME_UPDATE");
+				else
+					chatCtrl = groupbox:CreateOrGetControlSet('chatTextVer', clustername, ui.LEFT, ui.TOP, marginLeft, ypos , marginRight, 1);
+				end
 
 				chatCtrl:EnableHitTest(1);
 				chatCtrl:EnableAutoResize(true,false);
@@ -762,8 +794,11 @@ function CHATEXTENDS_DRAW_CHAT_MSG(groupboxname, startindex, chatframe, removeCh
 						chatCtrl:SetEventScriptArgString(ui.LBUTTONDOWN, clusterinfo:GetRoomID());
 
 						txt:SetUserValue("ROOM_ID", clusterinfo:GetRoomID());
-				
-						fontStyle = CHATEXTENDS_CHAT_TEXT_IS_MINE_AND_SETFONT(msgIsMine, "TEXTCHAT_FONTSTYLE_WHISPER");
+						if colorCls ~= nil then
+							fontStyle = (msgIsMine and "{#"..colorCls.TextColor.."}{b}{ol}{ds}") or ("{#"..colorCls.TextColor.."}{ol}")
+						else
+							fontStyle = CHATEXTENDS_CHAT_TEXT_IS_MINE_AND_SETFONT(msgIsMine, "TEXTCHAT_FONTSTYLE_WHISPER");
+						end
 
 						msgFront = CHATEXTENDS_GET_TYPE_CHARNAME(ScpArgMsg("ChatType_5"), commnderNameUIText);
 
@@ -773,11 +808,10 @@ function CHATEXTENDS_DRAW_CHAT_MSG(groupboxname, startindex, chatframe, removeCh
 						chatCtrl:SetEventScriptArgString(ui.LBUTTONDOWN, clusterinfo:GetRoomID());
 
 						txt:SetUserValue("ROOM_ID", clusterinfo:GetRoomID());
-			
 						if colorCls ~= nil then
-							fontStyle = "{#"..colorCls.TextColor.."}{ol}"
+							fontStyle = (msgIsMine and "{#"..colorCls.TextColor.."}{b}{ol}{ds}") or ("{#"..colorCls.TextColor.."}{ol}")
 						else
-							fontStyle = CHATEXTENDS_CHAT_TEXT_IS_MINE_AND_SETFONT(msgIsMine, "TEXTCHAT_FONTSTYLE_WHISPER");
+							fontStyle = CHATEXTENDS_CHAT_TEXT_IS_MINE_AND_SETFONT(msgIsMine, "TEXTCHAT_FONTSTYLE_GROUP");
 						end
 
 						msgFront = CHATEXTENDS_GET_TYPE_CHARNAME(ScpArgMsg("ChatType_6"), commnderNameUIText);
@@ -798,10 +832,10 @@ function CHATEXTENDS_DRAW_CHAT_MSG(groupboxname, startindex, chatframe, removeCh
 					fontStyle = mainchatFrame:GetUserConfig("TEXTCHAT_FONTSTYLE_SYSTEM");
 					local colorOverride = clusterinfo:GetColor();
 					if colorOverride ~= '' then
-						fontStyle = string.gsub(fontStyle, '{#%x+}', '{#'..colorOverride..'}');				
+						fontStyle = string.gsub(fontStyle, '{#%x+}', '{#'..colorOverride..'}');
 					end
 
-					msgFront = string.format("[%s]", ScpArgMsg("ChatType_7"));			
+					msgFront = g.settings.ENABLE_TYPE_FLG and string.format("[%s]", ScpArgMsg("ChatType_7")) or "";
 				end	
 
 				local tempMsg = clusterinfo:GetMsg()
@@ -820,13 +854,12 @@ function CHATEXTENDS_DRAW_CHAT_MSG(groupboxname, startindex, chatframe, removeCh
 				txt:SetTextByKey("text", CHAT_TEXT_LINKCHAR_FONTSET(mainchatFrame, msgString));
 				timeCtrl:SetTextByKey("time", clusterinfo:GetTimeStr());	
 
-				local slflag = string.find(clusterinfo:GetMsg(),'a SL%a')
-				if slflag == nil then
-					txt:EnableHitTest(0)
-				else
-					txt:EnableHitTest(1)
+				txt:EnableHitTest(1);
+
+				if spinePic ~= nil then
+					spinePic:SetMargin(txt:GetWidth() - 110, 0, 0, 0);
 				end
-			
+
 				RESIZE_CHAT_CTRL(groupbox, chatCtrl, label, txt, timeCtrl, offsetX);
 			end
 		end
@@ -974,11 +1007,11 @@ function CHATEXTENDS_CHAT_REC(frame, msg)
 		local month = string.format("%02d",time.wMonth);
 		local day = string.format("%02d",time.wDay);
 
-		-- ファイル名は recchat_YYYYMMDD_キャラ名.txt
-		local logfile=string.format("recchat_%s%s%s_%s.txt", year,month,day,GETMYPCNAME());
+		-- ファイル名は recchat_YYYYMMDD_cid.txt
+		local logfile=string.format("recchat_%s%s%s_%s.txt", year,month,day,CHATEXTENDS_GET_LOGFILE_CHARNAME());
 
 		-- ファイル追記モード
-		file,err = io.open(g.SAVE_DIR.."/"..logfile, "a");
+		local file,err = io.open(g.SAVE_DIR.."/"..logfile, "a");
 		file:write(CHATEXTENDS_GET_MSGBODY(clusterinfo,clusterinfo:GetMsg()));
 		file:close();
 	end
@@ -1006,6 +1039,7 @@ function CHATEXTENDS_BALLON_DRAW(groupboxname, groupbox, clustername, clusterinf
 		AUTO_CAST(chatCtrl);
 		chatCtrl:EnableHitTest(1);
 		chatCtrl:SetSkinName("NONE");
+		chatCtrl:EnableScrollBar(0);
 
 		local labelBox = chatCtrl:CreateOrGetControl("groupbox", "bg", 380, 40, horzGravity, ui.TOP, 0, 0, 2, 0);
 		AUTO_CAST(labelBox);
@@ -1044,6 +1078,7 @@ function CHATEXTENDS_BALLON_DRAW(groupboxname, groupbox, clustername, clusterinf
 		AUTO_CAST(chatCtrl);
 		chatCtrl:EnableHitTest(1);
 		chatCtrl:SetSkinName("NONE");
+		chatCtrl:EnableScrollBar(0);
 
 		local labelBox = chatCtrl:CreateOrGetControl("groupbox", "bg", 380, 40, horzGravity, ui.TOP, 0, 18, 0, 0);
 		AUTO_CAST(labelBox);
@@ -1244,11 +1279,11 @@ function CHATEXTENDS_SAVE_CHAT()
 	local min = string.format("%02d",time.wMinute);
 	local sec = string.format("%02d",time.wSecond);
 
-	-- ファイル名は YYYYMMDD_HHMISS_キャラ名.txt
-	local logfile=string.format("savechat_%s%s%s_%s%s%s_%s.txt", year,month,day,hour,min,sec,GETMYPCNAME());
+	-- ファイル名は YYYYMMDD_HHMISS_cid.txt
+	local logfile=string.format("savechat_%s%s%s_%s%s%s_%s.txt", year,month,day,hour,min,sec,CHATEXTENDS_GET_LOGFILE_CHARNAME());
 
 	-- ファイル書き込みモード
-	file,err = io.open(g.SAVE_DIR.."/"..logfile, "w")
+	local file,err = io.open(g.SAVE_DIR.."/"..logfile, "w")
 	if err then
 		if option.GetCurrentCountry()=="Japanese" then
 			ui.SysMsg("チャットの保存に失敗しました(フォルダがない？)");
@@ -1269,11 +1304,15 @@ function CHATEXTENDS_SAVE_CHAT()
 	end
 end
 
+function CHATEXTENDS_GET_LOGFILE_CHARNAME()
+    return session.GetMySession():GetCID()
+end
+
 --************************************************
 -- ファイル書き込めるか確認
 --************************************************
 function CHATEXTENDS_CHECK_DIR(dirname)
-	file,err = io.open(dirname.."/test.tmp", "w")
+	local file,err = io.open(dirname.."/test.tmp", "w")
 	if err then
 		return false
 	else
@@ -1295,10 +1334,10 @@ function CHATEXTENDS_GET_MSGBODY(clusterinfo,msgbody)
 
 	-- stinrg.gsub内で直接dictionary.ReplaceDicIDInCompStr("%1")とやったが使えなかった
 	-- ので、一時変数に入れる
-	tempstr=string.match(logbody, "(@dicID.+\*\^)");
+	tempstr=string.match(logbody, "(@dicID.+%*%^)");
 	if tempstr ~= nil then
 		tempstr = dictionary.ReplaceDicIDInCompStr(tempstr);
-		logbody=string.gsub(logbody,"(@dicID.+\*\^)", tempstr);
+		logbody=string.gsub(logbody,"(@dicID.+%*%^)", tempstr);
 	end
 	return logbody;
 end

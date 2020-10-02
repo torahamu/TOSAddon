@@ -13,7 +13,6 @@ local g = _G["ADDONS"][author][addonName];
 --ライブラリ読み込み
 local acutil = require('acutil');
 
-
 --lua読み込み時のメッセージ
 CHAT_SYSTEM(string.format("%s.lua is loaded", addonName));
 
@@ -49,25 +48,43 @@ propList.CRTDR         = {max = 14;};
 propList.BLK           = {max = 14;};
 propList.ADD_HR        = {max = 14;};
 propList.ADD_DR        = {max = 14;};
-propList.ADD_FIRE      = {max = 99;};
-propList.ADD_ICE       = {max = 99;};
-propList.ADD_POISON    = {max = 99;};
-propList.ADD_LIGHTNING = {max = 99;};
-propList.ADD_EARTH     = {max = 99;};
-propList.ADD_SOUL      = {max = 99;};
-propList.ADD_HOLY      = {max = 99;};
-propList.ADD_DARK      = {max = 99;};
-propList.RES_FIRE      = {max = 84;};
-propList.RES_ICE       = {max = 84;};
-propList.RES_POISON    = {max = 84;};
-propList.RES_LIGHTNING = {max = 84;};
-propList.RES_EARTH     = {max = 84;};
-propList.RES_SOUL      = {max = 84;};
-propList.RES_HOLY      = {max = 84;};
-propList.RES_DARK      = {max = 84;};
+propList.AriesDEF      = {max = 110;};
+propList.SlashDEF      = {max = 110;};
+propList.StrikeDEF     = {max = 110;};
+propList.ADD_FIRE      = {max = 198;};
+propList.ADD_ICE       = {max = 198;};
+propList.ADD_POISON    = {max = 198;};
+propList.ADD_LIGHTNING = {max = 198;};
+propList.ADD_EARTH     = {max = 198;};
+propList.ADD_SOUL      = {max = 198;};
+propList.ADD_HOLY      = {max = 198;};
+propList.ADD_DARK      = {max = 198;};
+propList.Add_Damage_Atk= {max = 198;};
+propList.ADD_SMALLSIZE = {max = 198;};
+propList.ADD_MIDDLESIZE= {max = 198;};
+propList.ADD_LARGESIZE = {max = 198;};
+propList.ADD_BOSS_ATK  = {max = 198;};
+propList.ADD_CLOTH     = {max = 198;};
+propList.ADD_LEATHER   = {max = 198;};
+propList.ADD_IRON      = {max = 198;};
+propList.ADD_GHOST     = {max = 198;};
+propList.ADD_BOSS_ATK  = {max = 198;};
+propList.RES_FIRE      = {max = 198;};
+propList.RES_ICE       = {max = 198;};
+propList.RES_POISON    = {max = 198;};
+propList.RES_LIGHTNING = {max = 198;};
+propList.RES_EARTH     = {max = 198;};
+propList.RES_SOUL      = {max = 198;};
+propList.RES_HOLY      = {max = 198;};
+propList.RES_DARK      = {max = 198;};
+propList.ResAdd_Damage = {max = 198;};
 propList.MSPD          = {max = 1;};
 propList.SR            = {max = 1;};
 propList.SDR           = {max = 4;};
+propList.MiddleSize_Def= {max = 110;};
+propList.Leather_Def   = {max = 110;};
+propList.Cloth_Def     = {max = 110;};
+propList.Iron_Def      = {max = 110;};
 
 local itemColor = {
 	[0] = "FFFFFF",    -- Normal
@@ -113,9 +130,10 @@ function HAIRENCHANT_UPDATE_ITEM_OPTION_MAIN(itemIES)
 			nonOption = true;
 		else
 			if obj[propName] ~= "None" then
+				local propMaxValue = propList[obj[propName]].max or 0;
 				local propValueColored = GET_ITEM_VALUE_COLOR(obj[propName], obj[propValue], propList[obj[propName]].max);
 				local opName = string.format("%s",ScpArgMsg(obj[propName]));
-				txt = string.format("{#%s}{ol}%s "..ScpArgMsg("PropUp").."%d{/}{/}", propValueColored, opName, tonumber(obj[propValue]));
+				txt = string.format("{#%s}{ol}%s "..ScpArgMsg("PropUp").."%d(MAX:%d){/}{/}", propValueColored, opName, tonumber(obj[propValue]), propMaxValue);
 			end
 		end
 
@@ -130,7 +148,7 @@ end
 function DRAW_EQUIP_PROPERTY_HOOKED(tooltipframe, invitem, yPos, mainframename, setItem, drawLableline)
 	local gBox = GET_CHILD(tooltipframe,mainframename,'ui::CGroupBox')
 	gBox:RemoveChild('tooltip_equip_property');
-	
+
 	local basicList = GET_EQUIP_TOOLTIP_PROP_LIST(invitem);
     local list = {};
     local basicTooltipPropList = StringSplit(invitem.BasicTooltipProp, ';');
@@ -140,7 +158,7 @@ function DRAW_EQUIP_PROPERTY_HOOKED(tooltipframe, invitem, yPos, mainframename, 
     end
 
 	local list2 = GET_EUQIPITEM_PROP_LIST();
-	if IS_NEED_TO_DRAW_TOOLTIP_PROPERTY(list, list2, invitem, basicTooltipPropList) == false and (invitem.OptDesc == nil or invitem.OptDesc == "None" ) then -- 일단 그릴 프로퍼티가 있는지 검사. 없으면 컨트롤 셋 자체를 안만듬
+	if IS_NEED_TO_DRAW_TOOLTIP_PROPERTY(list, list2, invitem, basicTooltipPropList) == false and (invitem.OptDesc == nil or invitem.OptDesc == "None" ) then -- ?? ?? ????? ??? ??. ??? ??? ? ??? ???
 		if setItem == nil then
 			if invitem.ReinforceRatio == 100 then				
     			return yPos
@@ -170,12 +188,47 @@ function DRAW_EQUIP_PROPERTY_HOOKED(tooltipframe, invitem, yPos, mainframename, 
 		end
 	end
 
+	-- Trigger On == 1, if triggered then set margin
+	local marginTrigger = 0;
+
+	for i = 1 , maxRandomOptionCnt do
+	    local propGroupName = "RandomOptionGroup_"..i;
+		local propName = "RandomOption_"..i;
+		local propValue = "RandomOptionValue_"..i;
+		local clientMessage = 'None'
+
+		local propItem = invitem
+
+		if setItem ~= nil then
+			propItem = setItem
+		end
+
+		if propItem[propGroupName] == 'ATK' then
+		    clientMessage = 'ItemRandomOptionGroupATK'
+		elseif propItem[propGroupName] == 'DEF' then
+		    clientMessage = 'ItemRandomOptionGroupDEF'
+		elseif propItem[propGroupName] == 'UTIL_WEAPON' then
+		    clientMessage = 'ItemRandomOptionGroupUTIL'
+		elseif propItem[propGroupName] == 'UTIL_ARMOR' then
+		    clientMessage = 'ItemRandomOptionGroupUTIL'
+		elseif propItem[propGroupName] == 'UTIL_SHILED' then
+		    clientMessage = 'ItemRandomOptionGroupUTIL'
+		elseif propItem[propGroupName] == 'STAT' then
+		    clientMessage = 'ItemRandomOptionGroupSTAT'
+		end
+		
+		if propItem[propValue] ~= 0 and propItem[propName] ~= "None" then
+			local opName = string.format("%s %s", ClMsg(clientMessage), ScpArgMsg(propItem[propName]));
+			local strInfo = ABILITY_DESC_NO_PLUS(opName, propItem[propValue], 0);
+
+			inner_yPos = ADD_ITEM_PROPERTY_TEXT(property_gbox, strInfo, 0, inner_yPos);
+			marginTrigger = 1;
+		end
+	end
+
 	for i = 1 , #list do
 		local propName = list[i];
 		local propValue = class[propName];
-	--	if socketitem ~= nil then
-	--		propValue = socketitem[propName]
-	--	end
 
 		local needToShow = true;
 		for j = 1, #basicTooltipPropList do
@@ -184,7 +237,12 @@ function DRAW_EQUIP_PROPERTY_HOOKED(tooltipframe, invitem, yPos, mainframename, 
 			end
 		end
 
-		if needToShow == true and propValue ~= 0 and randomOptionProp[propName] == nil then -- 랜덤 옵션이랑 겹치는 프로퍼티는 여기서 출력하지 않음
+		if needToShow == true and propValue ~= 0 and randomOptionProp[propName] == nil then -- ?? ???? ??? ????? ??? ???? ??
+			if marginTrigger == 1 then
+				inner_yPos = ADD_ITEM_PROPERTY_TEXT(property_gbox, " ", 0, inner_yPos);
+				marginTrigger = 0;
+			end
+
 			if  invitem.GroupName == 'Weapon' then
 				if propName ~= "MINATK" and propName ~= 'MAXATK' then
 					local strInfo = ABILITY_DESC_PLUS(ScpArgMsg(propName), propValue);					
@@ -219,55 +277,20 @@ function DRAW_EQUIP_PROPERTY_HOOKED(tooltipframe, invitem, yPos, mainframename, 
 		local propValue = "HatPropValue_"..i;
 		if invitem[propValue] ~= 0 and invitem[propName] ~= "None" then
 -- add code start
-			local propValueColored = GET_ITEM_VALUE_COLOR(invitem[propName], invitem[propValue], propList[invitem[propName]].max);
+			local propMaxValue = propList[invitem[propName]].max or 0;
+			local propValueColored = GET_ITEM_VALUE_COLOR(invitem[propName], invitem[propValue], propMaxValue);
 			local opName = string.format("[%s] {#%s}{ol}%s{/}{/}", ClMsg("EnchantOption"), propValueColored, ScpArgMsg(invitem[propName]));
 			local strInfo = "";
 			if invitem[propValue] < 0 then
-				strInfo = string.format(" - %s "..ScpArgMsg("PropDown").."{#%s}{ol}%d{/}{/}", opName, propValueColored, math.abs(invitem[propValue]));
+				strInfo = string.format(" - %s "..ScpArgMsg("PropDown").."{#%s}{ol}%d(MAX:%d){/}{/}", opName, propValueColored, math.abs(invitem[propValue]), propMaxValue);
 			else
-				strInfo = string.format(" - %s "..ScpArgMsg("PropUp").."{#%s}{ol}%d{/}{/}", opName, propValueColored, math.abs(invitem[propValue]));
+				strInfo = string.format(" - %s "..ScpArgMsg("PropUp").."{#%s}{ol}%d(MAX:%d){/}{/}", opName, propValueColored, math.abs(invitem[propValue]), propMaxValue);
 			end
 			inner_yPos = ADD_ITEM_PROPERTY_TEXT(property_gbox, strInfo, 0, inner_yPos);
 -- add code end
 		end
 	end
-	
-	for i = 1 , maxRandomOptionCnt do
-	    local propGroupName = "RandomOptionGroup_"..i;
-		local propName = "RandomOption_"..i;
-		local propValue = "RandomOptionValue_"..i;
-		local clientMessage = 'None'
-
-		local propItem = invitem
-
-		if setItem ~= nil then
-			propItem = setItem
-		end
-
-		if propItem[propGroupName] == 'ATK' then
-		    clientMessage = 'ItemRandomOptionGroupATK'
-		elseif propItem[propGroupName] == 'DEF' then
-		    clientMessage = 'ItemRandomOptionGroupDEF'
-		elseif propItem[propGroupName] == 'UTIL_WEAPON' then
-		    clientMessage = 'ItemRandomOptionGroupUTIL'
-		elseif propItem[propGroupName] == 'UTIL_ARMOR' then
-		    clientMessage = 'ItemRandomOptionGroupUTIL'
-		elseif propItem[propGroupName] == 'UTIL_SHILED' then
-		    clientMessage = 'ItemRandomOptionGroupUTIL'
-		elseif propItem[propGroupName] == 'STAT' then
-		    clientMessage = 'ItemRandomOptionGroupSTAT'
-		end
-		
-		if propItem[propValue] ~= 0 and propItem[propName] ~= "None" then
-			local opName = string.format("%s %s", ClMsg(clientMessage), ScpArgMsg(propItem[propName]));
-			local strInfo = ABILITY_DESC_NO_PLUS(opName, propItem[propValue], 0);
-
-			inner_yPos = ADD_ITEM_PROPERTY_TEXT(property_gbox, strInfo, 0, inner_yPos);
-		end
-	end
-
    
-
 	for i = 1 , #list2 do
 		local propName = list2[i];
 		local propValue = invitem[propName];
@@ -280,7 +303,7 @@ function DRAW_EQUIP_PROPERTY_HOOKED(tooltipframe, invitem, yPos, mainframename, 
 	if invitem.OptDesc ~= nil and invitem.OptDesc ~= 'None' then
 		inner_yPos = ADD_ITEM_PROPERTY_TEXT(property_gbox, invitem.OptDesc, 0, inner_yPos);
 	end
-    
+	
 	if setItem == nil then
 		if invitem.IsAwaken == 1 then
 			local opName = string.format("[%s] %s", ClMsg("AwakenOption"), ScpArgMsg(invitem.HiddenProp));
@@ -300,12 +323,13 @@ function DRAW_EQUIP_PROPERTY_HOOKED(tooltipframe, invitem, yPos, mainframename, 
 		local strInfo = ABILITY_DESC_PLUS(opName, math.floor(10 * invitem.ReinforceRatio/100));
 		inner_yPos = ADD_ITEM_PROPERTY_TEXT(property_gbox, strInfo.."0%"..ClMsg("ReinforceOptionAtk"), 0, inner_yPos);
 	end
+
     if setItem ~= nil then
 	    inner_yPos = ADD_RANDOM_OPTION_RARE_TEXT(property_gbox, setItem, inner_yPos);
     else
         inner_yPos = ADD_RANDOM_OPTION_RARE_TEXT(property_gbox, invitem, inner_yPos);
-    end
-	local BOTTOM_MARGIN = tooltipframe:GetUserConfig("BOTTOM_MARGIN"); -- 맨 아랫쪽 여백
+	end
+	local BOTTOM_MARGIN = tooltipframe:GetUserConfig("BOTTOM_MARGIN"); -- ? ??? ??
 	BOTTOM_MARGIN = tonumber(BOTTOM_MARGIN)
 	if BOTTOM_MARGIN == nil then
 		BOTTOM_MARGIN = 0

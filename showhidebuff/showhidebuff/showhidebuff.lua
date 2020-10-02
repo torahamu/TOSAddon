@@ -47,8 +47,8 @@ function SHOW_HIDE_BUFF_COMMON_BUFF_MSG(frame, msg, buffType, handle, buff_ui, b
 --	if class.ShowIcon == "FALSE" then
 --		return;
 --	end
-	if class.Icon == nli or class.Icon == "" then
-		class.Icon == "expup";
+	if class.Icon == nil or class.Icon == "" then
+		class.Icon = "expup";
 	end
 
 	local slotlist;
@@ -79,7 +79,20 @@ function SHOW_HIDE_BUFF_COMMON_BUFF_MSG(frame, msg, buffType, handle, buff_ui, b
 	end
 
 	if msg == 'ADD' then
+        local skip = false
+        if class ~= nil then
+            if TryGetProp(class, 'OnlyOneBuff', 'None') == 'YES' and TryGetProp(class, 'Duplicate', 1) == 0 then
+                local exist_slot, i = get_exist_debuff_in_slotlist(slotlist, buffType)
+                if exist_slot ~= nil then
+                    if exist_slot:IsVisible() == 0 then
+                        SET_BUFF_SLOT(exist_slot, captionlist[i], class, buffType, handle, slotlist, buffIndex);
+                    end
+                    skip = true                  
+                end
+            end
+        end
 
+        if skip == false then
 		for j = 0, slotcount - 1 do
 			local i = GET_BUFF_SLOT_INDEX(j, colcnt);
 			local slot				= slotlist[i];
@@ -89,7 +102,7 @@ function SHOW_HIDE_BUFF_COMMON_BUFF_MSG(frame, msg, buffType, handle, buff_ui, b
 				break;
 			end
 		end
-
+        end
 	elseif msg == 'REMOVE' then
 		for i = 0, slotcount - 1 do
 
@@ -130,4 +143,3 @@ function SHOW_HIDE_BUFF_COMMON_BUFF_MSG(frame, msg, buffType, handle, buff_ui, b
 
     COLONY_POINT_INFO_DRAW_BUFF_ICON()
 end
-

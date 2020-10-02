@@ -17,10 +17,10 @@
 		"name" : "Market Show Level",
 		"file" : "marketshowlevel",
 		"extension" : "ipf",
-		"fileVersion" : "v3.1.1",
+		"fileVersion" : "v3.3.0",
 		"releaseTag" : "marketshowlevel",
 		"unicode" : "⛄",
-		"description" : "Make Market Equipment a Simple List.[v3.1.0 ReBuild Patch.]  マーケットの装備をシンプルなリストにします。[v3.1.0 ReBuild Patch.]",
+		"description" : "Make Market Equipment a Simple List.(Thanks for itos and jtos and all addon developers.I used fixed source code.)[v3.3.0 Patch fix.]  マーケットの装備をシンプルなリストにします。(itosとjtosとすべてのアドオン開発者に感謝します。修正されたソースコードを使用しました。)[v3.3.0 Patch fix.]",
 		"tags" : [
 			"ui",
 			"market"
@@ -30,10 +30,10 @@
 		"name" : "Show Hide Buff",
 		"file" : "showhidebuff",
 		"extension" : "ipf",
-		"fileVersion" : "v1.1.0",
+		"fileVersion" : "v1.1.1",
 		"releaseTag" : "showhidebuff",
 		"unicode" : "⛄",
-		"description" : "An add-on that displays a buff icon that is not normally displayed for targeted enemies.[v1.1.0 ReBuild Patch.]  隠しバフを表示する。[v1.1.0 ReBuild Patch.]",
+		"description" : "An add-on that displays a buff icon that is not normally displayed for targeted enemies.(Thanks for itos and jtos and all addon developers.I used fixed source code.)[v1.1.1 Patch fix.]  隠しバフを表示する。(itosとjtosとすべてのアドオン開発者に感謝します。修正されたソースコードを使用しました。)[v1.1.1 Patch fix.]",
 		"tags" : [
 			"ui",
 			"icon",
@@ -58,10 +58,10 @@
 		"name" : "Hair Enchant Extend",
 		"file" : "hairenchantextend",
 		"extension" : "ipf",
-		"fileVersion" : "v1.1.0",
+		"fileVersion" : "v2.0.0",
 		"releaseTag" : "hairenchantextend",
 		"unicode" : "⛄",
-		"description" : "An add-on that changes enchantment option color.[v1.1.0 ReBuild Patch]  魔法付与スクロール使用時やヘアアクセの装備確認時もオプションの値によって色を変更する。[v1.1.0 ReBuild Patch]",
+		"description" : "An add-on that changes enchantment option color.[v2.0.0 Patch fix]  魔法付与スクロール使用時やヘアアクセの装備確認時もオプションの値によって色を変更する。[v2.0.0 Patch fix]",
 		"tags" : [
 			"ui",
 			"hair",
@@ -87,10 +87,10 @@
 		"name" : "chatextends",
 		"file" : "chatextends",
 		"extension" : "ipf",
-		"fileVersion" : "v3.1.2",
+		"fileVersion" : "v4.0.0",
 		"releaseTag" : "chatextends",
 		"unicode" : "⛄",
-		"description" : "Modify chat.Please look at github for details.[v3.1.0 ReBuild Patch]  チャットを色々改造します。詳細はGithubやReadmeを見てください。[v3.1.0 ReBuild Patch]",
+		"description" : "Modify chat.Please look at github for details.(Thanks for itos and jtos and all addon developers.I used fixed source code.)[v4.0.0 Patch fix]  チャットを色々改造します。詳細はGithubやReadmeを見てください。(itosとjtosとすべてのアドオン開発者に感謝します。修正されたソースコードを使用しました。)[v4.0.0 Patch fix]",
 		"tags" : [
 			"ui",
 			"chat"
@@ -126,7 +126,7 @@
 		"name" : "Turi of Savior",
 		"file" : "turiofsavior",
 		"extension" : "ipf",
-		"fileVersion" : "v2.0.0",
+		"fileVersion" : "v2.0.1",
 		"releaseTag" : "turiofsavior",
 		"unicode" : "⛄",
 		"description" : "Improvement of fishing window.[v2.0.0 ReBuild Patch.]  釣りーオブセイヴァーのウィンドウを改良します。[v2.0.0 ReBuild Patch.]",
@@ -134,19 +134,6 @@
 			"ui",
 			"fish",
 			"fishing"
-		]
-	},
-	{
-		"name" : "Stat Viewer Ex",
-		"file" : "statviewer_ex",
-		"extension" : "ipf",
-		"fileVersion" : "v2.0.1",
-		"releaseTag" : "statviewer_ex",
-		"unicode" : "⛄",
-		"description" : "This is a modified version of Excrulon's statviewer addon.[v2.0.0 ReBuild Patch.]  Excrulonさんのstatviewerアドオンを改造しました。[v2.0.0  ReBuild Patch]",
-		"tags" : [
-			"ui",
-			"status"
 		]
 	},
 	{
@@ -177,13 +164,13 @@
 		]
 	},
 	{
-		"name" : "IndunPlus V3",
+		"name" : "IndunPlus",
 		"file" : "indunplus",
 		"extension" : "ipf",
-		"fileVersion" : "v3.0.2",
+		"fileVersion" : "v4.0.1",
 		"releaseTag" : "indunplus",
 		"unicode" : "⛄",
-		"description" : "Added challenge mode to IndanPlus.Please login with each character.[v3.0.0 ReBuild Patch]  IndunPlusにチャレンジモードを追加したものです。設定ファイル書き換わったので、もう一度各キャラでログインし直してください。[v3.0.0 リビルドパッチ]",
+		"description" : "Added challenge mode to IndanPlus.Please login with each character.(Thanks for itos and jtos and all addon developers.I used fixed source code.)[v4.0.0 Patch fix]  IndunPlusにチャレンジモードを追加したものです。設定ファイル書き換わったので、もう一度各キャラでログインし直してください。(itosとjtosとすべてのアドオン開発者に感謝します。修正されたソースコードを使用しました。)[v4.0.0 Patch fix]",
 		"tags" : [
 			"ui",
 			"instance dungeon",
@@ -195,10 +182,10 @@
 		"name" : "Status Point Check",
 		"file" : "statuspointcheck",
 		"extension" : "ipf",
-		"fileVersion" : "v1.5.0",
+		"fileVersion" : "v1.5.2",
 		"releaseTag" : "statuspointcheck",
 		"unicode" : "⛄",
-		"description" : "From the status screen (F1 button), you can check whether you have cleared the quest to acquire the status point.[v1.5.0 Fixed patch.]  ステータス画面(F1ボタン)より、ステータスポイントを取得するクエストをクリアしているかどうかを確認することができます。[v1.5.0 パッチ修正。]",
+		"description" : "From the status screen (F1 button), you can check whether you have cleared the quest to acquire the status point.(Thanks for itos and jtos and all addon developers.I used fixed source code.)[v1.5.1 Patch fix]  ステータス画面(F1ボタン)より、ステータスポイントを取得するクエストをクリアしているかどうかを確認することができます。(itosとjtosとすべてのアドオン開発者に感謝します。修正されたソースコードを使用しました。)[v1.5.1 Patch fix]",
 		"tags" : [
 			"status",
 			"point"
@@ -215,6 +202,33 @@
 		"tags" : [
 			"setting",
 			"common"
+		]
+	},
+	{
+		"name" : "Notices Goto Sys Msg",
+		"file" : "noticesgotosysmsg",
+		"extension" : "ipf",
+		"fileVersion" : "v1.0.2",
+		"releaseTag" : "noticesgotosysmsg",
+		"unicode" : "⛄",
+		"description" : "Causes the specified notification to appear in system messages and not normally.  指定した通知をシステムメッセージに表示させ、通常表示しないようにします",
+		"tags" : [
+			"ui",
+			"notice",
+			"system"
+		]
+	},
+	{
+		"name" : "Simple Challenge Gauge",
+		"file" : "simplechallengegauge",
+		"extension" : "ipf",
+		"fileVersion" : "v1.0.1",
+		"releaseTag" : "simplechallengegauge",
+		"unicode" : "⛄",
+		"description" : "Change the gauge in challenge mode.  チャレンジモードのゲージを変更します。",
+		"tags" : [
+			"ui",
+			"challenge"
 		]
 	}
 

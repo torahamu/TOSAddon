@@ -46,7 +46,7 @@ end
 function STATUSPOINTCHECK_QUESTCHECK(statuspoint)
 	--questprogresscheck_auto.ies
 	local questList = {
-		"20050", "8537", "20275", "8392", "20201", "8728", "8752", "80047", "20219", "8458", "8498", "20341", "30194", "90217", "60278", "50369", "72214"
+		"20050", "8537", "20275", "8392", "20201", "8728", "8752", "80047", "20219", "8458", "8498", "20341", "30194", "90217", "60278", "50369", "72214", "72235", "80437", "80460", "72264"
 	}
 	local titleBody = "Quest List For Status Point";
 	local body = "";
@@ -381,7 +381,8 @@ function STATUSPOINTCHECK_ZEMINACLEARCHECK(mapClassName)
 	for i = 0, idcount -1 do
 		local classIES = GetClassByIndex(idspace, i);
 		if classIES.ClassType == "statue_zemina" then
-			if GetNPCState(mapClassName, classIES.GenType) == 20 then
+			local state = GetNPCState(mapClassName, classIES.GenType)
+			if state == 20 or state == 1 then
 				return true;
 			else
 				return false;
