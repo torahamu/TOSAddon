@@ -87,7 +87,7 @@
 		"name" : "chatextends",
 		"file" : "chatextends",
 		"extension" : "ipf",
-		"fileVersion" : "v4.0.0",
+		"fileVersion" : "v4.1.0",
 		"releaseTag" : "chatextends",
 		"unicode" : "⛄",
 		"description" : "Modify chat.Please look at github for details.(Thanks for itos and jtos and all addon developers.I used fixed source code.)[v4.0.0 Patch fix]  チャットを色々改造します。詳細はGithubやReadmeを見てください。(itosとjtosとすべてのアドオン開発者に感謝します。修正されたソースコードを使用しました。)[v4.0.0 Patch fix]",

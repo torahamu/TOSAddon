@@ -52,9 +52,11 @@ g.usefontsettings = {
 	COLOR_PARTY_MY="FF93c95a";
 	COLOR_PARTY="FFbceb89";
 	COLOR_PARTY_INFO="FFbceb89";
-	COLOR_GUILD_INFO="FFBE80CE";
-	COLOR_GUILD_MY="FFa735dc";
+	COLOR_GUILD_INFO="FFA566FF";
+	COLOR_GUILD_MY="FFDC99FF";
 	COLOR_GUILD="FFbe80ce";
+	COLOR_GUILD_NOTICE_MY="FFFF44FF";
+	COLOR_GUILD_NOTICE="FFFF44FF";
 	BALLONCHAT_FONTSTYLE="{#050505}";
 	BALLONCHAT_FONTSTYLE_SYSTEM="{#DD0000}";
 	BALLONCHAT_FONTSTYLE_MEMBER="{#000000}";
@@ -64,6 +66,8 @@ g.usefontsettings = {
 	TEXTCHAT_FONTSTYLE_GUILD_MY="{#DC99FF}{b}{ol}{ds}";
 	TEXTCHAT_FONTSTYLE_WHISPER_MY="{#8EEBFF}{b}{ol}{ds}";
 	TEXTCHAT_FONTSTYLE_GROUP_MY="{#8EEBFF}{b}{ol}{ds}";
+	TEXTCHAT_FONTSTYLE_GUILD_NOTICE_MY="{#FF44FF}{b}{ol}";
+	TEXTCHAT_FONTSTYLE_GUILD_NOTICE="{#FF44FF}{b}{ol}";
 	TEXTCHAT_FONTSTYLE_NORMAL="{#FFFFFF}{ol}";
 	TEXTCHAT_FONTSTYLE_SHOUT="{#da6e0f}{ol}";
 	TEXTCHAT_FONTSTYLE_PARTY="{#86E57F}{ol}";
@@ -230,15 +234,15 @@ function CHATEXTENDS_UPDATE_CHAT_FRAME()
 	chat_frame:SetOffset(chat_frame:GetX(),chat_frame:GetY() + 100);
 	chat_frame:EnableMove(0);
 	local edit_bg=GET_CHILD(chat_frame,"edit_bg");
-	edit_bg:Resize(742,36);
+	edit_bg:Resize(732,36);
 	local mainchat=GET_CHILD(chat_frame,"mainchat");
 	local titleCtrl = GET_CHILD(chat_frame,'edit_to_bg');
 	titleCtrl:SetGravity(ui.LEFT, ui.TOP);
 	local btn_ChatType = GET_CHILD(chat_frame,'button_type');
 	local offsetX = btn_ChatType:GetWidth();
 	mainchat:SetGravity(ui.LEFT, ui.TOP);
-	mainchat:Resize(600 - titleCtrl:GetWidth() - offsetX + 10, mainchat:GetOriginalHeight())
-	mainchat:SetOffset(titleCtrl:GetWidth() + offsetX, mainchat:GetOriginalY());
+	mainchat:Resize(585 - titleCtrl:GetWidth() - offsetX + 17, mainchat:GetOriginalHeight())
+	mainchat:SetOffset(titleCtrl:GetWidth() + offsetX + 7, mainchat:GetOriginalY());
 
 	local now_button = chat_frame:CreateOrGetControl("button", "CHATEXTENDS_NOW_BUTTON", 72, 0, 36, 36);
 	tolua.cast(now_button, "ui::CButton");
@@ -270,7 +274,7 @@ function CHATEXTENDS_UPDATE_CHAT_FRAME()
 	local button_option = chat_frame:CreateOrGetControl("button", "CHATEXTENDS_BUTTON_OPTION", 6, 0, 36, 36);
 	tolua.cast(button_option, "ui::CButton");
 	button_option:SetGravity(ui.RIGHT, ui.TOP);
-	button_option:SetOffset(6, 0);
+	button_option:SetOffset(3, 0);
 	button_option:SetClickSound("button_click");
 	button_option:SetOverSound("button_cursor_over_2");
 	button_option:SetAnimation("MouseOnAnim", "btn_mouseover");
@@ -408,8 +412,8 @@ function CHATEXTENDS_CHAT_OPEN_INIT()
 	local btn_ChatType = GET_CHILD(chat_frame,'button_type');
 	local offsetX = btn_ChatType:GetWidth();
 	mainchat:SetGravity(ui.LEFT, ui.TOP);
-	mainchat:Resize(600 - titleCtrl:GetWidth() - offsetX + 10, mainchat:GetOriginalHeight())
-	mainchat:SetOffset(titleCtrl:GetWidth() + offsetX, mainchat:GetOriginalY());
+	mainchat:Resize(585 - titleCtrl:GetWidth() - offsetX + 17, mainchat:GetOriginalHeight())
+	mainchat:SetOffset(titleCtrl:GetWidth() + offsetX + 7, mainchat:GetOriginalY());
 end
 
 -- チェックボックスのイベント
@@ -514,8 +518,8 @@ function CHATEXTENDS_CHAT_CHAT_SET_TO_TITLENAME(chatType, targetName, count)
 	local btn_ChatType = GET_CHILD(chat_frame,'button_type');
 	local offsetX = btn_ChatType:GetWidth();
 
-	mainchat:Resize(600 - titleCtrl:GetWidth() - offsetX + 10, mainchat:GetOriginalHeight())
-	mainchat:SetOffset(titleCtrl:GetWidth() + offsetX, mainchat:GetOriginalY());
+	mainchat:Resize(585 - titleCtrl:GetWidth() - offsetX + 17, mainchat:GetOriginalHeight())
+	mainchat:SetOffset(titleCtrl:GetWidth() + offsetX + 7, mainchat:GetOriginalY());
 
 end
 
@@ -782,6 +786,19 @@ function CHATEXTENDS_DRAW_CHAT_MSG(groupboxname, startindex, chatframe, removeCh
 
 						fontStyle = CHATEXTENDS_CHAT_TEXT_IS_MINE_AND_SETFONT(msgIsMine, "TEXTCHAT_FONTSTYLE_GUILD");
 						msgFront = CHATEXTENDS_GET_TYPE_CHARNAME(ScpArgMsg("ChatType_4"), commnderNameUIText);
+
+					elseif msgType == "GuildNotice" then
+						fontStyle = g.usefontsettings.TEXTCHAT_FONTSTYLE_GUILD_NOTICE;
+						msgFront = CHATEXTENDS_GET_TYPE_CHARNAME(ScpArgMsg("ChatType_4"), commnderNameUIText);
+
+						local guild = GET_MY_GUILD_INFO();
+						if guild ~= nil then
+							local leaderName = guild.info:GetLeaderName();
+							if commnderName ~= leaderName then
+								local memberInfo = session.party.GetPartyMemberInfoByName(PARTY_GUILD, commnderName);
+								GetPlayerClaims("CHATEXTENDS_GUILD_NOTICE_MSG_CHECK", memberInfo:GetAID(), chatframe:GetName()..";"..groupboxname..";"..clusterinfo:GetMsgInfoID());
+							end
+						end
 
 					elseif msgType == "Notice" then
 
@@ -1208,6 +1225,9 @@ function CHATEXTENDS_GET_CHAT_COLOR(msgType, roomID)
 	elseif msgType == 'Guild' then
 		myColor = g.usefontsettings.COLOR_GUILD_MY;
 		targetColor = g.usefontsettings.COLOR_GUILD;
+	elseif msgType == 'GuildNotice' then
+		myColor = g.usefontsettings.COLOR_GUILD_NOTICE_MY;
+		targetColor = g.usefontsettings.COLOR_GUILD_NOTICE;
 	elseif msgType == "friendmem" then
 		targetColor = g.usefontsettings.COLOR_PARTY_INFO;
 	elseif msgType == "guildmem" then
@@ -1556,4 +1576,46 @@ function CHATEXTENDS_NICO_CHAT(msg)
 	ctrl:SetUserValue("NICO_START_X", x);
 
 	frame:RunUpdateScript("INVALIDATE_NICO");
+end
+
+local json = require "json_imc"
+function CHATEXTENDS_GUILD_NOTICE_MSG_CHECK(code, ret_json, argStr)
+	if code ~= 200 then
+		return;
+	end
+	
+	local guild = GET_MY_GUILD_INFO();
+	if guild == nil then
+		return;
+	end
+
+	local ret = false;
+    local parsed_json = json.decode(ret_json)
+	for k, v in pairs(parsed_json) do
+		if v == 208 then -- 메시지 강조 권한
+			ret = true;
+			break;
+		end
+    end
+
+	if ret == true then 
+		return;
+	end
+
+	local argStrlist = StringSplit(argStr, ";");
+	local frame = ui.GetFrame(argStrlist[1]);
+	local groupbox = GET_CHILD(frame, argStrlist[2]);
+	local clustername = "cluster_" .. argStrlist[3];
+	local chatCtrl = GET_CHILD(groupbox, clustername);
+	if chatCtrl == nil then
+		return;
+	end
+
+	local mainchatFrame = ui.GetFrame("chatframe");
+	local fontStyle = mainchatFrame:GetUserConfig("TEXTCHAT_FONTSTYLE_GUILD");
+
+	local txt = GET_CHILD(chatCtrl, "text");
+	txt:SetTextByKey("font", fontStyle);
+	groupbox:Invalidate();
+
 end
